@@ -1,0 +1,93 @@
+[
+    {
+        "name": "Miramar",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 123456789,
+        "population": 123456789,
+        "borders": ["Ottamendi", "Mar del Plata"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    },
+    {
+        "name": "La Plata",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 987654321,
+        "population": 987654321,
+        "borders": ["Brandsen", "Berriso, Ensenada"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    },
+    {
+        "name": "Mar del Plata",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 123456789,
+        "population": 123456789,
+        "borders": ["Miramar", "Ottamendi"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    },
+    {
+        "name": "Ottamendi",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 123456789,
+        "population": 123456789,
+        "borders": ["Miramar", "Mar del Plata"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    },
+    {
+        "name": "Brandsen",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 123456789,
+        "population": 123456789,
+        "borders": ["La Plata", "Berriso, Ensenada"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Iglesia"
+        }
+    },
+    {
+        "name": "Berriso",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 123456789,
+        "population": 123456789,
+        "borders": ["La Plata", "Brandsen, Ensenada"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    },
+    {
+        "name": "Ensenada",
+        "subnation": "Buenos Aires",
+        "country": "AR",
+        "area": 123456789,
+        "population": 123456789,
+        "borders": ["La Plata", "Brandsen"],
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    }
+]

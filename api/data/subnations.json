@@ -1,0 +1,799 @@
+[
+    {
+        "name": "Buenos Aires",
+        "country": "AR",
+        "area": 307571,
+        "population": 17541141,
+        "borders": [
+            "La Pampa",
+            "Río Negro",
+            "Córdoba",
+            "Santa Fe",
+            "Entre Ríos"
+        ],
+        "capital": "La Plata",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Bandera_de_la_Provincia_de_Buenos_Aires.svg/1024px-Bandera_de_la_Provincia_de_Buenos_Aires.svg.png",
+        "additional_info": {
+            "iso_code": "AR-B",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Obelisco"
+        }
+    },
+    {
+        "name": "Córdoba",
+        "country": "AR",
+        "area": 165321,
+        "population": 3760450,
+        "borders": [
+            "Santa Fe",
+            "Santiago del Estero",
+            "Catamarca",
+            "La Rioja",
+            "San Luis",
+            "Buenos Aires"
+        ],
+        "capital": "Córdoba",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Bandera_de_la_Provincia_de_Córdoba.svg/1024px-Bandera_de_la_Provincia_de_Córdoba.svg.png",
+        "additional_info": {
+            "iso_code": "AR-X",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Manzana Jesuítica"
+        }
+    },
+    {
+        "name": "Santa Fe",
+        "country": "AR",
+        "area": 133007,
+        "population": 3397532,
+        "borders": [
+            "Córdoba",
+            "Buenos Aires",
+            "Entre Ríos",
+            "Corrientes",
+            "Chaco",
+            "Santiago del Estero"
+        ],
+        "capital": "Santa Fe",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Bandera_de_la_Provincia_de_Santa_Fe.svg/1024px-Bandera_de_la_Provincia_de_Santa_Fe.svg.png",
+        "additional_info": {
+            "iso_code": "AR-S",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Puente Colgante"
+        }
+    },
+    {
+        "name": "Mendoza",
+        "country": "AR",
+        "area": 148827,
+        "population": 2043261,
+        "borders": [
+            "San Juan",
+            "San Luis",
+            "La Pampa",
+            "Neuquén"
+        ],
+        "capital": "Mendoza",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Bandera_de_la_Provincia_de_Mendoza.svg/1024px-Bandera_de_la_Provincia_de_Mendoza.svg.png",
+        "additional_info": {
+            "iso_code": "AR-M",
+            "timezone": "America/Argentina/Mendoza",
+            "famous_landmark": "Aconcagua"
+        }
+    },
+    {
+        "name": "Tierra del Fuego",
+        "country": "AR",
+        "area": 21378,
+        "population": 173432,
+        "borders": [],
+        "capital": "Ushuaia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Bandera_de_la_Provincia_de_Tierra_del_Fuego.svg/1024px-Bandera_de_la_Provincia_de_Tierra_del_Fuego.svg.png",
+        "additional_info": {
+            "iso_code": "AR-V",
+            "timezone": "America/Argentina/Ushuaia",
+            "famous_landmark": "Canal Beagle"
+        }
+    },
+    {
+        "name": "Catamarca",
+        "country": "AR",
+        "area": 102602,
+        "population": 415438,
+        "borders": [
+            "Salta",
+            "Tucumán",
+            "Santiago del Estero",
+            "La Rioja"
+        ],
+        "capital": "San Fernando del Valle de Catamarca",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Bandera_de_la_Provincia_de_Catamarca.svg/1024px-Bandera_de_la_Provincia_de_Catamarca.svg.png",
+        "additional_info": {
+            "iso_code": "AR-K",
+            "timezone": "America/Argentina/Catamarca",
+            "famous_landmark": "Dique El Jumeal"
+        }
+    },
+    {
+        "name": "Chaco",
+        "country": "AR",
+        "area": 99633,
+        "population": 1204541,
+        "borders": [
+            "Formosa",
+            "Corrientes",
+            "Santa Fe",
+            "Santiago del Estero",
+            "Salta"
+        ],
+        "capital": "Resistencia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Bandera_de_la_Provincia_del_Chaco.svg/1024px-Bandera_de_la_Provincia_del_Chaco.svg.png",
+        "additional_info": {
+            "iso_code": "AR-H",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Parque Nacional Chaco"
+        }
+    },
+    {
+        "name": "Chubut",
+        "country": "AR",
+        "area": 224686,
+        "population": 618994,
+        "borders": [
+            "Río Negro",
+            "Neuquén",
+            "Santa Cruz"
+        ],
+        "capital": "Rawson",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bandera_de_la_Provincia_del_Chubut.svg/1024px-Bandera_de_la_Provincia_del_Chubut.svg.png",
+        "additional_info": {
+            "iso_code": "AR-U",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Península Valdés"
+        }
+    },
+    {
+        "name": "Ciudad Autónoma de Buenos Aires",
+        "country": "AR",
+        "area": 203,
+        "population": 3075646,
+        "borders": [
+            "Buenos Aires"
+        ],
+        "capital": "Buenos Aires",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Bandera_de_la_Ciudad_de_Buenos_Aires.svg/1024px-Bandera_de_la_Ciudad_de_Buenos_Aires.svg.png",
+        "additional_info": {
+            "iso_code": "AR-C",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "famous_landmark": "Casa Rosada"
+        }
+    },
+    {
+        "name": "Corrientes",
+        "country": "AR",
+        "area": 88199,
+        "population": 1120801,
+        "borders": [
+            "Chaco",
+            "Misiones",
+            "Entre Ríos",
+            "Santa Fe"
+        ],
+        "capital": "Corrientes",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Bandera_de_la_Provincia_de_Corrientes.svg/1024px-Bandera_de_la_Provincia_de_Corrientes.svg.png",
+        "additional_info": {
+            "iso_code": "AR-W",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Esteros del Iberá"
+        }
+    },
+    {
+        "name": "Entre Ríos",
+        "country": "AR",
+        "area": 78781,
+        "population": 1385961,
+        "borders": [
+            "Santa Fe",
+            "Corrientes",
+            "Buenos Aires"
+        ],
+        "capital": "Paraná",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Bandera_de_la_Provincia_de_Entre_Ríos.svg/1024px-Bandera_de_la_Provincia_de_Entre_Ríos.svg.png",
+        "additional_info": {
+            "iso_code": "AR-E",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Parque Nacional El Palmar"
+        }
+    },
+    {
+        "name": "Formosa",
+        "country": "AR",
+        "area": 72066,
+        "population": 606041,
+        "borders": [
+            "Chaco",
+            "Salta"
+        ],
+        "capital": "Formosa",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bandera_de_la_Provincia_de_Formosa.svg/1024px-Bandera_de_la_Provincia_de_Formosa.svg.png",
+        "additional_info": {
+            "iso_code": "AR-P",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Bañado La Estrella"
+        }
+    },
+    {
+        "name": "Jujuy",
+        "country": "AR",
+        "area": 53219,
+        "population": 797955,
+        "borders": [
+            "Salta"
+        ],
+        "capital": "San Salvador de Jujuy",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Bandera_de_la_Provincia_de_Jujuy.svg/1024px-Bandera_de_la_Provincia_de_Jujuy.svg.png",
+        "additional_info": {
+            "iso_code": "AR-Y",
+            "timezone": "America/Argentina/Jujuy",
+            "famous_landmark": "Cerro de los Siete Colores"
+        }
+    },
+    {
+        "name": "La Pampa",
+        "country": "AR",
+        "area": 143440,
+        "population": 358428,
+        "borders": [
+            "Buenos Aires",
+            "Córdoba",
+            "San Luis",
+            "Río Negro"
+        ],
+        "capital": "Santa Rosa",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Bandera_de_la_Provincia_de_La_Pampa.svg/1024px-Bandera_de_la_Provincia_de_La_Pampa.svg.png",
+        "additional_info": {
+            "iso_code": "AR-L",
+            "timezone": "America/Argentina/Salta",
+            "famous_landmark": "Parque Luro"
+        }
+    },
+    {
+        "name": "La Rioja",
+        "country": "AR",
+        "area": 89680,
+        "population": 384607,
+        "borders": [
+            "Catamarca",
+            "Córdoba",
+            "San Luis",
+            "San Juan"
+        ],
+        "capital": "La Rioja",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Bandera_de_la_Provincia_de_La_Rioja.svg/1024px-Bandera_de_la_Provincia_de_La_Rioja.svg.png",
+        "additional_info": {
+            "iso_code": "AR-F",
+            "timezone": "America/Argentina/La_Rioja",
+            "famous_landmark": "Talampaya"
+        }
+    },
+    {
+        "name": "Misiones",
+        "country": "AR",
+        "area": 29801,
+        "population": 1265816,
+        "borders": [
+            "Corrientes"
+        ],
+        "capital": "Posadas",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Bandera_de_la_Provincia_de_Misiones.svg/1024px-Bandera_de_la_Provincia_de_Misiones.svg.png",
+        "additional_info": {
+            "iso_code": "AR-N",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Cataratas del Iguazú"
+        }
+    },
+    {
+        "name": "Neuquén",
+        "country": "AR",
+        "area": 94078,
+        "population": 726590,
+        "borders": [
+            "Río Negro",
+            "Mendoza",
+            "La Pampa"
+        ],
+        "capital": "Neuquén",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Bandera_de_la_Provincia_del_Neuquén.svg/1024px-Bandera_de_la_Provincia_del_Neuquén.svg.png",
+        "additional_info": {
+            "iso_code": "AR-Q",
+            "timezone": "America/Argentina/Salta",
+            "famous_landmark": "Lago Lácar"
+        }
+    },
+    {
+        "name": "Río Negro",
+        "country": "AR",
+        "area": 203013,
+        "population": 747610,
+        "borders": [
+            "La Pampa",
+            "Neuquén",
+            "Chubut",
+            "Buenos Aires"
+        ],
+        "capital": "Viedma",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Bandera_de_la_Provincia_de_Río_Negro.svg/1024px-Bandera_de_la_Provincia_de_Río_Negro.svg.png",
+        "additional_info": {
+            "iso_code": "AR-R",
+            "timezone": "America/Argentina/Salta",
+            "famous_landmark": "Bariloche"
+        }
+    },
+    {
+        "name": "Salta",
+        "country": "AR",
+        "area": 155488,
+        "population": 1441040,
+        "borders": [
+            "Jujuy",
+            "Formosa",
+            "Chaco",
+            "Santiago del Estero",
+            "Tucumán",
+            "Catamarca"
+        ],
+        "capital": "Salta",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Bandera_de_la_Provincia_de_Salta.svg/1024px-Bandera_de_la_Provincia_de_Salta.svg.png",
+        "additional_info": {
+            "iso_code": "AR-A",
+            "timezone": "America/Argentina/Salta",
+            "famous_landmark": "Cerro San Bernardo"
+        }
+    },
+    {
+        "name": "San Juan",
+        "country": "AR",
+        "area": 89651,
+        "population": 738034,
+        "borders": [
+            "La Rioja",
+            "San Luis",
+            "Mendoza"
+        ],
+        "capital": "San Juan",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Bandera_de_la_Provincia_de_San_Juan.svg/1024px-Bandera_de_la_Provincia_de_San_Juan.svg.png",
+        "additional_info": {
+            "iso_code": "AR-J",
+            "timezone": "America/Argentina/San_Juan",
+            "famous_landmark": "Parque Provincial Ischigualasto"
+        }
+    },
+    {
+        "name": "San Luis",
+        "country": "AR",
+        "area": 76748,
+        "population": 540905,
+        "borders": [
+            "Córdoba",
+            "La Rioja",
+            "San Juan",
+            "Mendoza",
+            "La Pampa"
+        ],
+        "capital": "San Luis",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Bandera_de_la_Provincia_de_San_Luis.svg/1024px-Bandera_de_la_Provincia_de_San_Luis.svg.png",
+        "additional_info": {
+            "iso_code": "AR-D",
+            "timezone": "America/Argentina/San_Luis",
+            "famous_landmark": "Sierras de las Quijadas"
+        }
+    },
+    {
+        "name": "Santa Cruz",
+        "country": "AR",
+        "area": 243943,
+        "population": 365698,
+        "borders": [
+            "Chubut"
+        ],
+        "capital": "Río Gallegos",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Bandera_de_la_Provincia_de_Santa_Cruz.svg/1024px-Bandera_de_la_Provincia_de_Santa_Cruz.svg.png",
+        "additional_info": {
+            "iso_code": "AR-Z",
+            "timezone": "America/Argentina/Rio_Gallegos",
+            "famous_landmark": "Glaciar Perito Moreno"
+        }
+    },
+    {
+        "name": "Santiago del Estero",
+        "country": "AR",
+        "area": 136351,
+        "population": 1043295,
+        "borders": [
+            "Salta",
+            "Chaco",
+            "Santa Fe",
+            "Córdoba",
+            "Catamarca",
+            "Tucumán"
+        ],
+        "capital": "Santiago del Estero",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Bandera_de_la_Provincia_de_Santiago_del_Estero.svg/1024px-Bandera_de_la_Provincia_de_Santiago_del_Estero.svg.png",
+        "additional_info": {
+            "iso_code": "AR-G",
+            "timezone": "America/Argentina/Cordoba",
+            "famous_landmark": "Termas de Río Hondo"
+        }
+    },
+    {
+        "name": "Tucumán",
+        "country": "AR",
+        "area": 22524,
+        "population": 1687305,
+        "borders": [
+            "Salta",
+            "Santiago del Estero",
+            "Catamarca"
+        ],
+        "capital": "San Miguel de Tucumán",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Bandera_de_la_Provincia_de_Tucumán.svg/1024px-Bandera_de_la_Provincia_de_Tucumán.svg.png",
+        "additional_info": {
+            "iso_code": "AR-T",
+            "timezone": "America/Argentina/Tucuman",
+            "famous_landmark": "Casa Histórica de Tucumán"
+        }
+    },
+    {
+        "name": "Artigas",
+        "country": "UY",
+        "area": 11928,
+        "population": 73678,
+        "borders": [
+            "Salto",
+            "Rivera"
+        ],
+        "capital": "Artigas",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Bandera_de_Artigas.svg/1024px-Bandera_de_Artigas.svg.png",
+        "additional_info": {
+            "iso_code": "UY-AR",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Piedra Pintada"
+        }
+    },
+    {
+        "name": "Canelones",
+        "country": "UY",
+        "area": 4536,
+        "population": 520187,
+        "borders": [
+            "Montevideo",
+            "Florida",
+            "Lavalleja",
+            "Maldonado",
+            "San José"
+        ],
+        "capital": "Canelones",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Bandera_de_Canelones.svg/1024px-Bandera_de_Canelones.svg.png",
+        "additional_info": {
+            "iso_code": "UY-CA",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Las Piedras"
+        }
+    },
+    {
+        "name": "Cerro Largo",
+        "country": "UY",
+        "area": 13648,
+        "population": 84798,
+        "borders": [
+            "Rivera",
+            "Tacuarembó",
+            "Durazno",
+            "Treinta y Tres"
+        ],
+        "capital": "Melo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bandera_de_Cerro_Largo.svg/1024px-Bandera_de_Cerro_Largo.svg.png",
+        "additional_info": {
+            "iso_code": "UY-CL",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Arroyo Conventos"
+        }
+    },
+    {
+        "name": "Colonia",
+        "country": "UY",
+        "area": 6127,
+        "population": 128669,
+        "borders": [
+            "San José",
+            "Soriano"
+        ],
+        "capital": "Colonia del Sacramento",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Bandera_de_Colonia.svg/1024px-Bandera_de_Colonia.svg.png",
+        "additional_info": {
+            "iso_code": "UY-CO",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Barrio Histórico"
+        }
+    },
+    {
+        "name": "Durazno",
+        "country": "UY",
+        "area": 11764,
+        "population": 57900,
+        "borders": [
+            "Florida",
+            "Flores",
+            "Soriano",
+            "Tacuarembó",
+            "Cerro Largo",
+            "Treinta y Tres"
+        ],
+        "capital": "Durazno",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Bandera_de_Durazno.svg/1024px-Bandera_de_Durazno.svg.png",
+        "additional_info": {
+            "iso_code": "UY-DU",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Parque de la Hispanidad"
+        }
+    },
+    {
+        "name": "Flores",
+        "country": "UY",
+        "area": 5144,
+        "population": 25357,
+        "borders": [
+            "Durazno",
+            "Florida",
+            "San José",
+            "Soriano"
+        ],
+        "capital": "Trinidad",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Bandera_de_Flores.svg/1024px-Bandera_de_Flores.svg.png",
+        "additional_info": {
+            "iso_code": "UY-FS",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Grutas del Palacio"
+        }
+    },
+    {
+        "name": "Florida",
+        "country": "UY",
+        "area": 10417,
+        "population": 67190,
+        "borders": [
+            "Canelones",
+            "Lavalleja",
+            "Durazno",
+            "Flores",
+            "San José"
+        ],
+        "capital": "Florida",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Bandera_de_Florida.svg/1024px-Bandera_de_Florida.svg.png",
+        "additional_info": {
+            "iso_code": "UY-FD",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Piedra Alta"
+        }
+    },
+    {
+        "name": "Lavalleja",
+        "country": "UY",
+        "area": 10016,
+        "population": 58680,
+        "borders": [
+            "Maldonado",
+            "Rocha",
+            "Treinta y Tres",
+            "Florida",
+            "Canelones"
+        ],
+        "capital": "Minas",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Bandera_de_Lavalleja.svg/1024px-Bandera_de_Lavalleja.svg.png",
+        "additional_info": {
+            "iso_code": "UY-LA",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Cerro Arequita"
+        }
+    },
+    {
+        "name": "Maldonado",
+        "country": "UY",
+        "area": 4793,
+        "population": 190500,
+        "borders": [
+            "Lavalleja",
+            "Rocha",
+            "Canelones"
+        ],
+        "capital": "Maldonado",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Bandera_de_Maldonado.svg/1024px-Bandera_de_Maldonado.svg.png",
+        "additional_info": {
+            "iso_code": "UY-MA",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Punta del Este"
+        }
+    },
+    {
+        "name": "Montevideo",
+        "country": "UY",
+        "area": 530,
+        "population": 1319108,
+        "borders": [
+            "Canelones"
+        ],
+        "capital": "Montevideo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Bandera_de_Montevideo.svg/1024px-Bandera_de_Montevideo.svg.png",
+        "additional_info": {
+            "iso_code": "UY-MO",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Ciudad Vieja"
+        }
+    },
+    {
+        "name": "Paysandú",
+        "country": "UY",
+        "area": 13922,
+        "population": 113124,
+        "borders": [
+            "Río Negro",
+            "Tacuarembó",
+            "Salto"
+        ],
+        "capital": "Paysandú",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Bandera_de_Paysandú.svg/1024px-Bandera_de_Paysandú.svg.png",
+        "additional_info": {
+            "iso_code": "UY-PA",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Termas de Guaviyú"
+        }
+    },
+    {
+        "name": "Río Negro",
+        "country": "UY",
+        "area": 9282,
+        "population": 54150,
+        "borders": [
+            "Paysandú",
+            "Tacuarembó",
+            "Durazno",
+            "Soriano"
+        ],
+        "capital": "Fray Bentos",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Bandera_de_Río_Negro.svg/1024px-Bandera_de_Río_Negro.svg.png",
+        "additional_info": {
+            "iso_code": "UY-RN",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Anglo Industrial Heritage"
+        }
+    },
+    {
+        "name": "Rivera",
+        "country": "UY",
+        "area": 9370,
+        "population": 103493,
+        "borders": [
+            "Artigas",
+            "Tacuarembó",
+            "Cerro Largo"
+        ],
+        "capital": "Rivera",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Bandera_de_Rivera.svg/1024px-Bandera_de_Rivera.svg.png",
+        "additional_info": {
+            "iso_code": "UY-RV",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Cerro del Marco"
+        }
+    },
+    {
+        "name": "Rocha",
+        "country": "UY",
+        "area": 10551,
+        "population": 68809,
+        "borders": [
+            "Maldonado",
+            "Lavalleja",
+            "Treinta y Tres"
+        ],
+        "capital": "Rocha",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Bandera_de_Rocha.svg/1024px-Bandera_de_Rocha.svg.png",
+        "additional_info": {
+            "iso_code": "UY-RO",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Cabo Polonio"
+        }
+    },
+    {
+        "name": "Salto",
+        "country": "UY",
+        "area": 14163,
+        "population": 124878,
+        "borders": [
+            "Artigas",
+            "Paysandú"
+        ],
+        "capital": "Salto",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Bandera_de_Salto.svg/1024px-Bandera_de_Salto.svg.png",
+        "additional_info": {
+            "iso_code": "UY-SA",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Termas del Daymán"
+        }
+    },
+    {
+        "name": "San José",
+        "country": "UY",
+        "area": 4992,
+        "population": 108309,
+        "borders": [
+            "Canelones",
+            "Flores",
+            "Florida",
+            "Colonia"
+        ],
+        "capital": "San José de Mayo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Bandera_de_San_José.svg/1024px-Bandera_de_San_José.svg.png",
+        "additional_info": {
+            "iso_code": "UY-SJ",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Teatro Macció"
+        }
+    },
+    {
+        "name": "Soriano",
+        "country": "UY",
+        "area": 9008,
+        "population": 82559,
+        "borders": [
+            "Río Negro",
+            "Flores",
+            "Colonia"
+        ],
+        "capital": "Mercedes",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Bandera_de_Soriano.svg/1024px-Bandera_de_Soriano.svg.png",
+        "additional_info": {
+            "iso_code": "UY-SO",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Palacio Municipal de Mercedes"
+        }
+    },
+    {
+        "name": "Tacuarembó",
+        "country": "UY",
+        "area": 15438,
+        "population": 90653,
+        "borders": [
+            "Rivera",
+            "Cerro Largo",
+            "Durazno",
+            "Río Negro",
+            "Paysandú",
+            "Salto"
+        ],
+        "capital": "Tacuarembó",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Bandera_de_Tacuarembó.svg/1024px-Bandera_de_Tacuarembó.svg.png",
+        "additional_info": {
+            "iso_code": "UY-TA",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Valle Edén"
+        }
+    },
+    {
+        "name": "Treinta y Tres",
+        "country": "UY",
+        "area": 9376,
+        "population": 49157,
+        "borders": [
+            "Cerro Largo",
+            "Durazno",
+            "Lavalleja",
+            "Rocha"
+        ],
+        "capital": "Treinta y Tres",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Bandera_de_Treinta_y_Tres.svg/1024px-Bandera_de_Treinta_y_Tres.svg.png",
+        "additional_info": {
+            "iso_code": "UY-TT",
+            "timezone": "America/Montevideo",
+            "famous_landmark": "Quebrada de los Cuervos"
+        }
+    }
+]
