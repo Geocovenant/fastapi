@@ -1,5 +1,6 @@
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
+from api.public.subnation_division.models import SubnationDivision
 
 class Subnation(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

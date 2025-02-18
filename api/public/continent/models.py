@@ -1,5 +1,8 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from sqlmodel import Field, SQLModel, Relationship
+
+if TYPE_CHECKING:
+    from api.public.country.models import Country
 
 class Continent(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

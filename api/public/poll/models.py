@@ -45,9 +45,6 @@ class Poll(PollBase, table=True):
     reactions: list["PollReaction"] = Relationship(back_populates="poll", cascade_delete=True)
     comments: list["PollComment"] = Relationship(back_populates="poll", cascade_delete=True)
 
-class PollRead(PollBase):
-    pass
-
 class PollOption(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     poll_id: int = Field(foreign_key="poll.id")
@@ -56,6 +53,7 @@ class PollOption(SQLModel, table=True):
 
     # Relationships
     poll: Poll = Relationship(back_populates="options")
+    votes_rel: list["PollVote"] = Relationship(back_populates="option")
 
 class PollVote(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -65,8 +63,8 @@ class PollVote(SQLModel, table=True):
 
     # Relationships
     poll: Poll = Relationship(back_populates="votes")
-    option: PollOption = Relationship(back_populates="votes")
-    user: "User" = Relationship(back_populates="votes")
+    option: Optional[PollOption] = Relationship(back_populates="votes_rel")
+    user: "User" = Relationship(back_populates="poll_votes")
 
 class PollReaction(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

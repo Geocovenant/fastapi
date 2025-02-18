@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from api.public.poll.models import Poll, PollRead
+from api.database import get_session
+from sqlmodel import Session
+from api.public.user.models import User
+from api.public.poll.crud import get_all_polls
 
 router = APIRouter()
 
-@router.get("/", response_model=list[PollRead])
-def read_polls():
-    return [{"data": "Polls"}]
+@router.get("/")
+def read_polls(
+    db: Session = Depends(get_session)
+):
+    return get_all_polls(db)

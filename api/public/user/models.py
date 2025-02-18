@@ -1,7 +1,7 @@
 from enum import Enum
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
-from typing import Optional, List
+from typing import Optional
 from pydantic import EmailStr
 from api.utils.generic_models import UserCommunityLink, UserFollowLink
 
@@ -42,12 +42,12 @@ class User(UserBase, table=True):
     updated_at: Optional[datetime] = Field(default=None)
     
     # Relaciones para Auth.js
-    accounts: List["Account"] = Relationship(back_populates="user")
-    sessions: List["Session"] = Relationship(back_populates="user")
+    accounts: list["Account"] = Relationship(back_populates="user")
+    sessions: list["Session"] = Relationship(back_populates="user")
     
     # Tus relaciones existentes
-    communities: List["Community"] = Relationship(back_populates="members", link_model=UserCommunityLink)
-    followers: List["User"] = Relationship(
+    communities: list["Community"] = Relationship(back_populates="members", link_model=UserCommunityLink)
+    followers: list["User"] = Relationship(
         back_populates="following",
         link_model=UserFollowLink,
         sa_relationship_kwargs={
@@ -55,7 +55,7 @@ class User(UserBase, table=True):
             "secondaryjoin": "User.id == UserFollowLink.follower_id",
         }
     )
-    following: List["User"] = Relationship(
+    following: list["User"] = Relationship(
         back_populates="followers",
         link_model=UserFollowLink,
         sa_relationship_kwargs={
@@ -63,7 +63,10 @@ class User(UserBase, table=True):
             "secondaryjoin": "User.id == UserFollowLink.followed_id",
         }
     )
-    polls: List["Poll"] = Relationship(back_populates="creator")
+    polls: list["Poll"] = Relationship(back_populates="creator")
+    poll_votes: list["PollVote"] = Relationship(back_populates="user")
+    poll_reactions: list["PollReaction"] = Relationship(back_populates="user")
+    poll_comments: list["PollComment"] = Relationship(back_populates="user")
 
 # Modelos adicionales requeridos por Auth.js
 class Account(SQLModel, table=True):
