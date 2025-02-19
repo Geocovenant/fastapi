@@ -795,5 +795,2292 @@
             "timezone": "America/Montevideo",
             "famous_landmark": "Quebrada de los Cuervos"
         }
+    },
+    {
+        "name": "Arica",
+        "country": "CL",
+        "area": 8726,
+        "population": 247552,
+        "borders": [
+            "Parinacota"
+        ],
+        "capital": "Arica",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Arica%2C_Chile.svg/1024px-Flag_of_Arica%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AP",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Morro de Arica"
+        }
+    },
+    {
+        "name": "Parinacota",
+        "country": "CL",
+        "area": 8146,
+        "population": 3237,
+        "borders": [
+            "Arica"
+        ],
+        "capital": "Putre",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Arica%2C_Chile.svg/1024px-Flag_of_Arica%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AP",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Parque Nacional Lauca"
+        }
+    },
+    {
+        "name": "Iquique",
+        "country": "CL",
+        "area": 2835,
+        "population": 191468,
+        "borders": [
+            "Tamarugal"
+        ],
+        "capital": "Iquique",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Flag_of_Tarapac%C3%A1%2C_Chile.svg/1024px-Flag_of_Tarapac%C3%A1%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-TA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Torre del Reloj"
+        }
+    },
+    {
+        "name": "Tamarugal",
+        "country": "CL",
+        "area": 39390,
+        "population": 47000,
+        "borders": [
+            "Iquique"
+        ],
+        "capital": "Pozo Almonte",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Flag_of_Tarapac%C3%A1%2C_Chile.svg/1024px-Flag_of_Tarapac%C3%A1%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-TA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Salar de Huasco"
+        }
+    },
+    {
+        "name": "Antofagasta",
+        "country": "CL",
+        "area": 67813,
+        "population": 388545,
+        "borders": [
+            "El Loa",
+            "Tocopilla"
+        ],
+        "capital": "Antofagasta",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Flag_of_Antofagasta%2C_Chile.svg/1024px-Flag_of_Antofagasta%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AN",
+            "timezone": "America/Santiago",
+            "famous_landmark": "La Portada"
+        }
+    },
+    {
+        "name": "El Loa",
+        "country": "CL",
+        "area": 42934,
+        "population": 177048,
+        "borders": [
+            "Antofagasta",
+            "Tocopilla"
+        ],
+        "capital": "Calama",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Flag_of_Antofagasta%2C_Chile.svg/1024px-Flag_of_Antofagasta%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AN",
+            "timezone": "America/Santiago",
+            "famous_landmark": "San Pedro de Atacama"
+        }
+    },
+    {
+        "name": "Tocopilla",
+        "country": "CL",
+        "area": 16396,
+        "population": 31643,
+        "borders": [
+            "Antofagasta",
+            "El Loa"
+        ],
+        "capital": "Tocopilla",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Flag_of_Antofagasta%2C_Chile.svg/1024px-Flag_of_Antofagasta%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AN",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Central Térmica Tocopilla"
+        }
+    },
+    {
+        "name": "Chañaral",
+        "country": "CL",
+        "area": 24436,
+        "population": 30598,
+        "borders": [
+            "Copiapó",
+            "Huasco"
+        ],
+        "capital": "Chañaral",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Flag_of_Atacama%2C_Chile.svg/1024px-Flag_of_Atacama%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AT",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Parque Nacional Pan de Azúcar"
+        }
+    },
+    {
+        "name": "Copiapó",
+        "country": "CL",
+        "area": 32538,
+        "population": 188323,
+        "borders": [
+            "Chañaral",
+            "Huasco"
+        ],
+        "capital": "Copiapó",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Flag_of_Atacama%2C_Chile.svg/1024px-Flag_of_Atacama%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AT",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Desierto Florido"
+        }
+    },
+    {
+        "name": "Huasco",
+        "country": "CL",
+        "area": 19066,
+        "population": 73887,
+        "borders": [
+            "Copiapó"
+        ],
+        "capital": "Vallenar",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Flag_of_Atacama%2C_Chile.svg/1024px-Flag_of_Atacama%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-AT",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Valle del Huasco"
+        }
+    },
+    {
+        "name": "Elqui",
+        "country": "CL",
+        "area": 16895,
+        "population": 365371,
+        "borders": [
+            "Limarí"
+        ],
+        "capital": "La Serena",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Flag_of_Coquimbo_Region%2C_Chile.svg/1024px-Flag_of_Coquimbo_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-CO",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Valle del Elqui"
+        }
+    },
+    {
+        "name": "Limarí",
+        "country": "CL",
+        "area": 13553,
+        "population": 167512,
+        "borders": [
+            "Elqui",
+            "Choapa"
+        ],
+        "capital": "Ovalle",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Flag_of_Coquimbo_Region%2C_Chile.svg/1024px-Flag_of_Coquimbo_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-CO",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Valle del Limarí"
+        }
+    },
+    {
+        "name": "Choapa",
+        "country": "CL",
+        "area": 10131,
+        "population": 90670,
+        "borders": [
+            "Limarí"
+        ],
+        "capital": "Illapel",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Flag_of_Coquimbo_Region%2C_Chile.svg/1024px-Flag_of_Coquimbo_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-CO",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Los Vilos"
+        }
+    },
+    {
+        "name": "Petorca",
+        "country": "CL",
+        "area": 4588,
+        "population": 78299,
+        "borders": [
+            "Los Andes",
+            "San Felipe"
+        ],
+        "capital": "La Ligua",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Papudo"
+        }
+    },
+    {
+        "name": "Los Andes",
+        "country": "CL",
+        "area": 3054,
+        "population": 110602,
+        "borders": [
+            "Petorca",
+            "San Felipe"
+        ],
+        "capital": "Los Andes",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Cristo Redentor"
+        }
+    },
+    {
+        "name": "San Felipe",
+        "country": "CL",
+        "area": 2659,
+        "population": 131911,
+        "borders": [
+            "Los Andes",
+            "Petorca"
+        ],
+        "capital": "San Felipe",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Valle de Aconcagua"
+        }
+    },
+    {
+        "name": "Quillota",
+        "country": "CL",
+        "area": 1638,
+        "population": 203102,
+        "borders": [
+            "Valparaíso",
+            "Marga Marga"
+        ],
+        "capital": "Quillota",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "La Campana"
+        }
+    },
+    {
+        "name": "Valparaíso",
+        "country": "CL",
+        "area": 2780,
+        "population": 876022,
+        "borders": [
+            "Quillota",
+            "San Antonio"
+        ],
+        "capital": "Valparaíso",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Cerro Alegre"
+        }
+    },
+    {
+        "name": "San Antonio",
+        "country": "CL",
+        "area": 1511,
+        "population": 168046,
+        "borders": [
+            "Valparaíso"
+        ],
+        "capital": "San Antonio",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Puerto de San Antonio"
+        }
+    },
+    {
+        "name": "Isla de Pascua",
+        "country": "CL",
+        "area": 163,
+        "population": 7750,
+        "borders": [],
+        "capital": "Hanga Roa",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "Pacific/Easter",
+            "famous_landmark": "Moai"
+        }
+    },
+    {
+        "name": "Marga Marga",
+        "country": "CL",
+        "area": 1179,
+        "population": 341893,
+        "borders": [
+            "Quillota",
+            "Valparaíso"
+        ],
+        "capital": "Quilpué",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VA",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Villa Alemana"
+        }
+    },
+    {
+        "name": "Alto Paraguay",
+        "country": "PY",
+        "area": 82349,
+        "population": 11191,
+        "borders": [
+            "Boquerón",
+            "Presidente Hayes"
+        ],
+        "capital": "Fuerte Olimpo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Bandera_de_Alto_Paraguay.svg/1024px-Bandera_de_Alto_Paraguay.svg.png",
+        "additional_info": {
+            "iso_code": "PY-AG",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Cerro Chovoreca"
+        }
+    },
+    {
+        "name": "Alto Paraná",
+        "country": "PY",
+        "area": 14895,
+        "population": 785066,
+        "borders": [
+            "Caaguazú",
+            "Canindeyú",
+            "Itapúa"
+        ],
+        "capital": "Ciudad del Este",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Bandera_de_Alto_Paran%C3%A1.svg/1024px-Bandera_de_Alto_Paran%C3%A1.svg.png",
+        "additional_info": {
+            "iso_code": "PY-10",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Represa de Itaipú"
+        }
+    },
+    {
+        "name": "Amambay",
+        "country": "PY",
+        "area": 12933,
+        "population": 164462,
+        "borders": [
+            "Concepción",
+            "San Pedro",
+            "Canindeyú"
+        ],
+        "capital": "Pedro Juan Caballero",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Bandera_de_Amambay.svg/1024px-Bandera_de_Amambay.svg.png",
+        "additional_info": {
+            "iso_code": "PY-13",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Cerro Corá"
+        }
+    },
+    {
+        "name": "Boquerón",
+        "country": "PY",
+        "area": 91669,
+        "population": 67547,
+        "borders": [
+            "Alto Paraguay",
+            "Presidente Hayes"
+        ],
+        "capital": "Filadelfia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Bandera_de_Boquer%C3%B3n.svg/1024px-Bandera_de_Boquer%C3%B3n.svg.png",
+        "additional_info": {
+            "iso_code": "PY-19",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Fortín Boquerón"
+        }
+    },
+    {
+        "name": "Caaguazú",
+        "country": "PY",
+        "area": 11474,
+        "population": 532201,
+        "borders": [
+            "San Pedro",
+            "Guairá",
+            "Caazapá",
+            "Alto Paraná"
+        ],
+        "capital": "Coronel Oviedo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Bandera_de_Caaguaz%C3%BA.svg/1024px-Bandera_de_Caaguaz%C3%BA.svg.png",
+        "additional_info": {
+            "iso_code": "PY-5",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Salto Monday"
+        }
+    },
+    {
+        "name": "Caazapá",
+        "country": "PY",
+        "area": 9496,
+        "population": 185311,
+        "borders": [
+            "Guairá",
+            "Itapúa",
+            "Alto Paraná",
+            "Caaguazú"
+        ],
+        "capital": "Caazapá",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Bandera_de_Caazap%C3%A1.svg/1024px-Bandera_de_Caazap%C3%A1.svg.png",
+        "additional_info": {
+            "iso_code": "PY-6",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Parque Nacional Caaguazú"
+        }
+    },
+    {
+        "name": "Canindeyú",
+        "country": "PY",
+        "area": 14667,
+        "population": 214352,
+        "borders": [
+            "San Pedro",
+            "Caaguazú",
+            "Alto Paraná",
+            "Amambay"
+        ],
+        "capital": "Salto del Guairá",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Bandera_de_Canindey%C3%BA.svg/1024px-Bandera_de_Canindey%C3%BA.svg.png",
+        "additional_info": {
+            "iso_code": "PY-14",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Saltos del Guairá"
+        }
+    },
+    {
+        "name": "Central",
+        "country": "PY",
+        "area": 2465,
+        "population": 2028700,
+        "borders": [
+            "Asunción",
+            "Cordillera",
+            "Paraguarí",
+            "Presidente Hayes"
+        ],
+        "capital": "Areguá",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Bandera_de_Central.svg/1024px-Bandera_de_Central.svg.png",
+        "additional_info": {
+            "iso_code": "PY-11",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Lago Ypacaraí"
+        }
+    },
+    {
+        "name": "Concepción",
+        "country": "PY",
+        "area": 18051,
+        "population": 244071,
+        "borders": [
+            "Amambay",
+            "San Pedro",
+            "Presidente Hayes"
+        ],
+        "capital": "Concepción",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Bandera_de_Concepci%C3%B3n.svg/1024px-Bandera_de_Concepci%C3%B3n.svg.png",
+        "additional_info": {
+            "iso_code": "PY-1",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Fuerte de San Carlos"
+        }
+    },
+    {
+        "name": "Cordillera",
+        "country": "PY",
+        "area": 4948,
+        "population": 289736,
+        "borders": [
+            "San Pedro",
+            "Caaguazú",
+            "Paraguarí",
+            "Central"
+        ],
+        "capital": "Caacupé",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_Cordillera.svg/1024px-Bandera_de_Cordillera.svg.png",
+        "additional_info": {
+            "iso_code": "PY-3",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Basílica de Caacupé"
+        }
+    },
+    {
+        "name": "Guairá",
+        "country": "PY",
+        "area": 3846,
+        "population": 214520,
+        "borders": [
+            "Caaguazú",
+            "Caazapá",
+            "Paraguarí"
+        ],
+        "capital": "Villarrica",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_Guair%C3%A1.svg/1024px-Bandera_de_Guair%C3%A1.svg.png",
+        "additional_info": {
+            "iso_code": "PY-4",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Cerro de Villarrica"
+        }
+    },
+    {
+        "name": "Itapúa",
+        "country": "PY",
+        "area": 16525,
+        "population": 589210,
+        "borders": [
+            "Caazapá",
+            "Misiones",
+            "Alto Paraná"
+        ],
+        "capital": "Encarnación",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_Itap%C3%BAa.svg/1024px-Bandera_de_Itap%C3%BAa.svg.png",
+        "additional_info": {
+            "iso_code": "PY-7",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Misiones Jesuíticas"
+        }
+    },
+    {
+        "name": "Misiones",
+        "country": "PY",
+        "area": 9556,
+        "population": 120848,
+        "borders": [
+            "Paraguarí",
+            "Itapúa",
+            "Ñeembucú"
+        ],
+        "capital": "San Juan Bautista",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_Misiones.svg/1024px-Bandera_de_Misiones.svg.png",
+        "additional_info": {
+            "iso_code": "PY-8",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Misión Jesuítica de San Cosme y Damián"
+        }
+    },
+    {
+        "name": "Ñeembucú",
+        "country": "PY",
+        "area": 12147,
+        "population": 87750,
+        "borders": [
+            "Misiones",
+            "Paraguarí",
+            "Central"
+        ],
+        "capital": "Pilar",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_%C3%91eembuc%C3%BA.svg/1024px-Bandera_de_%C3%91eembuc%C3%BA.svg.png",
+        "additional_info": {
+            "iso_code": "PY-12",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Humaitá"
+        }
+    },
+    {
+        "name": "Paraguarí",
+        "country": "PY",
+        "area": 8705,
+        "population": 247675,
+        "borders": [
+            "Cordillera",
+            "Guairá",
+            "Caazapá",
+            "Misiones",
+            "Ñeembucú",
+            "Central"
+        ],
+        "capital": "Paraguarí",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_Paraguar%C3%AD.svg/1024px-Bandera_de_Paraguar%C3%AD.svg.png",
+        "additional_info": {
+            "iso_code": "PY-9",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Cerro Acahay"
+        }
+    },
+    {
+        "name": "Presidente Hayes",
+        "country": "PY",
+        "area": 72907,
+        "population": 123214,
+        "borders": [
+            "Alto Paraguay",
+            "Boquerón",
+            "Concepción",
+            "San Pedro",
+            "Cordillera",
+            "Central"
+        ],
+        "capital": "Villa Hayes",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_Presidente_Hayes.svg/1024px-Bandera_de_Presidente_Hayes.svg.png",
+        "additional_info": {
+            "iso_code": "PY-15",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Fortín Nanawa"
+        }
+    },
+    {
+        "name": "San Pedro",
+        "country": "PY",
+        "area": 20002,
+        "population": 419629,
+        "borders": [
+            "Concepción",
+            "Amambay",
+            "Canindeyú",
+            "Caaguazú",
+            "Cordillera"
+        ],
+        "capital": "San Pedro de Ycuamandiyú",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bandera_de_San_Pedro.svg/1024px-Bandera_de_San_Pedro.svg.png",
+        "additional_info": {
+            "iso_code": "PY-2",
+            "timezone": "America/Asuncion",
+            "famous_landmark": "Río Jejuí"
+        }
+    },
+    {
+        "name": "Chuquisaca",
+        "country": "BO",
+        "area": 51524,
+        "population": 621100,
+        "borders": [
+            "Potosí",
+            "Cochabamba",
+            "Santa Cruz",
+            "Tarija"
+        ],
+        "capital": "Sucre",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Flag_of_Chuquisaca.svg/1024px-Flag_of_Chuquisaca.svg.png",
+        "additional_info": {
+            "iso_code": "BO-H",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Casa de la Libertad"
+        }
+    },
+    {
+        "name": "Cochabamba",
+        "country": "BO",
+        "area": 55631,
+        "population": 2028639,
+        "borders": [
+            "La Paz",
+            "Beni",
+            "Santa Cruz",
+            "Chuquisaca",
+            "Potosí"
+        ],
+        "capital": "Cochabamba",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Flag_of_Cochabamba.svg/1024px-Flag_of_Cochabamba.svg.png",
+        "additional_info": {
+            "iso_code": "BO-C",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Cristo de la Concordia"
+        }
+    },
+    {
+        "name": "Beni",
+        "country": "BO",
+        "area": 213564,
+        "population": 480308,
+        "borders": [
+            "La Paz",
+            "Cochabamba",
+            "Santa Cruz",
+            "Pando"
+        ],
+        "capital": "Trinidad",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Flag_of_Beni.svg/1024px-Flag_of_Beni.svg.png",
+        "additional_info": {
+            "iso_code": "BO-B",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Loma Suárez"
+        }
+    },
+    {
+        "name": "La Paz",
+        "country": "BO",
+        "area": 133985,
+        "population": 2926996,
+        "borders": [
+            "Pando",
+            "Beni",
+            "Cochabamba",
+            "Oruro"
+        ],
+        "capital": "La Paz",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Flag_of_La_Paz.svg/1024px-Flag_of_La_Paz.svg.png",
+        "additional_info": {
+            "iso_code": "BO-L",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Tiwanaku"
+        }
+    },
+    {
+        "name": "Oruro",
+        "country": "BO",
+        "area": 53588,
+        "population": 494587,
+        "borders": [
+            "La Paz",
+            "Cochabamba",
+            "Potosí"
+        ],
+        "capital": "Oruro",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Flag_of_Oruro.svg/1024px-Flag_of_Oruro.svg.png",
+        "additional_info": {
+            "iso_code": "BO-O",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Carnaval de Oruro"
+        }
+    },
+    {
+        "name": "Pando",
+        "country": "BO",
+        "area": 63827,
+        "population": 110436,
+        "borders": [
+            "La Paz",
+            "Beni"
+        ],
+        "capital": "Cobija",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Flag_of_Pando.svg/1024px-Flag_of_Pando.svg.png",
+        "additional_info": {
+            "iso_code": "BO-N",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Reserva Nacional de Vida Silvestre Amazónica Manuripi"
+        }
+    },
+    {
+        "name": "Potosí",
+        "country": "BO",
+        "area": 118218,
+        "population": 880651,
+        "borders": [
+            "Oruro",
+            "Cochabamba",
+            "Chuquisaca",
+            "Tarija"
+        ],
+        "capital": "Potosí",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Flag_of_Potos%C3%AD.svg/1024px-Flag_of_Potos%C3%AD.svg.png",
+        "additional_info": {
+            "iso_code": "BO-P",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Cerro Rico"
+        }
+    },
+    {
+        "name": "Santa Cruz",
+        "country": "BO",
+        "area": 370621,
+        "population": 3363917,
+        "borders": [
+            "Beni",
+            "Cochabamba",
+            "Chuquisaca",
+            "Tarija"
+        ],
+        "capital": "Santa Cruz de la Sierra",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Flag_of_Santa_Cruz.svg/1024px-Flag_of_Santa_Cruz.svg.png",
+        "additional_info": {
+            "iso_code": "BO-S",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Samaipata"
+        }
+    },
+    {
+        "name": "Tarija",
+        "country": "BO",
+        "area": 37623,
+        "population": 553373,
+        "borders": [
+            "Potosí",
+            "Chuquisaca",
+            "Santa Cruz"
+        ],
+        "capital": "Tarija",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Flag_of_Tarija.svg/1024px-Flag_of_Tarija.svg.png",
+        "additional_info": {
+            "iso_code": "BO-T",
+            "timezone": "America/La_Paz",
+            "famous_landmark": "Casa Dorada"
+        }
+    },
+    {
+        "name": "Región Metropolitana de Santiago",
+        "country": "CL",
+        "area": 15403,
+        "population": 7112808,
+        "borders": ["Valparaíso", "O'Higgins"],
+        "capital": "Santiago",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Flag_of_the_Metropolitan_Region_of_Santiago.svg/1024px-Flag_of_the_Metropolitan_Region_of_Santiago.svg.png",
+        "additional_info": {
+            "iso_code": "CL-RM",
+            "timezone": "America/Santiago",
+            "famous_landmark": "Cerro San Cristóbal"
+        }
+    },
+    {
+        "name": "Valparaíso",
+        "country": "CL",
+        "area": 16396,
+        "population": 1815902,
+        "borders": ["Coquimbo", "Metropolitana de Santiago", "O'Higgins"],
+        "capital": "Valparaíso",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg/1024px-Flag_of_Valpara%C3%ADso_Region%2C_Chile.svg.png",
+        "additional_info": {
+            "iso_code": "CL-VS",
+            "timezone": "America/Santiago",
+            "famous_landmark": "La Sebastiana"
+        }
+    },
+    {
+        "name": "Lima",
+        "country": "PE",
+        "area": 2672,
+        "population": 9674755,
+        "borders": ["Callao"],
+        "capital": "Lima",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Flag_of_Lima.svg/1024px-Flag_of_Lima.svg.png",
+        "additional_info": {
+            "iso_code": "PE-LIM",
+            "timezone": "America/Lima",
+            "famous_landmark": "Plaza Mayor"
+        }
+    },
+    {
+        "name": "Cusco",
+        "country": "PE",
+        "area": 71986,
+        "population": 1375831,
+        "borders": ["Apurímac", "Arequipa", "Madre de Dios", "Puno"],
+        "capital": "Cusco",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Flag_of_Cusco.svg/1024px-Flag_of_Cusco.svg.png",
+        "additional_info": {
+            "iso_code": "PE-CUS",
+            "timezone": "America/Lima",
+            "famous_landmark": "Machu Picchu"
+        }
+    },
+    {
+        "name": "Antioquia",
+        "country": "CO",
+        "area": 63612,
+        "population": 6819170,
+        "borders": ["Córdoba", "Bolívar", "Santander", "Boyacá", "Caldas", "Risaralda", "Chocó"],
+        "capital": "Medellín",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Flag_of_Antioquia.svg/1024px-Flag_of_Antioquia.svg.png",
+        "additional_info": {
+            "iso_code": "CO-ANT",
+            "timezone": "America/Bogota",
+            "famous_landmark": "Parque Arví"
+        }
+    },
+    {
+        "name": "Cundinamarca",
+        "country": "CO",
+        "area": 24000,
+        "population": 2899581,
+        "borders": ["Boyacá", "Tolima", "Meta", "Huila"],
+        "capital": "Bogotá",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Flag_of_Cundinamarca.svg/1024px-Flag_of_Cundinamarca.svg.png",
+        "additional_info": {
+            "iso_code": "CO-CUN",
+            "timezone": "America/Bogota",
+            "famous_landmark": "Catedral de Sal"
+        }
+    },
+    {
+        "name": "Pichincha",
+        "country": "EC",
+        "area": 9119,
+        "population": 2834200,
+        "borders": ["Imbabura", "Napo", "Cotopaxi", "Santo Domingo de los Tsáchilas"],
+        "capital": "Quito",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_Pichincha.svg/1024px-Flag_of_Pichincha.svg.png",
+        "additional_info": {
+            "iso_code": "EC-P",
+            "timezone": "America/Guayaquil",
+            "famous_landmark": "Mitad del Mundo"
+        }
+    },
+    {
+        "name": "Guayas",
+        "country": "EC",
+        "area": 15430,
+        "population": 3855000,
+        "borders": ["Manabí", "Los Ríos", "Chimborazo", "Cañar", "Santa Elena"],
+        "capital": "Guayaquil",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Flag_of_Guayas.svg/1024px-Flag_of_Guayas.svg.png",
+        "additional_info": {
+            "iso_code": "EC-G",
+            "timezone": "America/Guayaquil",
+            "famous_landmark": "Malecón 2000"
+        }
+    },
+    {
+        "name": "São Paulo",
+        "country": "BR",
+        "area": 248222,
+        "population": 45919049,
+        "borders": ["Minas Gerais", "Rio de Janeiro", "Paraná", "Mato Grosso do Sul"],
+        "capital": "São Paulo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Bandeira_do_estado_de_S%C3%A3o_Paulo.svg/1024px-Bandeira_do_estado_de_S%C3%A3o_Paulo.svg.png",
+        "additional_info": {
+            "iso_code": "BR-SP",
+            "timezone": "America/Sao_Paulo",
+            "famous_landmark": "Avenida Paulista"
+        }
+    },
+    {
+        "name": "Rio de Janeiro",
+        "country": "BR",
+        "area": 43780,
+        "population": 17366189,
+        "borders": ["Espírito Santo", "Minas Gerais", "São Paulo"],
+        "capital": "Rio de Janeiro",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Bandeira_do_estado_do_Rio_de_Janeiro.svg/1024px-Bandeira_do_estado_do_Rio_de_Janeiro.svg.png",
+        "additional_info": {
+            "iso_code": "BR-RJ",
+            "timezone": "America/Sao_Paulo",
+            "famous_landmark": "Cristo Redentor"
+        }
+    },
+    {
+        "name": "Alabama",
+        "country": "US",
+        "area": 135767,
+        "population": 4903185,
+        "borders": ["Tennessee", "Georgia", "Florida", "Mississippi"],
+        "capital": "Montgomery",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Alabama.svg/1024px-Flag_of_Alabama.svg.png",
+        "additional_info": {
+            "iso_code": "US-AL",
+            "timezone": "America/Chicago",
+            "famous_landmark": "USS Alabama"
+        }
+    },
+    {
+        "name": "Alaska",
+        "country": "US",
+        "area": 1723337,
+        "population": 731545,
+        "borders": [],
+        "capital": "Juneau",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Flag_of_Alaska.svg/1024px-Flag_of_Alaska.svg.png",
+        "additional_info": {
+            "iso_code": "US-AK",
+            "timezone": "America/Anchorage",
+            "famous_landmark": "Denali"
+        }
+    },
+    {
+        "name": "Arizona",
+        "country": "US",
+        "area": 295234,
+        "population": 7278717,
+        "borders": ["California", "Nevada", "Utah", "Colorado", "New Mexico"],
+        "capital": "Phoenix",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Flag_of_Arizona.svg/1024px-Flag_of_Arizona.svg.png",
+        "additional_info": {
+            "iso_code": "US-AZ",
+            "timezone": "America/Phoenix",
+            "famous_landmark": "Grand Canyon"
+        }
+    },
+    {
+        "name": "Arkansas",
+        "country": "US",
+        "area": 137732,
+        "population": 3017804,
+        "borders": ["Missouri", "Tennessee", "Mississippi", "Louisiana", "Texas", "Oklahoma"],
+        "capital": "Little Rock",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Flag_of_Arkansas.svg/1024px-Flag_of_Arkansas.svg.png",
+        "additional_info": {
+            "iso_code": "US-AR",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Hot Springs National Park"
+        }
+    },
+    {
+        "name": "California",
+        "country": "US",
+        "area": 423967,
+        "population": 39512223,
+        "borders": ["Oregon", "Nevada", "Arizona"],
+        "capital": "Sacramento",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Flag_of_California.svg/1024px-Flag_of_California.svg.png",
+        "additional_info": {
+            "iso_code": "US-CA",
+            "timezone": "America/Los_Angeles",
+            "famous_landmark": "Golden Gate Bridge"
+        }
+    },
+    {
+        "name": "Colorado",
+        "country": "US",
+        "area": 269601,
+        "population": 5758736,
+        "borders": ["Wyoming", "Nebraska", "Kansas", "Oklahoma", "New Mexico", "Utah"],
+        "capital": "Denver",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Flag_of_Colorado.svg/1024px-Flag_of_Colorado.svg.png",
+        "additional_info": {
+            "iso_code": "US-CO",
+            "timezone": "America/Denver",
+            "famous_landmark": "Rocky Mountain National Park"
+        }
+    },
+    {
+        "name": "Connecticut",
+        "country": "US",
+        "area": 14357,
+        "population": 3565287,
+        "borders": ["New York", "Massachusetts", "Rhode Island"],
+        "capital": "Hartford",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Flag_of_Connecticut.svg/1024px-Flag_of_Connecticut.svg.png",
+        "additional_info": {
+            "iso_code": "US-CT",
+            "timezone": "America/New_York",
+            "famous_landmark": "Mystic Seaport"
+        }
+    },
+    {
+        "name": "Delaware",
+        "country": "US",
+        "area": 6446,
+        "population": 973764,
+        "borders": ["Maryland", "New Jersey", "Pennsylvania"],
+        "capital": "Dover",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Flag_of_Delaware.svg/1024px-Flag_of_Delaware.svg.png",
+        "additional_info": {
+            "iso_code": "US-DE",
+            "timezone": "America/New_York",
+            "famous_landmark": "Rehoboth Beach"
+        }
+    },
+    {
+        "name": "Florida",
+        "country": "US",
+        "area": 170312,
+        "population": 21477737,
+        "borders": ["Georgia", "Alabama"],
+        "capital": "Tallahassee",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Flag_of_Florida.svg/1024px-Flag_of_Florida.svg.png",
+        "additional_info": {
+            "iso_code": "US-FL",
+            "timezone": "America/New_York",
+            "famous_landmark": "Walt Disney World"
+        }
+    },
+    {
+        "name": "Georgia",
+        "country": "US",
+        "area": 153910,
+        "population": 10617423,
+        "borders": ["Florida", "Alabama", "Tennessee", "North Carolina", "South Carolina"],
+        "capital": "Atlanta",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Flag_of_Georgia.svg/1024px-Flag_of_Georgia.svg.png",
+        "additional_info": {
+            "iso_code": "US-GA",
+            "timezone": "America/New_York",
+            "famous_landmark": "Stone Mountain"
+        }
+    },
+    {
+        "name": "Hawaii",
+        "country": "US",
+        "area": 28313,
+        "population": 1415872,
+        "borders": [],
+        "capital": "Honolulu",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Flag_of_Hawaii.svg/1024px-Flag_of_Hawaii.svg.png",
+        "additional_info": {
+            "iso_code": "US-HI",
+            "timezone": "Pacific/Honolulu",
+            "famous_landmark": "Waikiki Beach"
+        }
+    },
+    {
+        "name": "Idaho",
+        "country": "US",
+        "area": 216443,
+        "population": 1787065,
+        "borders": ["Montana", "Wyoming", "Utah", "Nevada", "Oregon", "Washington"],
+        "capital": "Boise",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_Idaho.svg/1024px-Flag_of_Idaho.svg.png",
+        "additional_info": {
+            "iso_code": "US-ID",
+            "timezone": "America/Boise",
+            "famous_landmark": "Shoshone Falls"
+        }
+    },
+    {
+        "name": "Illinois",
+        "country": "US",
+        "area": 149995,
+        "population": 12671821,
+        "borders": ["Wisconsin", "Iowa", "Missouri", "Kentucky", "Indiana"],
+        "capital": "Springfield",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Flag_of_Illinois.svg/1024px-Flag_of_Illinois.svg.png",
+        "additional_info": {
+            "iso_code": "US-IL",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Willis Tower"
+        }
+    },
+    {
+        "name": "Indiana",
+        "country": "US",
+        "area": 94326,
+        "population": 6732219,
+        "borders": ["Michigan", "Ohio", "Kentucky", "Illinois"],
+        "capital": "Indianapolis",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Flag_of_Indiana.svg/1024px-Flag_of_Indiana.svg.png",
+        "additional_info": {
+            "iso_code": "US-IN",
+            "timezone": "America/Indiana/Indianapolis",
+            "famous_landmark": "Indianapolis Motor Speedway"
+        }
+    },
+    {
+        "name": "Iowa",
+        "country": "US",
+        "area": 145746,
+        "population": 3155070,
+        "borders": ["Minnesota", "Wisconsin", "Illinois", "Missouri", "Nebraska", "South Dakota"],
+        "capital": "Des Moines",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Flag_of_Iowa.svg/1024px-Flag_of_Iowa.svg.png",
+        "additional_info": {
+            "iso_code": "US-IA",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Field of Dreams"
+        }
+    },
+    {
+        "name": "Kansas",
+        "country": "US",
+        "area": 213100,
+        "population": 2913314,
+        "borders": ["Nebraska", "Missouri", "Oklahoma", "Colorado"],
+        "capital": "Topeka",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Flag_of_Kansas.svg/1024px-Flag_of_Kansas.svg.png",
+        "additional_info": {
+            "iso_code": "US-KS",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Monument Rocks"
+        }
+    },
+    {
+        "name": "Kentucky",
+        "country": "US",
+        "area": 104656,
+        "population": 4467673,
+        "borders": ["Illinois", "Indiana", "Ohio", "West Virginia", "Virginia", "Tennessee", "Missouri"],
+        "capital": "Frankfort",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Flag_of_Kentucky.svg/1024px-Flag_of_Kentucky.svg.png",
+        "additional_info": {
+            "iso_code": "US-KY",
+            "timezone": "America/New_York",
+            "famous_landmark": "Mammoth Cave National Park"
+        }
+    },
+    {
+        "name": "Louisiana",
+        "country": "US",
+        "area": 135659,
+        "population": 4648794,
+        "borders": ["Arkansas", "Mississippi", "Texas"],
+        "capital": "Baton Rouge",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Flag_of_Louisiana.svg/1024px-Flag_of_Louisiana.svg.png",
+        "additional_info": {
+            "iso_code": "US-LA",
+            "timezone": "America/Chicago",
+            "famous_landmark": "French Quarter"
+        }
+    },
+    {
+        "name": "Maine",
+        "country": "US",
+        "area": 91633,
+        "population": 1344212,
+        "borders": ["New Hampshire"],
+        "capital": "Augusta",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Flag_of_Maine.svg/1024px-Flag_of_Maine.svg.png",
+        "additional_info": {
+            "iso_code": "US-ME",
+            "timezone": "America/New_York",
+            "famous_landmark": "Acadia National Park"
+        }
+    },
+    {
+        "name": "Maryland",
+        "country": "US",
+        "area": 32131,
+        "population": 6045680,
+        "borders": ["Virginia", "West Virginia", "Pennsylvania", "Delaware"],
+        "capital": "Annapolis",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Flag_of_Maryland.svg/1024px-Flag_of_Maryland.svg.png",
+        "additional_info": {
+            "iso_code": "US-MD",
+            "timezone": "America/New_York",
+            "famous_landmark": "Fort McHenry"
+        }
+    },
+    {
+        "name": "Massachusetts",
+        "country": "US",
+        "area": 27336,
+        "population": 6892503,
+        "borders": ["New York", "Vermont", "New Hampshire", "Connecticut", "Rhode Island"],
+        "capital": "Boston",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Flag_of_Massachusetts.svg/1024px-Flag_of_Massachusetts.svg.png",
+        "additional_info": {
+            "iso_code": "US-MA",
+            "timezone": "America/New_York",
+            "famous_landmark": "Freedom Trail"
+        }
+    },
+    {
+        "name": "Michigan",
+        "country": "US",
+        "area": 250487,
+        "population": 9986857,
+        "borders": ["Ohio", "Indiana", "Wisconsin"],
+        "capital": "Lansing",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Flag_of_Michigan.svg/1024px-Flag_of_Michigan.svg.png",
+        "additional_info": {
+            "iso_code": "US-MI",
+            "timezone": "America/Detroit",
+            "famous_landmark": "Mackinac Bridge"
+        }
+    },
+    {
+        "name": "Minnesota",
+        "country": "US",
+        "area": 225163,
+        "population": 5639632,
+        "borders": ["Wisconsin", "Iowa", "South Dakota", "North Dakota"],
+        "capital": "Saint Paul",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Flag_of_Minnesota.svg/1024px-Flag_of_Minnesota.svg.png",
+        "additional_info": {
+            "iso_code": "US-MN",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Mall of America"
+        }
+    },
+    {
+        "name": "Mississippi",
+        "country": "US",
+        "area": 125438,
+        "population": 2976149,
+        "borders": ["Tennessee", "Alabama", "Louisiana", "Arkansas"],
+        "capital": "Jackson",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Flag_of_Mississippi.svg/1024px-Flag_of_Mississippi.svg.png",
+        "additional_info": {
+            "iso_code": "US-MS",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Vicksburg National Military Park"
+        }
+    },
+    {
+        "name": "Missouri",
+        "country": "US",
+        "area": 180540,
+        "population": 6137428,
+        "borders": ["Iowa", "Illinois", "Kentucky", "Tennessee", "Arkansas", "Oklahoma", "Kansas", "Nebraska"],
+        "capital": "Jefferson City",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Flag_of_Missouri.svg/1024px-Flag_of_Missouri.svg.png",
+        "additional_info": {
+            "iso_code": "US-MO",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Gateway Arch"
+        }
+    },
+    {
+        "name": "Montana",
+        "country": "US",
+        "area": 380831,
+        "population": 1068778,
+        "borders": ["North Dakota", "South Dakota", "Wyoming", "Idaho"],
+        "capital": "Helena",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_Montana.svg/1024px-Flag_of_Montana.svg.png",
+        "additional_info": {
+            "iso_code": "US-MT",
+            "timezone": "America/Denver",
+            "famous_landmark": "Glacier National Park"
+        }
+    },
+    {
+        "name": "Nebraska",
+        "country": "US",
+        "area": 200330,
+        "population": 1934408,
+        "borders": ["South Dakota", "Iowa", "Missouri", "Kansas", "Colorado", "Wyoming"],
+        "capital": "Lincoln",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Flag_of_Nebraska.svg/1024px-Flag_of_Nebraska.svg.png",
+        "additional_info": {
+            "iso_code": "US-NE",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Chimney Rock"
+        }
+    },
+    {
+        "name": "Nevada",
+        "country": "US",
+        "area": 286380,
+        "population": 3080156,
+        "borders": ["Oregon", "Idaho", "Utah", "Arizona", "California"],
+        "capital": "Carson City",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Flag_of_Nevada.svg/1024px-Flag_of_Nevada.svg.png",
+        "additional_info": {
+            "iso_code": "US-NV",
+            "timezone": "America/Los_Angeles",
+            "famous_landmark": "Las Vegas Strip"
+        }
+    },
+    {
+        "name": "New Hampshire",
+        "country": "US",
+        "area": 24214,
+        "population": 1359711,
+        "borders": ["Vermont", "Maine", "Massachusetts"],
+        "capital": "Concord",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Flag_of_New_Hampshire.svg/1024px-Flag_of_New_Hampshire.svg.png",
+        "additional_info": {
+            "iso_code": "US-NH",
+            "timezone": "America/New_York",
+            "famous_landmark": "Mount Washington"
+        }
+    },
+    {
+        "name": "New Jersey",
+        "country": "US",
+        "area": 22591,
+        "population": 8882190,
+        "borders": ["New York", "Delaware", "Pennsylvania"],
+        "capital": "Trenton",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Flag_of_New_Jersey.svg/1024px-Flag_of_New_Jersey.svg.png",
+        "additional_info": {
+            "iso_code": "US-NJ",
+            "timezone": "America/New_York",
+            "famous_landmark": "Statue of Liberty"
+        }
+    },
+    {
+        "name": "New Mexico",
+        "country": "US",
+        "area": 314917,
+        "population": 2096829,
+        "borders": ["Arizona", "Utah", "Colorado", "Oklahoma", "Texas"],
+        "capital": "Santa Fe",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_New_Mexico.svg/1024px-Flag_of_New_Mexico.svg.png",
+        "additional_info": {
+            "iso_code": "US-NM",
+            "timezone": "America/Denver",
+            "famous_landmark": "Carlsbad Caverns"
+        }
+    },
+    {
+        "name": "New York",
+        "country": "US",
+        "area": 141297,
+        "population": 19453561,
+        "borders": ["Vermont", "Massachusetts", "Connecticut", "New Jersey", "Pennsylvania"],
+        "capital": "Albany",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_New_York.svg/1024px-Flag_of_New_York.svg.png",
+        "additional_info": {
+            "iso_code": "US-NY",
+            "timezone": "America/New_York",
+            "famous_landmark": "Statue of Liberty"
+        }
+    },
+    {
+        "name": "North Carolina",
+        "country": "US",
+        "area": 139391,
+        "population": 10488084,
+        "borders": ["Virginia", "South Carolina", "Georgia", "Tennessee"],
+        "capital": "Raleigh",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Flag_of_North_Carolina.svg/1024px-Flag_of_North_Carolina.svg.png",
+        "additional_info": {
+            "iso_code": "US-NC",
+            "timezone": "America/New_York",
+            "famous_landmark": "Great Smoky Mountains"
+        }
+    },
+    {
+        "name": "North Dakota",
+        "country": "US",
+        "area": 183108,
+        "population": 762062,
+        "borders": ["Minnesota", "South Dakota", "Montana"],
+        "capital": "Bismarck",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Flag_of_North_Dakota.svg/1024px-Flag_of_North_Dakota.svg.png",
+        "additional_info": {
+            "iso_code": "US-ND",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Theodore Roosevelt National Park"
+        }
+    },
+    {
+        "name": "Ohio",
+        "country": "US",
+        "area": 116098,
+        "population": 11689100,
+        "borders": ["Pennsylvania", "West Virginia", "Kentucky", "Indiana", "Michigan"],
+        "capital": "Columbus",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Flag_of_Ohio.svg/1024px-Flag_of_Ohio.svg.png",
+        "additional_info": {
+            "iso_code": "US-OH",
+            "timezone": "America/New_York",
+            "famous_landmark": "Rock and Roll Hall of Fame"
+        }
+    },
+    {
+        "name": "Oklahoma",
+        "country": "US",
+        "area": 181037,
+        "population": 3956971,
+        "borders": ["Kansas", "Missouri", "Arkansas", "Texas", "New Mexico", "Colorado"],
+        "capital": "Oklahoma City",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Flag_of_Oklahoma.svg/1024px-Flag_of_Oklahoma.svg.png",
+        "additional_info": {
+            "iso_code": "US-OK",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Route 66"
+        }
+    },
+    {
+        "name": "Oregon",
+        "country": "US",
+        "area": 254799,
+        "population": 4217737,
+        "borders": ["Washington", "Idaho", "Nevada", "California"],
+        "capital": "Salem",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Flag_of_Oregon.svg/1024px-Flag_of_Oregon.svg.png",
+        "additional_info": {
+            "iso_code": "US-OR",
+            "timezone": "America/Los_Angeles",
+            "famous_landmark": "Crater Lake"
+        }
+    },
+    {
+        "name": "Pennsylvania",
+        "country": "US",
+        "area": 119280,
+        "population": 12801989,
+        "borders": ["New York", "New Jersey", "Delaware", "Maryland", "West Virginia", "Ohio"],
+        "capital": "Harrisburg",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Flag_of_Pennsylvania.svg/1024px-Flag_of_Pennsylvania.svg.png",
+        "additional_info": {
+            "iso_code": "US-PA",
+            "timezone": "America/New_York",
+            "famous_landmark": "Liberty Bell"
+        }
+    },
+    {
+        "name": "Rhode Island",
+        "country": "US",
+        "area": 4001,
+        "population": 1059361,
+        "borders": ["Massachusetts", "Connecticut"],
+        "capital": "Providence",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Rhode_Island.svg/1024px-Flag_of_Rhode_Island.svg.png",
+        "additional_info": {
+            "iso_code": "US-RI",
+            "timezone": "America/New_York",
+            "famous_landmark": "The Breakers"
+        }
+    },
+    {
+        "name": "South Carolina",
+        "country": "US",
+        "area": 82933,
+        "population": 5148714,
+        "borders": ["North Carolina", "Georgia"],
+        "capital": "Columbia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Flag_of_South_Carolina.svg/1024px-Flag_of_South_Carolina.svg.png",
+        "additional_info": {
+            "iso_code": "US-SC",
+            "timezone": "America/New_York",
+            "famous_landmark": "Fort Sumter"
+        }
+    },
+    {
+        "name": "South Dakota",
+        "country": "US",
+        "area": 199729,
+        "population": 884659,
+        "borders": ["North Dakota", "Minnesota", "Iowa", "Nebraska", "Wyoming", "Montana"],
+        "capital": "Pierre",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_South_Dakota.svg/1024px-Flag_of_South_Dakota.svg.png",
+        "additional_info": {
+            "iso_code": "US-SD",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Mount Rushmore"
+        }
+    },
+    {
+        "name": "Tennessee",
+        "country": "US",
+        "area": 109153,
+        "population": 6829174,
+        "borders": ["Kentucky", "Virginia", "North Carolina", "Georgia", "Alabama", "Mississippi", "Arkansas", "Missouri"],
+        "capital": "Nashville",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Tennessee.svg/1024px-Flag_of_Tennessee.svg.png",
+        "additional_info": {
+            "iso_code": "US-TN",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Great Smoky Mountains"
+        }
+    },
+    {
+        "name": "Texas",
+        "country": "US",
+        "area": 695662,
+        "population": 28995881,
+        "borders": ["New Mexico", "Oklahoma", "Arkansas", "Louisiana"],
+        "capital": "Austin",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Flag_of_Texas.svg/1024px-Flag_of_Texas.svg.png",
+        "additional_info": {
+            "iso_code": "US-TX",
+            "timezone": "America/Chicago",
+            "famous_landmark": "The Alamo"
+        }
+    },
+    {
+        "name": "Utah",
+        "country": "US",
+        "area": 219882,
+        "population": 3205958,
+        "borders": ["Idaho", "Wyoming", "Colorado", "New Mexico", "Arizona", "Nevada"],
+        "capital": "Salt Lake City",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Flag_of_Utah.svg/1024px-Flag_of_Utah.svg.png",
+        "additional_info": {
+            "iso_code": "US-UT",
+            "timezone": "America/Denver",
+            "famous_landmark": "Arches National Park"
+        }
+    },
+    {
+        "name": "Vermont",
+        "country": "US",
+        "area": 24906,
+        "population": 623989,
+        "borders": ["New York", "New Hampshire", "Massachusetts"],
+        "capital": "Montpelier",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Vermont.svg/1024px-Flag_of_Vermont.svg.png",
+        "additional_info": {
+            "iso_code": "US-VT",
+            "timezone": "America/New_York",
+            "famous_landmark": "Ben & Jerry's Factory"
+        }
+    },
+    {
+        "name": "Virginia",
+        "country": "US",
+        "area": 110787,
+        "population": 8535519,
+        "borders": ["Maryland", "North Carolina", "Tennessee", "Kentucky", "West Virginia"],
+        "capital": "Richmond",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Flag_of_Virginia.svg/1024px-Flag_of_Virginia.svg.png",
+        "additional_info": {
+            "iso_code": "US-VA",
+            "timezone": "America/New_York",
+            "famous_landmark": "Colonial Williamsburg"
+        }
+    },
+    {
+        "name": "Washington",
+        "country": "US",
+        "area": 184661,
+        "population": 7614893,
+        "borders": ["Oregon", "Idaho"],
+        "capital": "Olympia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Flag_of_Washington.svg/1024px-Flag_of_Washington.svg.png",
+        "additional_info": {
+            "iso_code": "US-WA",
+            "timezone": "America/Los_Angeles",
+            "famous_landmark": "Space Needle"
+        }
+    },
+    {
+        "name": "West Virginia",
+        "country": "US",
+        "area": 62756,
+        "population": 1792147,
+        "borders": ["Pennsylvania", "Maryland", "Virginia", "Kentucky", "Ohio"],
+        "capital": "Charleston",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Flag_of_West_Virginia.svg/1024px-Flag_of_West_Virginia.svg.png",
+        "additional_info": {
+            "iso_code": "US-WV",
+            "timezone": "America/New_York",
+            "famous_landmark": "New River Gorge Bridge"
+        }
+    },
+    {
+        "name": "Wisconsin",
+        "country": "US",
+        "area": 169635,
+        "population": 5822434,
+        "borders": ["Minnesota", "Iowa", "Illinois", "Michigan"],
+        "capital": "Madison",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Flag_of_Wisconsin.svg/1024px-Flag_of_Wisconsin.svg.png",
+        "additional_info": {
+            "iso_code": "US-WI",
+            "timezone": "America/Chicago",
+            "famous_landmark": "Wisconsin Dells"
+        }
+    },
+    {
+        "name": "Wyoming",
+        "country": "US",
+        "area": 253335,
+        "population": 578759,
+        "borders": ["Montana", "South Dakota", "Nebraska", "Colorado", "Utah", "Idaho"],
+        "capital": "Cheyenne",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Flag_of_Wyoming.svg/1024px-Flag_of_Wyoming.svg.png",
+        "additional_info": {
+            "iso_code": "US-WY",
+            "timezone": "America/Denver",
+            "famous_landmark": "Yellowstone National Park"
+        }
+    },
+    {
+        "name": "Alberta",
+        "country": "CA",
+        "area": 661848,
+        "population": 4413146,
+        "borders": ["British Columbia", "Saskatchewan", "Northwest Territories"],
+        "capital": "Edmonton",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Flag_of_Alberta.svg/1024px-Flag_of_Alberta.svg.png",
+        "additional_info": {
+            "iso_code": "CA-AB",
+            "timezone": "America/Edmonton",
+            "famous_landmark": "Banff National Park"
+        }
+    },
+    {
+        "name": "British Columbia",
+        "country": "CA",
+        "area": 944735,
+        "population": 5110917,
+        "borders": ["Alberta", "Yukon", "Northwest Territories"],
+        "capital": "Victoria",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Flag_of_British_Columbia.svg/1024px-Flag_of_British_Columbia.svg.png",
+        "additional_info": {
+            "iso_code": "CA-BC",
+            "timezone": "America/Vancouver",
+            "famous_landmark": "Stanley Park"
+        }
+    },
+    {
+        "name": "Manitoba",
+        "country": "CA",
+        "area": 647797,
+        "population": 1377517,
+        "borders": ["Saskatchewan", "Ontario", "Northwest Territories"],
+        "capital": "Winnipeg",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Flag_of_Manitoba.svg/1024px-Flag_of_Manitoba.svg.png",
+        "additional_info": {
+            "iso_code": "CA-MB",
+            "timezone": "America/Winnipeg",
+            "famous_landmark": "The Forks"
+        }
+    },
+    {
+        "name": "New Brunswick",
+        "country": "CA",
+        "area": 72908,
+        "population": 781315,
+        "borders": ["Quebec", "Nova Scotia"],
+        "capital": "Fredericton",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Flag_of_New_Brunswick.svg/1024px-Flag_of_New_Brunswick.svg.png",
+        "additional_info": {
+            "iso_code": "CA-NB",
+            "timezone": "America/Moncton",
+            "famous_landmark": "Bay of Fundy"
+        }
+    },
+    {
+        "name": "Newfoundland and Labrador",
+        "country": "CA",
+        "area": 405212,
+        "population": 521542,
+        "borders": [],
+        "capital": "St. John's",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Flag_of_Newfoundland_and_Labrador.svg/1024px-Flag_of_Newfoundland_and_Labrador.svg.png",
+        "additional_info": {
+            "iso_code": "CA-NL",
+            "timezone": "America/St_Johns",
+            "famous_landmark": "Gros Morne National Park"
+        }
+    },
+    {
+        "name": "Nova Scotia",
+        "country": "CA",
+        "area": 55284,
+        "population": 979351,
+        "borders": ["New Brunswick"],
+        "capital": "Halifax",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Flag_of_Nova_Scotia.svg/1024px-Flag_of_Nova_Scotia.svg.png",
+        "additional_info": {
+            "iso_code": "CA-NS",
+            "timezone": "America/Halifax",
+            "famous_landmark": "Peggy's Cove"
+        }
+    },
+    {
+        "name": "Ontario",
+        "country": "CA",
+        "area": 1076395,
+        "population": 14711827,
+        "borders": ["Quebec", "Manitoba"],
+        "capital": "Toronto",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Flag_of_Ontario.svg/1024px-Flag_of_Ontario.svg.png",
+        "additional_info": {
+            "iso_code": "CA-ON",
+            "timezone": "America/Toronto",
+            "famous_landmark": "CN Tower"
+        }
+    },
+    {
+        "name": "Prince Edward Island",
+        "country": "CA",
+        "area": 5660,
+        "population": 158158,
+        "borders": [],
+        "capital": "Charlottetown",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Flag_of_Prince_Edward_Island.svg/1024px-Flag_of_Prince_Edward_Island.svg.png",
+        "additional_info": {
+            "iso_code": "CA-PE",
+            "timezone": "America/Halifax",
+            "famous_landmark": "Green Gables"
+        }
+    },
+    {
+        "name": "Quebec",
+        "country": "CA",
+        "area": 1542056,
+        "population": 8537674,
+        "borders": ["Ontario", "New Brunswick"],
+        "capital": "Quebec City",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Flag_of_Quebec.svg/1024px-Flag_of_Quebec.svg.png",
+        "additional_info": {
+            "iso_code": "CA-QC",
+            "timezone": "America/Montreal",
+            "famous_landmark": "Old Quebec"
+        }
+    },
+    {
+        "name": "Saskatchewan",
+        "country": "CA",
+        "area": 651900,
+        "population": 1181666,
+        "borders": ["Alberta", "Manitoba", "Northwest Territories"],
+        "capital": "Regina",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Flag_of_Saskatchewan.svg/1024px-Flag_of_Saskatchewan.svg.png",
+        "additional_info": {
+            "iso_code": "CA-SK",
+            "timezone": "America/Regina",
+            "famous_landmark": "Prince Albert National Park"
+        }
+    },
+    {
+        "name": "Northwest Territories",
+        "country": "CA",
+        "area": 1346106,
+        "population": 45074,
+        "borders": ["Yukon", "Nunavut", "British Columbia", "Alberta", "Saskatchewan"],
+        "capital": "Yellowknife",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_the_Northwest_Territories.svg/1024px-Flag_of_the_Northwest_Territories.svg.png",
+        "additional_info": {
+            "iso_code": "CA-NT",
+            "timezone": "America/Yellowknife",
+            "famous_landmark": "Nahanni National Park Reserve"
+        }
+    },
+    {
+        "name": "Nunavut",
+        "country": "CA",
+        "area": 2093190,
+        "population": 39285,
+        "borders": ["Northwest Territories"],
+        "capital": "Iqaluit",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Flag_of_Nunavut.svg/1024px-Flag_of_Nunavut.svg.png",
+        "additional_info": {
+            "iso_code": "CA-NU",
+            "timezone": "America/Iqaluit",
+            "famous_landmark": "Auyuittuq National Park"
+        }
+    },
+    {
+        "name": "Yukon",
+        "country": "CA",
+        "area": 482443,
+        "population": 41078,
+        "borders": ["Alaska", "Northwest Territories", "British Columbia"],
+        "capital": "Whitehorse",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Flag_of_Yukon.svg/1024px-Flag_of_Yukon.svg.png",
+        "additional_info": {
+            "iso_code": "CA-YT",
+            "timezone": "America/Whitehorse",
+            "famous_landmark": "Kluane National Park"
+        }
+    },
+    {
+        "name": "Aguascalientes",
+        "country": "MX",
+        "area": 5617,
+        "population": 1434630,
+        "borders": ["Zacatecas", "Jalisco"],
+        "capital": "Aguascalientes",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Flag_of_Aguascalientes.svg/1024px-Flag_of_Aguascalientes.svg.png",
+        "additional_info": {
+            "iso_code": "MX-AGU",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Feria Nacional de San Marcos"
+        }
+    },
+    {
+        "name": "Baja California",
+        "country": "MX",
+        "area": 71450,
+        "population": 3769020,
+        "borders": ["Sonora", "Baja California Sur"],
+        "capital": "Mexicali",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Flag_of_Baja_California.svg/1024px-Flag_of_Baja_California.svg.png",
+        "additional_info": {
+            "iso_code": "MX-BCN",
+            "timezone": "America/Tijuana",
+            "famous_landmark": "Valle de Guadalupe"
+        }
+    },
+    {
+        "name": "Baja California Sur",
+        "country": "MX",
+        "area": 73909,
+        "population": 798447,
+        "borders": ["Baja California"],
+        "capital": "La Paz",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Flag_of_Baja_California_Sur.svg/1024px-Flag_of_Baja_California_Sur.svg.png",
+        "additional_info": {
+            "iso_code": "MX-BCS",
+            "timezone": "America/Mazatlan",
+            "famous_landmark": "Cabo San Lucas"
+        }
+    },
+    {
+        "name": "Campeche",
+        "country": "MX",
+        "area": 57724,
+        "population": 928363,
+        "borders": ["Yucatán", "Quintana Roo", "Tabasco"],
+        "capital": "San Francisco de Campeche",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Flag_of_Campeche.svg/1024px-Flag_of_Campeche.svg.png",
+        "additional_info": {
+            "iso_code": "MX-CAM",
+            "timezone": "America/Merida",
+            "famous_landmark": "Calakmul"
+        }
+    },
+    {
+        "name": "Chiapas",
+        "country": "MX",
+        "area": 73211,
+        "population": 5543828,
+        "borders": ["Oaxaca", "Veracruz", "Tabasco"],
+        "capital": "Tuxtla Gutiérrez",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Flag_of_Chiapas.svg/1024px-Flag_of_Chiapas.svg.png",
+        "additional_info": {
+            "iso_code": "MX-CHP",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Palenque"
+        }
+    },
+    {
+        "name": "Chihuahua",
+        "country": "MX",
+        "area": 247455,
+        "population": 3801487,
+        "borders": ["Sonora", "Sinaloa", "Durango", "Coahuila"],
+        "capital": "Chihuahua",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Flag_of_Chihuahua.svg/1024px-Flag_of_Chihuahua.svg.png",
+        "additional_info": {
+            "iso_code": "MX-CHH",
+            "timezone": "America/Chihuahua",
+            "famous_landmark": "Copper Canyon"
+        }
+    },
+    {
+        "name": "Coahuila",
+        "country": "MX",
+        "area": 151563,
+        "population": 3146771,
+        "borders": ["Chihuahua", "Durango", "Zacatecas", "Nuevo León"],
+        "capital": "Saltillo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Flag_of_Coahuila.svg/1024px-Flag_of_Coahuila.svg.png",
+        "additional_info": {
+            "iso_code": "MX-COA",
+            "timezone": "America/Monterrey",
+            "famous_landmark": "Sierra de Zapalinamé"
+        }
+    },
+    {
+        "name": "Colima",
+        "country": "MX",
+        "area": 5625,
+        "population": 731391,
+        "borders": ["Jalisco", "Michoacán"],
+        "capital": "Colima",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Colima.svg/1024px-Flag_of_Colima.svg.png",
+        "additional_info": {
+            "iso_code": "MX-COL",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Volcán de Colima"
+        }
+    },
+    {
+        "name": "Durango",
+        "country": "MX",
+        "area": 123317,
+        "population": 1832650,
+        "borders": ["Chihuahua", "Coahuila", "Zacatecas", "Nayarit", "Sinaloa"],
+        "capital": "Durango",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Flag_of_Durango.svg/1024px-Flag_of_Durango.svg.png",
+        "additional_info": {
+            "iso_code": "MX-DUR",
+            "timezone": "America/Monterrey",
+            "famous_landmark": "Puente de Ojuela"
+        }
+    },
+    {
+        "name": "Guanajuato",
+        "country": "MX",
+        "area": 30608,
+        "population": 6168883,
+        "borders": ["Jalisco", "Zacatecas", "San Luis Potosí", "Querétaro", "Michoacán"],
+        "capital": "Guanajuato",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Flag_of_Guanajuato.svg/1024px-Flag_of_Guanajuato.svg.png",
+        "additional_info": {
+            "iso_code": "MX-GUA",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Alhóndiga de Granaditas"
+        }
+    },
+    {
+        "name": "Guerrero",
+        "country": "MX",
+        "area": 63596,
+        "population": 3533251,
+        "borders": ["Michoacán", "Estado de México", "Morelos", "Puebla", "Oaxaca"],
+        "capital": "Chilpancingo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Flag_of_Guerrero.svg/1024px-Flag_of_Guerrero.svg.png",
+        "additional_info": {
+            "iso_code": "MX-GRO",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Acapulco"
+        }
+    },
+    {
+        "name": "Hidalgo",
+        "country": "MX",
+        "area": 20821,
+        "population": 3082841,
+        "borders": ["San Luis Potosí", "Veracruz", "Puebla", "Tlaxcala", "Estado de México", "Querétaro"],
+        "capital": "Pachuca",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Flag_of_Hidalgo.svg/1024px-Flag_of_Hidalgo.svg.png",
+        "additional_info": {
+            "iso_code": "MX-HID",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Prismas Basálticos"
+        }
+    },
+    {
+        "name": "Jalisco",
+        "country": "MX",
+        "area": 78595,
+        "population": 8348151,
+        "borders": ["Nayarit", "Zacatecas", "Aguascalientes", "Guanajuato", "Michoacán", "Colima"],
+        "capital": "Guadalajara",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Flag_of_Jalisco.svg/1024px-Flag_of_Jalisco.svg.png",
+        "additional_info": {
+            "iso_code": "MX-JAL",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Tequila"
+        }
+    },
+    {
+        "name": "Estado de México",
+        "country": "MX",
+        "area": 22351,
+        "population": 17427790,
+        "borders": ["Querétaro", "Hidalgo", "Tlaxcala", "Puebla", "Morelos", "Guerrero", "Michoacán"],
+        "capital": "Toluca",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Flag_of_the_State_of_Mexico.svg/1024px-Flag_of_the_State_of_Mexico.svg.png",
+        "additional_info": {
+            "iso_code": "MX-MEX",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Teotihuacán"
+        }
+    },
+    {
+        "name": "Michoacán",
+        "country": "MX",
+        "area": 58599,
+        "population": 4875443,
+        "borders": ["Colima", "Jalisco", "Guanajuato", "Querétaro", "Estado de México", "Guerrero"],
+        "capital": "Morelia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Flag_of_Michoac%C3%A1n.svg/1024px-Flag_of_Michoac%C3%A1n.svg.png",
+        "additional_info": {
+            "iso_code": "MX-MIC",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Pátzcuaro"
+        }
+    },
+    {
+        "name": "Morelos",
+        "country": "MX",
+        "area": 4893,
+        "population": 1971520,
+        "borders": ["Puebla", "Guerrero", "Estado de México"],
+        "capital": "Cuernavaca",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Morelos.svg/1024px-Flag_of_Morelos.svg.png",
+        "additional_info": {
+            "iso_code": "MX-MOR",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Tepoztlán"
+        }
+    },
+    {
+        "name": "Nayarit",
+        "country": "MX",
+        "area": 27857,
+        "population": 1282146,
+        "borders": ["Sinaloa", "Durango", "Zacatecas", "Jalisco"],
+        "capital": "Tepic",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Nayarit.svg/1024px-Flag_of_Nayarit.svg.png",
+        "additional_info": {
+            "iso_code": "MX-NAY",
+            "timezone": "America/Mazatlan",
+            "famous_landmark": "Islas Marietas"
+        }
+    },
+    {
+        "name": "Nuevo León",
+        "country": "MX",
+        "area": 64156,
+        "population": 5119503,
+        "borders": ["Tamaulipas", "San Luis Potosí", "Coahuila"],
+        "capital": "Monterrey",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Flag_of_Nuevo_Le%C3%B3n.svg/1024px-Flag_of_Nuevo_Le%C3%B3n.svg.png",
+        "additional_info": {
+            "iso_code": "MX-NLE",
+            "timezone": "America/Monterrey",
+            "famous_landmark": "Cerro de la Silla"
+        }
+    },
+    {
+        "name": "Oaxaca",
+        "country": "MX",
+        "area": 93757,
+        "population": 4132148,
+        "borders": ["Puebla", "Veracruz", "Chiapas"],
+        "capital": "Oaxaca de Juárez",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Oaxaca.svg/1024px-Flag_of_Oaxaca.svg.png",
+        "additional_info": {
+            "iso_code": "MX-OAX",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Monte Albán"
+        }
+    },
+    {
+        "name": "Puebla",
+        "country": "MX",
+        "area": 34306,
+        "population": 6583278,
+        "borders": ["Veracruz", "Hidalgo", "Tlaxcala", "Estado de México", "Morelos", "Guerrero", "Oaxaca"],
+        "capital": "Puebla",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Puebla.svg/1024px-Flag_of_Puebla.svg.png",
+        "additional_info": {
+            "iso_code": "MX-PUE",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Cholula"
+        }
+    },
+    {
+        "name": "Querétaro",
+        "country": "MX",
+        "area": 11699,
+        "population": 2279630,
+        "borders": ["San Luis Potosí", "Guanajuato", "Hidalgo", "Estado de México"],
+        "capital": "Santiago de Querétaro",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Quer%C3%A9taro.svg/1024px-Flag_of_Quer%C3%A9taro.svg.png",
+        "additional_info": {
+            "iso_code": "MX-QUE",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Peña de Bernal"
+        }
+    },
+    {
+        "name": "Quintana Roo",
+        "country": "MX",
+        "area": 44214,
+        "population": 1871563,
+        "borders": ["Yucatán", "Campeche"],
+        "capital": "Chetumal",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Quintana_Roo.svg/1024px-Flag_of_Quintana_Roo.svg.png",
+        "additional_info": {
+            "iso_code": "MX-ROO",
+            "timezone": "America/Cancun",
+            "famous_landmark": "Tulum"
+        }
+    },
+    {
+        "name": "San Luis Potosí",
+        "country": "MX",
+        "area": 61137,
+        "population": 2822255,
+        "borders": ["Nuevo León", "Tamaulipas", "Veracruz", "Hidalgo", "Querétaro", "Guanajuato", "Zacatecas"],
+        "capital": "San Luis Potosí",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_San_Luis_Potos%C3%AD.svg/1024px-Flag_of_San_Luis_Potos%C3%AD.svg.png",
+        "additional_info": {
+            "iso_code": "MX-SLP",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Huasteca Potosina"
+        }
+    },
+    {
+        "name": "Sinaloa",
+        "country": "MX",
+        "area": 57365,
+        "population": 3018767,
+        "borders": ["Sonora", "Chihuahua", "Durango", "Nayarit"],
+        "capital": "Culiacán",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Sinaloa.svg/1024px-Flag_of_Sinaloa.svg.png",
+        "additional_info": {
+            "iso_code": "MX-SIN",
+            "timezone": "America/Mazatlan",
+            "famous_landmark": "Mazatlán"
+        }
+    },
+    {
+        "name": "Sonora",
+        "country": "MX",
+        "area": 179503,
+        "population": 2944849,
+        "borders": ["Chihuahua", "Sinaloa", "Baja California"],
+        "capital": "Hermosillo",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Sonora.svg/1024px-Flag_of_Sonora.svg.png",
+        "additional_info": {
+            "iso_code": "MX-SON",
+            "timezone": "America/Hermosillo",
+            "famous_landmark": "Desierto de Altar"
+        }
+    },
+    {
+        "name": "Tabasco",
+        "country": "MX",
+        "area": 24738,
+        "population": 2395272,
+        "borders": ["Campeche", "Veracruz", "Chiapas"],
+        "capital": "Villahermosa",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Tabasco.svg/1024px-Flag_of_Tabasco.svg.png",
+        "additional_info": {
+            "iso_code": "MX-TAB",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "La Venta"
+        }
+    },
+    {
+        "name": "Tamaulipas",
+        "country": "MX",
+        "area": 80249,
+        "population": 3527735,
+        "borders": ["Nuevo León", "San Luis Potosí", "Veracruz"],
+        "capital": "Ciudad Victoria",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Tamaulipas.svg/1024px-Flag_of_Tamaulipas.svg.png",
+        "additional_info": {
+            "iso_code": "MX-TAM",
+            "timezone": "America/Monterrey",
+            "famous_landmark": "Playa Miramar"
+        }
+    },
+    {
+        "name": "Tlaxcala",
+        "country": "MX",
+        "area": 4016,
+        "population": 1342977,
+        "borders": ["Puebla", "Hidalgo", "Estado de México"],
+        "capital": "Tlaxcala",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Tlaxcala.svg/1024px-Flag_of_Tlaxcala.svg.png",
+        "additional_info": {
+            "iso_code": "MX-TLA",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Cacaxtla"
+        }
+    },
+    {
+        "name": "Veracruz",
+        "country": "MX",
+        "area": 71820,
+        "population": 8112505,
+        "borders": ["Tamaulipas", "San Luis Potosí", "Hidalgo", "Puebla", "Oaxaca", "Tabasco"],
+        "capital": "Xalapa",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Veracruz.svg/1024px-Flag_of_Veracruz.svg.png",
+        "additional_info": {
+            "iso_code": "MX-VER",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "El Tajín"
+        }
+    },
+    {
+        "name": "Yucatán",
+        "country": "MX",
+        "area": 39524,
+        "population": 2320894,
+        "borders": ["Campeche", "Quintana Roo"],
+        "capital": "Mérida",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Yucat%C3%A1n.svg/1024px-Flag_of_Yucat%C3%A1n.svg.png",
+        "additional_info": {
+            "iso_code": "MX-YUC",
+            "timezone": "America/Merida",
+            "famous_landmark": "Chichén Itzá"
+        }
+    },
+    {
+        "name": "Zacatecas",
+        "country": "MX",
+        "area": 75439,
+        "population": 1622138,
+        "borders": ["Coahuila", "Nuevo León", "San Luis Potosí", "Aguascalientes", "Jalisco", "Nayarit", "Durango"],
+        "capital": "Zacatecas",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_Zacatecas.svg/1024px-Flag_of_Zacatecas.svg.png",
+        "additional_info": {
+            "iso_code": "MX-ZAC",
+            "timezone": "America/Mexico_City",
+            "famous_landmark": "Mina El Edén"
+        }
     }
 ]

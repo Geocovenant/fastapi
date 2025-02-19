@@ -4,7 +4,7 @@ from api.public.subnation_division.models import SubnationDivision
 
 class Subnation(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=100, unique=True, index=True)
+    name: str = Field(max_length=100)
     area: Optional[float] = Field(default=None, description="Area in square kilometers")
     population: Optional[int] = Field(default=None, description="Population")
     borders: Optional[str] = Field(default=None, description="List of bordering countries")
