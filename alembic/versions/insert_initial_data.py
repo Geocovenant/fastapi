@@ -19,6 +19,7 @@ depends_on = None
 def upgrade() -> None:
     # Crear conexión
     conn = op.get_bind()
+    base_path = Path(__file__).resolve().parent.parent.parent
     
     # Obtener las tablas
     country_table = sa.Table(
@@ -77,6 +78,13 @@ def upgrade() -> None:
         sa.Column('parent_id', sa.Integer()),
     )
 
+    continent_table = sa.Table(
+        'continent',
+        sa.MetaData(),
+        sa.Column('id', sa.Integer()),
+        sa.Column('name', sa.String()),
+    )
+
     # Limpiar datos existentes
     op.execute("TRUNCATE TABLE community CASCADE")
     op.execute("TRUNCATE TABLE subnation CASCADE")
@@ -87,10 +95,7 @@ def upgrade() -> None:
     op.execute("ALTER SEQUENCE subnation_id_seq RESTART WITH 1")
     op.execute("ALTER SEQUENCE community_id_seq RESTART WITH 1")
 
-    # Cargar datos de los archivos JSON
-    base_path = Path(__file__).parent.parent.parent
-
-    # Primero crear la comunidad global
+    # Primero creamos la comunidad Global
     global_community = {
         'name': 'Global',
         'description': 'Global Community',
@@ -98,47 +103,53 @@ def upgrade() -> None:
         'level': 'GLOBAL',
     }
     op.bulk_insert(community_table, [global_community])
-    
-    # Crear comunidades para los continentes
-    continents = [
-        {'name': 'Africa', 'region': 'Africa'},
-        {'name': 'Americas', 'region': 'Americas'},
-        {'name': 'Asia', 'region': 'Asia'},
-        {'name': 'Europe', 'region': 'Europe'},
-        {'name': 'Oceania', 'region': 'Oceania'},
-    ]
-    
-    continent_communities = []
-    for continent in continents:
-        continent_community = {
-            'name': continent['name'],
-            'description': f'{continent["name"]} Continental Community',
-            'parent_id': 1,  # Global community ID
-            'level': 'CONTINENT',
-        }
-        continent_communities.append(continent_community)
-    
-    op.bulk_insert(community_table, continent_communities)
-    
-    # Insertar países y sus comunidades
+
+    # Luego insertamos los continentes
+    with open(base_path / 'api' / 'data' / 'continents.json', 'r', encoding='utf-8') as f:
+        continents_data = json.load(f)
+        formatted_continents = []
+        continent_communities = []
+        
+        for continent in continents_data:
+            formatted_continent = {
+                'name': continent['name']
+            }
+            formatted_continents.append(formatted_continent)
+            
+            # Crear comunidad para el continente
+            continent_community = {
+                'name': continent['name'],
+                'description': f"{continent['name']} Continental Community",
+                'parent_id': 1,  # ID de la comunidad Global que acabamos de crear
+                'level': 'CONTINENT',
+            }
+            continent_communities.append(continent_community)
+
+        op.bulk_insert(continent_table, formatted_continents)
+        op.bulk_insert(community_table, continent_communities)
+
+    # Luego insertamos países
     with open(base_path / 'api' / 'data' / 'countries.json', 'r', encoding='utf-8') as f:
         countries_data = json.load(f)
         formatted_countries = []
         country_communities = []
         
         for country in countries_data:
-            # Formatear país para la tabla country
-            currencies = country.get('currencies', {})
-            currency_code = next(iter(currencies.keys())) if currencies else None
-            currency_name = currencies[currency_code]['name'] if currency_code else None if currencies else None
+            if country.get('name', {}).get('common') == 'Antarctica':
+                continue  # Saltamos Antártida ya que la tratamos como continente
+                
+            # Obtener el ID del continente basado en la región
+            continent_id = None
+            region = country.get('region', '')
+            if region == 'Africa': continent_id = 1
+            elif region == 'Americas': continent_id = 2
+            elif region == 'Asia': continent_id = 3
+            elif region == 'Europe': continent_id = 4
+            elif region == 'Oceania': continent_id = 5
             
-            idd = country.get('idd', {})
-            languages = country.get('languages', {})
-            native_names = country.get('name', {}).get('nativeName', {})
-            native_name = next(iter(native_names.values()))['common'] if native_names else None
-
             formatted_country = {
                 'name': country.get('name', {}).get('common', ''),
+                'continent_id': continent_id,  # Asociamos el país con su continente
                 'area': country.get('area'),
                 'borders': ','.join(country.get('borders', [])),
                 'capital_latlng': ','.join(map(str, country.get('capitalInfo', {}).get('latlng', []))),
@@ -146,15 +157,22 @@ def upgrade() -> None:
                 'cca2': country.get('cca2'),
                 'cca3': country.get('cca3'),
                 'coat_of_arms_svg': country.get('coatOfArms', {}).get('svg'),
-                'currency_code': currency_code,
-                'currency_name': currency_name,
+                'currency_code': next(iter(country.get('currencies', {}).keys())) if country.get('currencies') else None,
+                'currency_name': next(iter(country.get('currencies', {}).values())).get('name') if country.get('currencies') else None,
                 'flag': country.get('flag'),
                 'google_maps_link': country.get('maps', {}).get('googleMaps'),
-                'idd_root': idd.get('root'),
-                'idd_suffixes': ','.join(idd.get('suffixes', [])),
+                'idd_root': next(iter(country.get('idd', {})['root'])) if country.get('idd') else None,
+                'idd_suffixes': ','.join(country.get('idd', {})['suffixes']) if country.get('idd') else None,
                 'landlocked': country.get('landlocked'),
-                'languages': ','.join(languages.values()) if languages else None,
-                'native_name': native_name,
+                'languages': ','.join(country.get('languages', {}).values()) if country.get('languages') else None,
+                'native_name': (
+                    next(iter(country.get('name', {})
+                        .get('nativeName', {})
+                        .values()))
+                        .get('common') 
+                    if country.get('name', {}).get('nativeName') 
+                    else None
+                ),
                 'numeric_code': country.get('ccn3'),
                 'openstreetmap_link': country.get('maps', {}).get('openStreetMaps'),
                 'population': country.get('population'),
@@ -165,15 +183,9 @@ def upgrade() -> None:
             }
             formatted_countries.append(formatted_country)
 
-            # Crear comunidad para el país
-            region = country.get('region', '')
-            parent_id = None
-            if region == 'Africa': parent_id = 2
-            elif region == 'Americas': parent_id = 3
-            elif region == 'Asia': parent_id = 4
-            elif region == 'Europe': parent_id = 5
-            elif region == 'Oceania': parent_id = 6
-
+            # El parent_id de la comunidad del país será el ID de la comunidad del continente + 1
+            parent_id = continent_id + 1 if continent_id else None
+            
             country_community = {
                 'name': country.get('name', {}).get('common', ''),
                 'description': f"National community of {country.get('name', {}).get('common', '')}",
