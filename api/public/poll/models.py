@@ -88,3 +88,28 @@ class PollComment(SQLModel, table=True):
     # Relationships
     poll: Poll = Relationship(back_populates="comments")
     user: "User" = Relationship(back_populates="poll_comments")
+
+class PollOptionCreate(SQLModel):
+    text: str = Field(max_length=150)
+
+class PollCreate(PollBase):
+    options: list[PollOptionCreate]
+    community_ids: list[int] = Field(default=[])  # Lista de IDs de comunidades
+
+class CommunityBase(SQLModel):
+    id: int
+    name: str
+    description: Optional[str]
+
+class PollRead(PollBase):
+    id: int
+    slug: str
+    creator_id: int
+    status: PollStatus
+    created_at: datetime
+    updated_at: datetime
+    options: list[PollOption]
+    communities: list[CommunityBase]  # Añadimos las comunidades a la respuesta
+
+class PollVoteCreate(SQLModel):
+    option_ids: list[int] = Field(description="Lista de IDs de las opciones seleccionadas")
