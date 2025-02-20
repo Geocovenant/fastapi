@@ -32,7 +32,7 @@ class Poll(PollBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     slug: str = Field(max_length=100, index=True, unique=True)
     creator_id: int = Field(foreign_key="users.id")
-    status: PollStatus = Field(default=PollStatus.DRAFT)
+    status: PollStatus = Field(default=PollStatus.PUBLISHED)
     created_at: datetime = Field(default=datetime.utcnow)
     updated_at: datetime = Field(default=datetime.utcnow)
 
@@ -101,15 +101,23 @@ class CommunityBase(SQLModel):
     name: str
     description: Optional[str]
 
+class PollReactionCount(SQLModel):
+    LIKE: int = 0
+    DISLIKE: int = 0
+
 class PollRead(PollBase):
     id: int
     slug: str
-    creator_id: int
+    creator_username: Optional[str] = None
     status: PollStatus
     created_at: datetime
     updated_at: datetime
     options: list[PollOption]
-    communities: list[CommunityBase]  # Añadimos las comunidades a la respuesta
+    communities: list[CommunityBase]
+    reactions: PollReactionCount
 
 class PollVoteCreate(SQLModel):
     option_ids: list[int] = Field(description="Lista de IDs de las opciones seleccionadas")
+
+class PollReactionCreate(SQLModel):
+    reaction: ReactionType

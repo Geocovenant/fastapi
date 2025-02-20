@@ -2,8 +2,11 @@ from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from api.public.continent.models import Continent
 from api.public.subnation.models import Subnation
+from api.public.community.models import Community
 
 class Country(SQLModel, table=True):
+    __tablename__ = "country"
+    
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=100, unique=True, index=True)
     area: Optional[float] = Field(default=None, description="Area in square kilometers")
@@ -29,9 +32,10 @@ class Country(SQLModel, table=True):
     status: Optional[str] = Field(default=None, description="Official assignment status")
     subregion: Optional[str] = Field(default=None, description="Subregion")
     timezone: Optional[str] = Field(default=None, description="Primary time zone")
-
+    community_id: int = Field(foreign_key="community.id")
     continent_id: Optional[int] = Field(default=None, foreign_key="continent.id")
 
     # Relationships
-    continent: Optional["Continent"] = Relationship(back_populates="countries")
+    community: Community = Relationship(back_populates="country")
+    continent: Optional[Continent] = Relationship(back_populates="countries")
     subnations: list["Subnation"] = Relationship(back_populates="country")

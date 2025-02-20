@@ -1,7 +1,7 @@
 """Insert initial data from JSON files
 
 Revision ID: insert_initial_data
-Revises: 7d72549f324f
+Revises: 7160389ecd8a
 Create Date: 2024-01-01 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 # revision identifiers, used by Alembic.
 revision = 'insert_initial_data'
-down_revision = '7d72549f324f'
+down_revision = '7160389ecd8a'
 branch_labels = None
 depends_on = None
 
@@ -68,7 +68,6 @@ def upgrade() -> None:
         sa.Column('iso_code', sa.String()),
         sa.Column('timezone', sa.String()),
         sa.Column('famous_landmark', sa.String()),
-        sa.Column('community_id', sa.Integer()),
     )
 
     community_table = sa.Table(
@@ -86,7 +85,6 @@ def upgrade() -> None:
         sa.MetaData(),
         sa.Column('id', sa.Integer()),
         sa.Column('name', sa.String()),
-        sa.Column('community_id', sa.Integer()),
     )
 
     # Limpiar datos existentes
@@ -113,7 +111,6 @@ def upgrade() -> None:
     with open(base_path / 'api' / 'data' / 'continents.json', 'r', encoding='utf-8') as f:
         continents_data = json.load(f)
         continent_communities = []
-        formatted_continents = []
         
         for i, continent in enumerate(continents_data):
             community = {
@@ -125,18 +122,8 @@ def upgrade() -> None:
             }
             continent_communities.append(community)
 
-            # Formatear los datos del continente incluyendo el community_id
-            formatted_continent = {
-                'id': i + 1,
-                'name': continent['name'],
-                'community_id': i + 2  # Mismo ID que su comunidad
-            }
-            formatted_continents.append(formatted_continent)
-
-        # Primero insertamos las comunidades
+        op.bulk_insert(continent_table, continents_data)
         op.bulk_insert(community_table, continent_communities)
-        # Luego insertamos los continentes con sus community_ids
-        op.bulk_insert(continent_table, formatted_continents)
 
     # 3. Luego insertar las comunidades de los países
     with open(base_path / 'api' / 'data' / 'countries.json', 'r', encoding='utf-8') as f:
@@ -217,26 +204,11 @@ def upgrade() -> None:
         subnation_communities = []
         
         for i, subnation in enumerate(subnations_data):
-            # Crear comunidad para la subnación
-            community_id = i + len(countries_data) + 8  # ID después de las comunidades de países
-            
-            # Obtener el parent_id correcto (el community_id del país)
-            country_id = subnation.get('country_id')
-            parent_id = country_id + 7 if country_id is not None else None  # +7 porque los países empiezan en ID 8
-            
-            subnation_community = {
-                'id': community_id,
-                'name': subnation.get('name', ''),
-                'description': f"Subnational community of {subnation.get('name', '')}",
-                'parent_id': parent_id,
-                'level': 'SUBNATIONAL',
-            }
-            subnation_communities.append(subnation_community)
-
             # Formatear subnación para la tabla subnation
             formatted_subnation = {
                 'name': subnation.get('name', ''),
-                'country_id': country_id,
+                'community_id': i + len(countries_data) + 8,  # Empezamos después de las comunidades de países
+                'country_id': subnation.get('country_id', None),
                 'country_cca2': subnation.get('country', None),
                 'area': subnation.get('area', 0.0),
                 'population': subnation.get('population', 0),
@@ -246,9 +218,21 @@ def upgrade() -> None:
                 'iso_code': subnation.get('iso_code', ''),
                 'timezone': subnation.get('timezone', ''),
                 'famous_landmark': subnation.get('famous_landmark', ''),
-                'community_id': community_id
             }
             formatted_subnations.append(formatted_subnation)
+
+            # Crear comunidad para la subnación
+            country_id = subnation.get('country_id')
+            parent_id = country_id + 7 if country_id is not None else None  # +7 porque los países empiezan en ID 8
+            
+            subnation_community = {
+                'id': i + len(countries_data) + 8,  # Mismo ID que en formatted_subnation
+                'name': subnation.get('name', ''),
+                'description': f"Subnational community of {subnation.get('name', '')}",
+                'parent_id': parent_id,
+                'level': 'SUBNATIONAL',
+            }
+            subnation_communities.append(subnation_community)
 
         # Primero insertamos las comunidades y luego las subnaciones
         op.bulk_insert(community_table, subnation_communities)
