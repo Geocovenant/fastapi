@@ -94,7 +94,9 @@ class PollOptionCreate(SQLModel):
 
 class PollCreate(PollBase):
     options: list[PollOptionCreate]
-    community_ids: list[int] = Field(default=[])  # Lista de IDs de comunidades
+    community_ids: list[int] = Field(default=[])
+    country_codes: Optional[list[str]] = Field(default=None, description="Lista de códigos CCA2 de países para encuestas internacionales")
+    country_code: Optional[str] = Field(default=None, description="Código CCA2 del país para encuestas nacionales")
 
 class CommunityBase(SQLModel):
     id: int
@@ -105,6 +107,18 @@ class PollReactionCount(SQLModel):
     LIKE: int = 0
     DISLIKE: int = 0
 
+class PollOptionRead(SQLModel):
+    id: int
+    text: str
+    votes: int
+    voted: bool = False  # Nuevo campo para indicar si el usuario votó esta opción
+
+class PollCommentCreate(SQLModel):
+    content: str = Field(max_length=500)
+
+class PollCommentUpdate(SQLModel):
+    content: str = Field(max_length=500)
+
 class PollRead(PollBase):
     id: int
     slug: str
@@ -112,9 +126,11 @@ class PollRead(PollBase):
     status: PollStatus
     created_at: datetime
     updated_at: datetime
-    options: list[PollOption]
+    options: list[PollOptionRead]
     communities: list[CommunityBase]
     reactions: PollReactionCount
+    comments_count: int = 0  # Nuevo campo para el conteo de comentarios
+    countries: Optional[list[str]] = None  # Lista de códigos CCA2 de países
 
 class PollVoteCreate(SQLModel):
     option_ids: list[int] = Field(description="Lista de IDs de las opciones seleccionadas")

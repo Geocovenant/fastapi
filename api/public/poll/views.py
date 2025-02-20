@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from api.database import get_session
 from sqlmodel import Session
 from api.public.user.models import User
@@ -12,19 +12,28 @@ from api.public.poll.models import (
     PollType, 
     PollOption,
     PollVote,
-    PollReactionCreate
+    PollReactionCreate,
+    PollComment,
+    PollCommentCreate,
+    PollCommentUpdate
 )
-from api.auth.dependencies import get_current_user
+from api.auth.dependencies import get_current_user, get_current_user_optional
 from datetime import datetime
+from sqlalchemy import select
 
 router = APIRouter()
 
 @router.get("/")
 def read_polls(
     scope: str | None = None,
+    current_user: User | None = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
-    return get_all_polls(db, scope=scope)
+    return get_all_polls(
+        db, 
+        scope=scope, 
+        current_user_id=current_user.id if current_user else None
+    )
 
 @router.post("/", response_model=PollRead, status_code=status.HTTP_201_CREATED)
 def create_new_poll(
@@ -140,3 +149,135 @@ def react_to_poll(
         current_user.id, 
         reaction_data.reaction
     )
+
+@router.get("/{poll_id}/comments")
+def get_poll_comments(
+    poll_id: int,
+    current_user: User | None = Depends(get_current_user_optional),
+    db: Session = Depends(get_session)
+):
+    """
+    Obtener todos los comentarios de una encuesta específica.
+    No requiere autenticación.
+    """
+    poll = db.get(Poll, poll_id)
+    if not poll:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Encuesta no encontrada"
+        )
+
+    comments = db.exec(
+        select(PollComment, User)
+        .join(User)
+        .where(PollComment.poll_id == poll_id)
+        .order_by(PollComment.created_at.desc())
+    ).all()
+
+    return [
+        {
+            **comment.dict(),
+            "username": user.username,
+            "can_edit": current_user and current_user.id == comment.user_id
+        }
+        for comment, user in comments
+    ]
+
+@router.post("/{poll_id}/comments", status_code=status.HTTP_201_CREATED)
+def create_poll_comment(
+    poll_id: int,
+    comment_data: PollCommentCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Crear un nuevo comentario en una encuesta.
+    Requiere autenticación.
+    """
+    poll = db.get(Poll, poll_id)
+    if not poll:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Encuesta no encontrada"
+        )
+
+    new_comment = PollComment(
+        poll_id=poll_id,
+        user_id=current_user.id,
+        content=comment_data.content,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+
+    return {
+        **new_comment.dict(),
+        "username": current_user.username,
+        "can_edit": True
+    }
+
+@router.put("/{poll_id}/comments/{comment_id}")
+def update_poll_comment(
+    poll_id: int,
+    comment_id: int,
+    comment_data: PollCommentUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Actualizar un comentario existente.
+    Solo el autor puede editar su comentario.
+    """
+    comment = db.get(PollComment, comment_id)
+    if not comment or comment.poll_id != poll_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comentario no encontrado"
+        )
+
+    if comment.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para editar este comentario"
+        )
+
+    comment.content = comment_data.content
+    comment.updated_at = datetime.utcnow()
+    db.add(comment)
+    db.commit()
+    db.refresh(comment)
+
+    return {
+        **comment.dict(),
+        "username": current_user.username,
+        "can_edit": True
+    }
+
+@router.delete("/{poll_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_poll_comment(
+    poll_id: int,
+    comment_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Eliminar un comentario.
+    Solo el autor puede eliminar su comentario.
+    """
+    comment = db.get(PollComment, comment_id)
+    if not comment or comment.poll_id != poll_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comentario no encontrado"
+        )
+
+    if comment.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para eliminar este comentario"
+        )
+
+    db.delete(comment)
+    db.commit()

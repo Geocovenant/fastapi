@@ -46,3 +46,14 @@ async def get_current_user(
     
     session, user = result
     return user
+
+async def get_current_user_optional(
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_session)
+) -> User | None:
+    if not authorization:
+        return None
+    try:
+        return await get_current_user(authorization=authorization, db=db)
+    except HTTPException:
+        return None
