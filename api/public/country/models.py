@@ -1,7 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship
 from api.public.continent.models import Continent
-from api.public.subnation.models import Subnation
 from api.public.community.models import Community
 
 class Country(SQLModel, table=True):
@@ -13,7 +12,7 @@ class Country(SQLModel, table=True):
     borders: Optional[str] = Field(default=None, description="List of bordering countries")
     capital_latlng: Optional[str] = Field(default=None, description="Latitude and longitude of the capital")
     capital: Optional[str] = Field(default=None, description="Capital city")
-    cca2: Optional[str] = Field(default=None, description="ISO 3166-1 alpha-2 code")
+    cca2: str = Field(max_length=2, description="ISO 3166-1 alpha-2 code")
     cca3: Optional[str] = Field(default=None, description="ISO 3166-1 alpha-3 code")
     coat_of_arms_svg: Optional[str] = Field(default=None, description="URL to the coat of arms image")
     currency_code: Optional[str] = Field(default=None, description="ISO 4217 currency code")
@@ -32,10 +31,14 @@ class Country(SQLModel, table=True):
     status: Optional[str] = Field(default=None, description="Official assignment status")
     subregion: Optional[str] = Field(default=None, description="Subregion")
     timezone: Optional[str] = Field(default=None, description="Primary time zone")
+    administrative_division_type: Optional[str] = Field(default=None, description="Name for administrative divisions (e.g. States, Provinces, Departments)")
     community_id: int = Field(foreign_key="community.id")
     continent_id: Optional[int] = Field(default=None, foreign_key="continent.id")
 
     # Relationships
     community: Community = Relationship(back_populates="country")
     continent: Optional[Continent] = Relationship(back_populates="countries")
-    subnations: list["Subnation"] = Relationship(back_populates="country")
+    regions: List["Region"] = Relationship(back_populates="country")
+
+# Mover la importación al final para evitar la importación circular
+from api.public.region.models import Region

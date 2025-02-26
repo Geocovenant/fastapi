@@ -1,0 +1,1333 @@
+[
+    {
+        "AR": {
+            "buenos-aires": [
+                {
+                    "name": "Adolfo Alsina",
+                    "area": 5878,
+                    "population": 17072,
+                    "borders": [
+                        "Guaminí",
+                        "Puan",
+                        "Saavedra",
+                        "Tornquist"
+                    ],
+                    "capital": "Carhué",
+                    "website": "www.adolfoalsina.gov.ar",
+                    "head_of_government": "ANDRÉS, Javier",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Adolfo Gonzales Chaves",
+                    "area": 3859,
+                    "population": 12047,
+                    "borders": [
+                        "Benito Juárez",
+                        "Necochea",
+                        "San Cayetano",
+                        "Tres Arroyos"
+                    ],
+                    "capital": "Adolfo Gonzales Chaves",
+                    "website": "www.gonzaleschaves.gob.ar",
+                    "head_of_government": "Dr. Marcelo E. SANTILLAN",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Alberti",
+                    "area": 1130,
+                    "population": 10654,
+                    "borders": [
+                        "Bragado",
+                        "Chivilcoy",
+                        "25 de Mayo"
+                    ],
+                    "capital": "Alberti",
+                    "website": "www.alberti.gov.ar",
+                    "head_of_government": "D. Germán LAGO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Almirante Brown",
+                    "area": 129.33,
+                    "population": 552902,
+                    "borders": [
+                        "Quilmes",
+                        "Florencio Varela",
+                        "Presidente Perón",
+                        "Esteban Echeverría",
+                        "Lomas de Zamora"
+                    ],
+                    "capital": "Adrogué",
+                    "website": "www.almirantebrown.gov.ar",
+                    "head_of_government": "Mariano CASCALLARES",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Arrecifes",
+                    "area": 1240,
+                    "population": 29044,
+                    "borders": [
+                        "Pergamino",
+                        "Salto",
+                        "Capitán Sarmiento",
+                        "San Pedro"
+                    ],
+                    "capital": "Arrecifes",
+                    "website": "www.arrecifes.gob.ar",
+                    "head_of_government": "D. Javier OLAETA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Baradero",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Baradero",
+                    "website": "www.baradero.gob.ar",
+                    "head_of_government": "\"TITO\", Sanzio",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Benito Juarez",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Benito Juarez",
+                    "website": "www.benitojuarez.gov.ar",
+                    "head_of_government": "Dr. Julio César MARINI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Berazategui",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Berazategui",
+                    "website": "www.berazategui.gov.ar",
+                    "head_of_government": "Juan MUSSI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Berisso",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Berisso",
+                    "website": "www.berisso.gov.ar",
+                    "head_of_government": "Fabian CAGLIARDI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Bolivar",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Carlos de Bolívar",
+                    "website": "www.bolivar.gob.ar",
+                    "head_of_government": "Marcos PISANO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Bragado",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Bragado",
+                    "website": "www.bragado.gov.ar",
+                    "head_of_government": "Dn Vicente GATICA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Brandsen",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Brandsen",
+                    "website": "www.brandsen.gob.ar",
+                    "head_of_government": "Oscar CAPPELLETTI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Campana",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Campana",
+                    "website": "www.campana.gov.ar",
+                    "head_of_government": "Dr. Sebastián ABELLA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Cañuelas",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Cañuelas",
+                    "website": "www.canuelas.gov.ar",
+                    "head_of_government": "Marisa FASSI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Capitán Sarmiento",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Capitán Sarmiento",
+                    "website": "www.capitansarmiento.gob.ar",
+                    "head_of_government": "IGUACEL, Javier Alfredo",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Carlos Casares",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Carlos Casares",
+                    "website": "www.casares.gob.ar",
+                    "head_of_government": "Esc. Walter Sergio TORCHIO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Carlos Tejedor",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Carlos Tejedor",
+                    "website": "www.carlostejedor.gob.ar",
+                    "head_of_government": "GIANINI, María Celia",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Carmen de Areco",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Carmen de Areco",
+                    "website": "www.carmendeareco.gob.ar",
+                    "head_of_government": "VILLAGRÁN, Iván Darío",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Castelli",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Castelli",
+                    "website": "www.castelli.gob.ar",
+                    "head_of_government": "Dr. Francisco José ECHARREN",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Colón",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Colón",
+                    "website": "www.municipalidaddecolon.com",
+                    "head_of_government": "Dr. Ricardo Miguel CASI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Coronel Dorrego",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Coronel Dorrego",
+                    "website": "www.dorrego.gob.ar",
+                    "head_of_government": "C.P.N. Raúl REYES",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Coronel Pringles",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Coronel Pringles",
+                    "website": "www.coronelpringles.gov.ar",
+                    "head_of_government": "MATZKIN, Lisandro",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Coronel Rosales",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Punta Alta",
+                    "website": "www.rosalesmunicipio.gob.ar",
+                    "head_of_government": "Dr. Mariano USET",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Coronel Suárez",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Coronel Suárez",
+                    "website": "www.coronelsuarez.gob.ar",
+                    "head_of_government": "MOCCERO, Ricardo Alejo",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Chacabuco",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Chacabuco",
+                    "website": "www.chacabuco.gob.ar",
+                    "head_of_government": "Dr. Víctor AIOLA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Chascomús",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Chascomús",
+                    "website": "www.chascomus.gob.ar",
+                    "head_of_government": "Dr. Javier GASTON",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Chivilcoy",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Chivilcoy",
+                    "website": "www.chivilcoy.gov.ar",
+                    "head_of_government": "Dr. Guillermo BRITOS",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Daireaux",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Daireaux",
+                    "website": "www.daireaux.gob.ar",
+                    "head_of_government": "Dr. Esteban Alejandro ACERBO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Dolores",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Dolores",
+                    "website": "www.dolores.gob.ar",
+                    "head_of_government": "Dr. Luis María Camilo ETCHEVARREN",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Ensenada",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Ensenada",
+                    "website": "www.ensenada.gov.ar",
+                    "head_of_government": "Dr. Mario Carlos SECCO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Escobar",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Belén de Escobar",
+                    "website": "www.escobar.gob.ar",
+                    "head_of_government": "Lic. Ariel SUJARCHUK",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Esteban Echeverría",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Monte Grande",
+                    "website": "www.estebanecheverria.gov.ar",
+                    "head_of_government": "Dr. Fernando Javier GRAY",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Exaltación de la Cruz",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Capilla del Señor",
+                    "website": "www.exaltaciondelacruz.gov.ar",
+                    "head_of_government": "Diego NANNI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Ezeiza",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Justo y Tres Horquetas (Ezeiza)",
+                    "website": "www.ezeiza.gob.ar",
+                    "head_of_government": "Interino: Dr. Alejandro GRANADOS",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Florencio Varela",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Florencio Varela",
+                    "website": "www.florenciovarela.gov.ar",
+                    "head_of_government": "Andrés WATSON",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Florentino Ameghino",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Florentino Ameghino",
+                    "website": "www.florentinoamehino.gob.ar",
+                    "head_of_government": "Med. Vet. Calixto Agustín TELLECHEA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Alvarado",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Miramar",
+                    "website": "www.mga.gov.ar",
+                    "head_of_government": "SEBASTIÁN, Ianantuony",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Alvear",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Alvear",
+                    "website": "www.munialvear.gov.ar",
+                    "head_of_government": "Ramón CAPRA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Arenales",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Arenales",
+                    "website": "www.generalarenales.gob.ar",
+                    "head_of_government": "Dra. Erica REVILLA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Belgrano",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Belgrano",
+                    "website": "www.generalbelgrano.gob.ar",
+                    "head_of_government": "Prof. Osvaldo DINAPOLI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Guido",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Guido",
+                    "website": "www.generalguido.gob.ar",
+                    "head_of_government": "ROCHA, Carlos Humberto",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General La Madrid",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General La Madrid",
+                    "website": "www.lamadrid.gob.ar",
+                    "head_of_government": "Dr. Martín RANDAZZO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Las Heras",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Las Heras",
+                    "website": "www.gobiernodelasheras.com",
+                    "head_of_government": "Marcelo Sartori",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Lavalle",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Lavalle",
+                    "website": "www.generallavalle.gob.ar",
+                    "head_of_government": "D. José RODRIGUEZ PONTE",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Madariaga",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Juan Madariaga",
+                    "website": "www.madariaga.gob.ar",
+                    "head_of_government": "Carlos Santoro",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Paz",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Ranchos",
+                    "website": "www.municipalidaddegeneralpaz.gob.ar",
+                    "head_of_government": "Juan Manuel ALVAREZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Pinto",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Pinto",
+                    "website": "www.pinto.gob.ar",
+                    "head_of_government": "\"FREDY\", Zavatarelli",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Pueyrredón",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Mar del Plata",
+                    "website": "www.mardelplata.gov.ar",
+                    "head_of_government": "MONTENEGRO, Guillermo Tristán",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Rodríguez",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Rodríguez",
+                    "website": "www.generalrodriguez.gov.ar",
+                    "head_of_government": "Mauro GARCIA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General San Martín",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Martín",
+                    "website": "www.sanmartin.gov.ar",
+                    "head_of_government": "Fernando moreira",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Viamonte",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Los Toldos",
+                    "website": "www.generalviamonte.gob.ar",
+                    "head_of_government": "Dr. Franco Ariel FLEXAS",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "General Villegas",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Villegas",
+                    "website": "www.villegas.gov.ar",
+                    "head_of_government": "Dr. Eduardo CAMPANA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Guaminí",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Guaminí",
+                    "website": "www.guamini.gob.ar",
+                    "head_of_government": "José Augusto Nobre FERREIRA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Hipólito Yrigoyen",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Henderson",
+                    "website": "www.hipolitoyrigoyen.gob.ar",
+                    "head_of_government": "PUGNALONI, Luis Ignacio",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Hurlingham",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Hurlingham",
+                    "website": "www.hurlingham.gob.ar",
+                    "head_of_government": "Dr. Juan ZABALETA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Ituzaingó",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Ituzaingó",
+                    "website": "www.miituzaingo.gov.ar",
+                    "head_of_government": "D. Alberto Daniel DESCALZO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "José C. Paz",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "José Clemente Paz",
+                    "website": "www.josecpaz.gob.ar",
+                    "head_of_government": "D. Mario Alberto ISHII",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Junín",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Junín",
+                    "website": "www.junin.gov.ar",
+                    "head_of_government": "Dr. Pablo PETRECCA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "La Costa",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Mar del Tuyú",
+                    "website": "www.lacosta.gov.ar",
+                    "head_of_government": "CARDOZO, Cristian Eduardo",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "La Matanza",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Justo",
+                    "website": "www.lamatanza.gov.ar",
+                    "head_of_government": "Fernando ESPINOZA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "La Plata",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "La Plata",
+                    "website": "www.laplata.gov.ar",
+                    "head_of_government": "Dr. Julio César GARRO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lanús",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Lanús",
+                    "website": "www.lanus.gov.ar",
+                    "head_of_government": "D. Néstor GRINDETTI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Laprida",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Laprida",
+                    "website": "www.laprida.gob.ar",
+                    "head_of_government": "Pablo Torres",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Las Flores",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Las Flores",
+                    "website": "www.lasflores.gob.ar",
+                    "head_of_government": "Alberto Gelene",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Leandro N. Alem",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Vedia",
+                    "website": "www.municipioalem.com",
+                    "head_of_government": "FERRARIS, Carlos Martín",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lezama",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Lezama",
+                    "website": "www.lezama.gov.ar",
+                    "head_of_government": "Agrim. Arnaldo HARISPE",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lincoln",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Lincoln",
+                    "website": "www.lincoln.gob.ar",
+                    "head_of_government": "Dr. Salvador SERENAL",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lobería",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Lobería",
+                    "website": "www.loberia.gov.ar",
+                    "head_of_government": "Dr. Juan José FIORAMONTI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lobos",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Lobos",
+                    "website": "www.lobos.gov.ar",
+                    "head_of_government": "Dr. Jorge ETCHEVERRY",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lomas de Zamora",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Lomas de Zamora",
+                    "website": "www.lomasdezamora.gov.ar",
+                    "head_of_government": "D. Martín INSAURRALDE",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Lujan",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Luján",
+                    "website": "www.lujan.gov.ar",
+                    "head_of_government": "Leo Boto",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Magdalena",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Magdalena",
+                    "website": "www.magdalena.gob.ar",
+                    "head_of_government": "Dr. Gonzalo PELUSO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Maipú",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Maipú",
+                    "website": "www.maipu.gba.gob.ar",
+                    "head_of_government": "Dr. Aníbal RAPPALLINI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Malvinas Argentinas",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Malvinas Argentinas",
+                    "website": "www.malvinasargentinas.gob.ar/web",
+                    "head_of_government": "Dr. Leonardo NARDINI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Mar Chiquita",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Coronel Vidal",
+                    "website": "www.marchiquita.gov.ar",
+                    "head_of_government": "PAREDI, Jorge Alberto",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Marcos Paz",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Marcos Paz",
+                    "website": "www.marcospaz.gov.ar",
+                    "head_of_government": "Agrim. Ricardo Pedro CURUTCHET",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Mercedes",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Mercedes",
+                    "website": "www.mercedes.gob.ar",
+                    "head_of_government": "Dr. Juan USTARROZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Merlo",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Merlo",
+                    "website": "www.merlo.gob.ar",
+                    "head_of_government": "Dr. Gustavo MENENDEZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Monte Hermoso",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Monte Hermoso",
+                    "website": "www.montehermoso.gov.ar",
+                    "head_of_government": "DICHIARA, Enrique Alejandro",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Moreno",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Moreno",
+                    "website": "www.moreno.gob.ar",
+                    "head_of_government": "Mariel FERNANDEZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Morón",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Morón",
+                    "website": "www.moron.gob.ar",
+                    "head_of_government": "Lucas GHI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Navarro",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Navarro",
+                    "website": "www.navarro.gob.ar",
+                    "head_of_government": "Facundo Niz",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Necochea",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Necochea",
+                    "website": "www.necochea.gob.ar",
+                    "head_of_government": "ROJAS, Arturo Alfredo",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Nueve de Julio",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Nueve de Julio",
+                    "website": "www.9dejulio.gov.ar",
+                    "head_of_government": "C.P.N. Mariano Edmundo BARROSO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Olavarria",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Olavarría",
+                    "website": "www.olavarria.gov.ar",
+                    "head_of_government": "C.P.N. Dr. Ezequiel GALLI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Patagones",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Carmen de Patagones",
+                    "website": "www.patagones.gob.ar",
+                    "head_of_government": "Ing. José Luis ZARA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Pehuajó",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pehuajó",
+                    "website": "www.pehuajo.gob.ar",
+                    "head_of_government": "Dr. Pablo Javier ZURRO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Pellegrini",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pellegrini",
+                    "website": "www.pellegrini.gov.ar",
+                    "head_of_government": "Dr. Guillermo Luis PACHECO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Pergamino",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pergamino",
+                    "website": "www.pergamino.gob.ar",
+                    "head_of_government": "Dr. Javier Arturo MARTINEZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Pila",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pila",
+                    "website": "www.pila.gob.ar",
+                    "head_of_government": "Dr. Gustavo Alfredo WALKER",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Pilar",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pilar",
+                    "website": "www.pilar.gov.ar",
+                    "head_of_government": "ACHAVAL, Federico",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Pinamar",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pinamar",
+                    "website": "www.pinamar.gov.ar",
+                    "head_of_government": "Dr. Martín YEZA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Presidente Perón",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Guernica",
+                    "website": "www.presidenteperon.gov.ar",
+                    "head_of_government": "Blanca CANTERO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Puán",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Puan",
+                    "website": "www.puan.gob.ar",
+                    "head_of_government": "C.P.N. Facundo David CASTELLI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Punta Indio",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Verónica",
+                    "website": "www.puntaindio.gob.ar",
+                    "head_of_government": "Dr. Hernán César YZURIETA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Quilmes",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Quilmes",
+                    "website": "www.quilmes.gov.ar",
+                    "head_of_government": "Mayra MENDOZA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Ramallo",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Ramallo",
+                    "website": "www.ramallo.gob.ar",
+                    "head_of_government": "PERIE, Gustavo Haroldo",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Rauch",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Rauch",
+                    "website": "www.rauch.mun.gba.gov.ar/web/",
+                    "head_of_government": "D. Maximiliano SUESCUN",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Rivadavia",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "América",
+                    "website": "www.munirivadavia.gov.ar",
+                    "head_of_government": "Dr. Javier REYNOSO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Rojas",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Rojas",
+                    "website": "www.rojas.gov.ar",
+                    "head_of_government": "Dr. Claudio Alberto ROSSI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Roque Pérez",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Roque Pérez",
+                    "website": "www.rperez.mun.gba.gob.ar",
+                    "head_of_government": "Dr. Juan Carlos GASPARINI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Saavedra",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Pigüé",
+                    "website": "www.saavedra.gov.ar",
+                    "head_of_government": "NOTARARIGO, Gustavo Javier",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Saladillo",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Saladillo",
+                    "website": "www.saladillo.gob.ar",
+                    "head_of_government": "Dr. José Luis SALOMÓN",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Salliquelo",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Salliqueló",
+                    "website": "www.salliquelo.gob.ar",
+                    "head_of_government": "NOSETTI, Juan Miguel",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Salto",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Salto",
+                    "website": "www.salto.gob.ar",
+                    "head_of_government": "Dr. Ricardo José ALESSANDRO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Andrés de Giles",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Andrés de Giles",
+                    "website": "www.sanandresdegiles.gob.ar",
+                    "head_of_government": "Cdor. Carlos Javier PUGLIELI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Antonio de Areco",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Antonio de Areco",
+                    "website": "SIN WEB",
+                    "head_of_government": "RATTO, Francisco",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Cayetano",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Cayetano",
+                    "website": "www.sancayetano.gov.ar",
+                    "head_of_government": "Agrim. Miguel Ángel GARGAGLIONE",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Fernando",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Fernando",
+                    "website": "www.sanfernando.gov.ar",
+                    "head_of_government": "C.P.N. Luis Carlos ANDREOTTI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Isidro",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Isidro",
+                    "website": "www.sanisidro.gob.ar",
+                    "head_of_government": "Dr. Angel Gustavo POSSE",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Miguel",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Miguel",
+                    "website": "www.msm.gov.ar",
+                    "head_of_government": "Jaime MÉNDEZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Miguel del Monte",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Miguel del Monte",
+                    "website": "www.monte.gob.ar",
+                    "head_of_government": "CASTRO, José Matildo",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Nicolás",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Nicolás de los Arroyos",
+                    "website": "www.sannicolas.gov.ar",
+                    "head_of_government": "PASSAGLIA, Manuel",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Pedro",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Pedro",
+                    "website": "www.sanpedro.gov.ar",
+                    "head_of_government": "Dr. Cecilo SALAZAR",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "San Vicente",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "San Vicente",
+                    "website": "www.sanvicente.gob.ar",
+                    "head_of_government": "Nicolas MANTEGAZZA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Suipacha",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Suipacha",
+                    "website": "www.suipacha.gob.ar",
+                    "head_of_government": "Dr. Alejandro FEDERICO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tandil",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Tandil",
+                    "website": "www.tandil.gov.ar",
+                    "head_of_government": "Dr. Miguel Angel LUNGHI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tapalqué",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Tapalqué",
+                    "website": "www.municipiodetapalque.gob.ar",
+                    "head_of_government": "Dr. Gustavo Rodolfo COCCONI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tigre",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Tigre",
+                    "website": "www.tigre.gov.ar",
+                    "head_of_government": "Dr. Julio César ZAMORA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tordillo",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "General Conesa (Tordillo)",
+                    "website": "www.tordillo.gov.ar",
+                    "head_of_government": "D. Héctor Aníbal OLIVERA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tornquist",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Tornquist",
+                    "website": "tornquist.gob.ar",
+                    "head_of_government": "Dr. Sergio Fabián BORDONI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Trenque Lauquen",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Trenque Lauquen",
+                    "website": "www.trenquelauquen.gov.ar",
+                    "head_of_government": "Dr. Miguél FERNANDEZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tres Arroyos",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Tres Arroyos",
+                    "website": "www.tresarroyos.gov.ar",
+                    "head_of_government": "Dr. Carlos Alberto SANCHEZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tres de Febrero",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Caseros",
+                    "website": "www.tresdefebrero.gov.ar",
+                    "head_of_government": "Lic. Diego VALENZUELA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Tres Lomas",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Tres Lomas",
+                    "website": "www.treslomas.gob.ar",
+                    "head_of_government": "Dr. Roberto Oscar ALVAREZ",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Veinticinco de Mayo",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "25 de Mayo",
+                    "website": "www.25demayo.gob.ar",
+                    "head_of_government": "Dr. Hernán RALINQUEO",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Vicente López",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Olivos",
+                    "website": "www.vicentelopez.gov.ar",
+                    "head_of_government": "Dr. Jorge MACRI",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Villa Gesell",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Villa Gesell",
+                    "website": "www.gesell.gob.ar",
+                    "head_of_government": "Dr. Gustavo Norberto BARRERA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Villarino",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Médanos",
+                    "website": "www.villarino.gob.ar",
+                    "head_of_government": "Dr. Carlos BEVILACQUA",
+                    "head_of_government_title": "Intendente"
+                },
+                {
+                    "name": "Zárate",
+                    "area": 0,
+                    "population": 0,
+                    "borders": [],
+                    "capital": "Zárate",
+                    "website": "www.zarate.gob.ar",
+                    "head_of_government": "Osvaldo Caffaro",
+                    "head_of_government_title": "Intendente"
+                }
+            ]
+        }
+    }
+]

@@ -1,7 +1,7 @@
 """Insert initial data from JSON files
 
 Revision ID: insert_initial_data
-Revises: 7d72549f324f
+Revises: 1a5939189d74
 Create Date: 2024-01-01 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 # revision identifiers, used by Alembic.
 revision = 'insert_initial_data'
-down_revision = '7d72549f324f'
+down_revision = '1a5939189d74'
 branch_labels = None
 depends_on = None
 
@@ -51,10 +51,11 @@ def upgrade() -> None:
         sa.Column('status', sa.String()),
         sa.Column('subregion', sa.String()),
         sa.Column('timezone', sa.String()),
+        sa.Column('administrative_division_type', sa.String()),
     )
 
-    subnation_table = sa.Table(
-        'subnation',
+    region_table = sa.Table(
+        'region',
         sa.MetaData(),
         sa.Column('id', sa.Integer()),
         sa.Column('name', sa.String()),
@@ -91,12 +92,12 @@ def upgrade() -> None:
 
     # Limpiar datos existentes
     op.execute("TRUNCATE TABLE community CASCADE")
-    op.execute("TRUNCATE TABLE subnation CASCADE")
+    op.execute("TRUNCATE TABLE region CASCADE")
     op.execute("TRUNCATE TABLE country CASCADE")
     
     # Reiniciar las secuencias
     op.execute("ALTER SEQUENCE country_id_seq RESTART WITH 1")
-    op.execute("ALTER SEQUENCE subnation_id_seq RESTART WITH 1")
+    op.execute("ALTER SEQUENCE region_id_seq RESTART WITH 1")
     op.execute("ALTER SEQUENCE community_id_seq RESTART WITH 1")
 
     # 1. Primero insertar la comunidad global
@@ -142,6 +143,7 @@ def upgrade() -> None:
     with open(base_path / 'api' / 'data' / 'countries.json', 'r', encoding='utf-8') as f:
         countries_data = json.load(f)
         country_communities = []
+        country_communities_map = {}  # Para mapear cca2 -> community
         
         for i, country in enumerate(countries_data):
             if country.get('name', {}).get('common') == 'Antarctica':
@@ -163,99 +165,232 @@ def upgrade() -> None:
                 'level': 'NATIONAL'
             }
             country_communities.append(community)
+            country_communities_map[country.get('cca2')] = community
 
         op.bulk_insert(community_table, country_communities)
 
-    # 4. Ahora sí insertar los países
-    formatted_countries = []
-    for i, country in enumerate(countries_data):
-        if country.get('name', {}).get('common') == 'Antarctica':
-            continue
-            
-        formatted_country = {
-            'name': country.get('name', {}).get('common', ''),
-            'community_id': i + 8,  # Mismo ID que su comunidad
-            'area': country.get('area'),
-            'borders': ','.join(country.get('borders', [])),
-            'capital_latlng': ','.join(map(str, country.get('capitalInfo', {}).get('latlng', []))),
-            'capital': country.get('capital', [''])[0] if country.get('capital') else None,
-            'cca2': country.get('cca2'),
-            'cca3': country.get('cca3'),
-            'coat_of_arms_svg': country.get('coatOfArms', {}).get('svg'),
-            'currency_code': next(iter(country.get('currencies', {}).keys())) if country.get('currencies') else None,
-            'currency_name': next(iter(country.get('currencies', {}).values())).get('name') if country.get('currencies') else None,
-            'flag': country.get('flag'),
-            'google_maps_link': country.get('maps', {}).get('googleMaps'),
-            'idd_root': next(iter(country.get('idd', {})['root'])) if country.get('idd') else None,
-            'idd_suffixes': ','.join(country.get('idd', {})['suffixes']) if country.get('idd') else None,
-            'landlocked': country.get('landlocked'),
-            'languages': ','.join(country.get('languages', {}).values()) if country.get('languages') else None,
-            'native_name': (
-                next(iter(country.get('name', {})
-                    .get('nativeName', {})
-                    .values()))
-                    .get('common') 
-                if country.get('name', {}).get('nativeName') 
-                else None
-            ),
-            'numeric_code': country.get('ccn3'),
-            'openstreetmap_link': country.get('maps', {}).get('openStreetMaps'),
-            'population': country.get('population'),
-            'region': country.get('region'),
-            'status': country.get('status'),
-            'subregion': country.get('subregion'),
-            'timezone': country.get('timezones', [''])[0] if country.get('timezones') else None,
-        }
-        formatted_countries.append(formatted_country)
+        # Insertar los países
+        formatted_countries = []
+        for i, country in enumerate(countries_data):
+            if country.get('name', {}).get('common') == 'Antarctica':
+                continue
+                
+            formatted_country = {
+                'name': country.get('name', {}).get('common', ''),
+                'community_id': i + 8,  # Mismo ID que su comunidad
+                'area': country.get('area'),
+                'borders': ','.join(country.get('borders', [])),
+                'capital_latlng': ','.join(map(str, country.get('capitalInfo', {}).get('latlng', []))),
+                'capital': country.get('capital', [''])[0] if country.get('capital') else None,
+                'cca2': country.get('cca2'),
+                'cca3': country.get('cca3'),
+                'coat_of_arms_svg': country.get('coatOfArms', {}).get('svg'),
+                'currency_code': next(iter(country.get('currencies', {}).keys())) if country.get('currencies') else None,
+                'currency_name': next(iter(country.get('currencies', {}).values())).get('name') if country.get('currencies') else None,
+                'flag': country.get('flag'),
+                'google_maps_link': country.get('maps', {}).get('googleMaps'),
+                'idd_root': country.get('idd', {}).get('root'),
+                'idd_suffixes': ','.join(country.get('idd', {}).get('suffixes', [])) if country.get('idd') else None,
+                'landlocked': country.get('landlocked'),
+                'languages': ','.join(country.get('languages', {}).values()) if country.get('languages') else None,
+                'native_name': (
+                    next(iter(country.get('name', {})
+                        .get('nativeName', {})
+                        .values()))
+                        .get('common') 
+                    if country.get('name', {}).get('nativeName') 
+                    else None
+                ),
+                'numeric_code': country.get('ccn3'),
+                'openstreetmap_link': country.get('maps', {}).get('openStreetMaps'),
+                'population': country.get('population'),
+                'region': country.get('region'),
+                'status': country.get('status'),
+                'subregion': country.get('subregion'),
+                'timezone': country.get('timezones', [''])[0] if country.get('timezones') else None,
+                'administrative_division_type': country.get('administrative_division_type'),
+            }
+            formatted_countries.append(formatted_country)
 
-    op.bulk_insert(country_table, formatted_countries)
+        op.bulk_insert(country_table, formatted_countries)
 
-    # Insertar subnaciones y sus comunidades
-    with open(base_path / 'api' / 'data' / 'subnations.json', 'r', encoding='utf-8') as f:
-        subnations_data = json.load(f)
-        formatted_subnations = []
-        subnation_communities = []
+    # 4. Insertar regiones y sus comunidades
+    with open(base_path / 'api' / 'data' / 'regions.json', 'r', encoding='utf-8') as f:
+        regions_data = json.load(f)
+        region_communities = []
+        formatted_regions = []
         
-        for i, subnation in enumerate(subnations_data):
-            # Crear comunidad para la subnación
-            community_id = i + len(countries_data) + 8  # ID después de las comunidades de países
+        # Obtener el último ID de comunidad usado
+        result = conn.execute(sa.text("SELECT MAX(id) FROM community"))
+        next_community_id = (result.scalar() or 0) + 1
+        
+        for region in regions_data:
+            # Obtener el ID del país usando el código cca2
+            country_result = conn.execute(
+                sa.text("SELECT id FROM country WHERE cca2 = :code"),
+                {"code": region['country']}
+            ).fetchone()
             
-            # Obtener el parent_id correcto (el community_id del país)
-            country_id = subnation.get('country_id')
-            parent_id = country_id + 7 if country_id is not None else None  # +7 porque los países empiezan en ID 8
+            if not country_result:
+                print(f"País no encontrado para código: {region['country']}")
+                continue
             
-            subnation_community = {
-                'id': community_id,
-                'name': subnation.get('name', ''),
-                'description': f"Subnational community of {subnation.get('name', '')}",
-                'parent_id': parent_id,
-                'level': 'SUBNATIONAL',
+            country_id = country_result[0]
+            
+            # Crear comunidad para la región
+            region_community = {
+                'id': next_community_id,
+                'name': region['name'],
+                'description': f"Regional community of {region['name']}",
+                'level': 'REGIONAL',
+                'parent_id': country_communities_map[region['country']]['id']
             }
-            subnation_communities.append(subnation_community)
-
-            # Formatear subnación para la tabla subnation
-            formatted_subnation = {
-                'name': subnation.get('name', ''),
-                'country_id': country_id,
-                'country_cca2': subnation.get('country', None),
-                'area': subnation.get('area', 0.0),
-                'population': subnation.get('population', 0),
-                'borders': ','.join(subnation.get('borders', [])),
-                'capital': subnation.get('capital', ''),
-                'flag': subnation.get('flag', ''),
-                'iso_code': subnation.get('iso_code', ''),
-                'timezone': subnation.get('timezone', ''),
-                'famous_landmark': subnation.get('famous_landmark', ''),
-                'community_id': community_id
+            region_communities.append(region_community)
+            
+            # Formatear región con el country_id
+            formatted_region = {
+                'name': region['name'],
+                'country_id': country_id,  # Aquí asignamos el country_id
+                'country_cca2': region['country'],
+                'area': float(region.get('area', 0.0)),
+                'population': int(region.get('population', 0)),
+                'borders': ','.join(region.get('borders', [])),
+                'capital': region.get('capital', ''),
+                'flag': region.get('flag', ''),
+                'iso_code': region.get('additional_info', {}).get('iso_code', ''),
+                'timezone': region.get('additional_info', {}).get('timezone', ''),
+                'famous_landmark': region.get('additional_info', {}).get('famous_landmark', ''),
+                'community_id': next_community_id
             }
-            formatted_subnations.append(formatted_subnation)
+            formatted_regions.append(formatted_region)
+            next_community_id += 1
+        
+        # Insertar comunidades de regiones
+        if region_communities:
+            op.bulk_insert(community_table, region_communities)
+        
+        # Insertar regiones
+        if formatted_regions:
+            op.bulk_insert(region_table, formatted_regions)
 
-        # Primero insertamos las comunidades y luego las subnaciones
-        op.bulk_insert(community_table, subnation_communities)
-        op.bulk_insert(subnation_table, formatted_subnations)
+    # Crear tabla para subregion
+    subregion_table = sa.Table(
+        'subregion',
+        sa.MetaData(),
+        sa.Column('id', sa.Integer()),
+        sa.Column('name', sa.String()),
+        sa.Column('area', sa.Float()),
+        sa.Column('population', sa.Integer()),
+        sa.Column('borders', sa.String()),
+        sa.Column('capital', sa.String()),
+        sa.Column('website', sa.String()),
+        sa.Column('head_of_government', sa.String()),
+        sa.Column('head_of_government_title', sa.String()),
+        sa.Column('community_id', sa.Integer()),
+        sa.Column('region_id', sa.Integer()),
+    )
+
+    # 5. Insertar subregions y sus comunidades
+    with open(base_path / 'api' / 'data' / 'subregions.json', 'r', encoding='utf-8') as f:
+        subregions_data = json.load(f)
+        
+        # Obtener el último ID de comunidad usado
+        result = conn.execute(sa.text("SELECT MAX(id) FROM community"))
+        last_community_id = result.scalar() or 0
+        next_community_id = last_community_id + 1
+
+        # Para almacenar todas las inserciones
+        division_communities = []
+        formatted_divisions = []
+
+        # Iterar sobre cada país en el JSON
+        for country_data in subregions_data:
+            for country_code, provinces in country_data.items():
+                # Obtener el ID del país
+                country_result = conn.execute(
+                    sa.text("SELECT id FROM country WHERE cca2 = :code"),
+                    {"code": country_code}
+                ).fetchone()
+                
+                if not country_result:
+                    print(f"País no encontrado: {country_code}")
+                    continue
+
+                country_id = country_result[0]
+
+                # Iterar sobre cada provincia y sus divisiones
+                for province_slug, divisions in provinces.items():
+                    # Convertir el slug a un nombre más amigable
+                    province_name = province_slug.replace('-', ' ').title()
+                    
+                    print(f"Buscando subnación para: {province_slug} en país {country_code}")
+                    # Obtener todas las subnaciones del país para debug
+                    regions = conn.execute(
+                        sa.text("SELECT id, name FROM region WHERE country_cca2 = :country_cca2"),
+                        {"country_cca2": country_code}
+                    ).fetchall()
+                    print(f"Subnaciones disponibles para {country_code}:", [s[1] for s in regions])
+                    
+                    # Obtener el ID de la subnación
+                    region_result = conn.execute(
+                        sa.text("""
+                            SELECT s.id 
+                            FROM region s
+                            JOIN country c ON s.country_cca2 = c.cca2
+                            WHERE c.cca2 = :country_code 
+                            AND LOWER(s.name) = :name
+                        """),
+                        {
+                            "country_code": country_code,
+                            "name": province_name.lower()
+                        }
+                    ).fetchone()
+
+                    if not region_result:
+                        print(f"Subnación no encontrada: {province_name} ({country_code})")
+                        continue
+
+                    region_id = region_result[0]
+                    print(f"Subnación encontrada con ID: {region_id}")
+
+                    # Procesar cada división
+                    for division in divisions:
+                        # Crear comunidad para la división
+                        community = {
+                            'id': next_community_id,
+                            'name': division['name'],
+                            'description': f"Local community of {division['name']}",
+                            'parent_id': region_id + 7,  # ID de la comunidad de la subnación
+                            'level': 'LOCAL'
+                        }
+                        division_communities.append(community)
+
+                        # Formatear división
+                        formatted_division = {
+                            'name': division['name'],
+                            'area': float(division.get('area', 0.0)),
+                            'population': int(division.get('population', 0)),
+                            'borders': ','.join(division.get('borders', [])),
+                            'capital': division.get('capital', ''),
+                            'website': division.get('website', ''),
+                            'head_of_government': division.get('head_of_government', ''),
+                            'head_of_government_title': division.get('head_of_government_title', ''),
+                            'community_id': next_community_id,
+                            'region_id': region_id
+                        }
+                        formatted_divisions.append(formatted_division)
+                        next_community_id += 1
+
+        # Insertar las comunidades y divisiones
+        if division_communities:
+            print(f"Insertando {len(division_communities)} comunidades")
+            op.bulk_insert(community_table, division_communities)
+        if formatted_divisions:
+            print(f"Insertando {len(formatted_divisions)} divisiones")
+            op.bulk_insert(subregion_table, formatted_divisions)
 
 def downgrade() -> None:
     # Limpiar las tablas en caso de downgrade
     op.execute("TRUNCATE TABLE community CASCADE")
-    op.execute("TRUNCATE TABLE subnation CASCADE")
+    op.execute("TRUNCATE TABLE region CASCADE")
     op.execute("TRUNCATE TABLE country CASCADE")

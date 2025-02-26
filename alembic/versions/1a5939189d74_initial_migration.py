@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 7d72549f324f
+Revision ID: 1a5939189d74
 Revises: 
-Create Date: 2025-02-19 23:26:33.930595
+Create Date: 2025-02-25 22:59:55.243078
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = '7d72549f324f'
+revision: str = '1a5939189d74'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,7 +23,7 @@ def upgrade() -> None:
     op.create_table('community',
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
     sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=False),
-    sa.Column('level', sa.Enum('GLOBAL', 'INTERNATIONAL', 'CONTINENT', 'NATIONAL', 'SUBNATIONAL', 'LOCAL', 'CUSTOM', name='communitylevel'), nullable=False),
+    sa.Column('level', sa.Enum('GLOBAL', 'INTERNATIONAL', 'CONTINENT', 'NATIONAL', 'REGIONAL', 'LOCAL', 'CUSTOM', name='communitylevel'), nullable=False),
     sa.Column('geo_data', sa.JSON(), nullable=True),
     sa.Column('parent_id', sa.Integer(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -134,7 +134,7 @@ def upgrade() -> None:
     sa.Column('borders', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('capital_latlng', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('capital', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('cca2', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('cca2', sqlmodel.sql.sqltypes.AutoString(length=2), nullable=False),
     sa.Column('cca3', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('coat_of_arms_svg', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('currency_code', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
@@ -153,6 +153,7 @@ def upgrade() -> None:
     sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('subregion', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('timezone', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('administrative_division_type', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('community_id', sa.Integer(), nullable=False),
     sa.Column('continent_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
@@ -213,7 +214,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('subnation',
+    op.create_table('region',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
     sa.Column('area', sa.Float(), nullable=True),
@@ -226,32 +227,55 @@ def upgrade() -> None:
     sa.Column('famous_landmark', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('country_cca2', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('community_id', sa.Integer(), nullable=False),
-    sa.Column('country_id', sa.Integer(), nullable=True),
+    sa.Column('country_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
     sa.ForeignKeyConstraint(['country_id'], ['country.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('subnationdivision',
+    op.create_table('subregion',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
     sa.Column('area', sa.Float(), nullable=True),
     sa.Column('population', sa.Integer(), nullable=True),
     sa.Column('borders', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('capital', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('website', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('head_of_government', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('head_of_government_title', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('community_id', sa.Integer(), nullable=False),
-    sa.Column('subnation_id', sa.Integer(), nullable=True),
+    sa.Column('region_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
-    sa.ForeignKeyConstraint(['subnation_id'], ['subnation.id'], ),
+    sa.ForeignKeyConstraint(['region_id'], ['region.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_subnationdivision_name'), 'subnationdivision', ['name'], unique=True)
+    op.create_index(op.f('ix_subregion_name'), 'subregion', ['name'], unique=True)
+    op.create_table('locality',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('area', sa.Float(), nullable=True),
+    sa.Column('population', sa.Integer(), nullable=True),
+    sa.Column('borders', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('capital', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('website', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('head_of_government', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('head_of_government_title', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('community_id', sa.Integer(), nullable=False),
+    sa.Column('subregion_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
+    sa.ForeignKeyConstraint(['subregion_id'], ['subregion.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_locality_name'), 'locality', ['name'], unique=True)
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_subnationdivision_name'), table_name='subnationdivision')
-    op.drop_table('subnationdivision')
-    op.drop_table('subnation')
+    op.drop_index(op.f('ix_locality_name'), table_name='locality')
+    op.drop_table('locality')
+    op.drop_index(op.f('ix_subregion_name'), table_name='subregion')
+    op.drop_table('subregion')
+    op.drop_table('region')
     op.drop_table('pollvote')
     op.drop_table('polltaglink')
     op.drop_table('pollreaction')

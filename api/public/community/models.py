@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, JSON
 from api.utils.generic_models import UserCommunityLink, PollCommunityLink
@@ -9,7 +9,7 @@ class CommunityLevel(str, Enum):
     INTERNATIONAL = "INTERNATIONAL"
     CONTINENT = "CONTINENT"
     NATIONAL = "NATIONAL"
-    SUBNATIONAL = "SUBNATIONAL"
+    REGIONAL = "REGIONAL"
     LOCAL = "LOCAL"
     CUSTOM = "CUSTOM"
 
@@ -30,8 +30,9 @@ class Community(CommunityBase, table=True):
     polls: list["Poll"] = Relationship(back_populates="communities", link_model=PollCommunityLink)
     continent: "Continent" = Relationship(back_populates="community")
     country: "Country" = Relationship(back_populates="community")
-    subnation: "Subnation" = Relationship(back_populates="community")
-    subnation_division: "SubnationDivision" = Relationship(back_populates="community")
+    region: "Region" = Relationship(back_populates="community")
+    subregion: "Subregion" = Relationship(back_populates="community")
+    locality: "Locality" = Relationship(back_populates="community")
 
 class CommunityRead(CommunityBase):
     id: int

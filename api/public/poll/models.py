@@ -97,6 +97,8 @@ class PollCreate(PollBase):
     community_ids: list[int] = Field(default=[])
     country_codes: Optional[list[str]] = Field(default=None, description="Lista de códigos CCA2 de países para encuestas internacionales")
     country_code: Optional[str] = Field(default=None, description="Código CCA2 del país para encuestas nacionales")
+    region_id: Optional[int] = Field(default=None, description="ID de la región para encuestas regionales")
+    subregion_id: Optional[int] = Field(default=None, description="ID de la subdivisión nacional para encuestas subnacionales")
 
 class CommunityBase(SQLModel):
     id: int

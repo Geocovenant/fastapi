@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from api.database import get_session
-from sqlmodel import Session
+from sqlmodel import Session, select, func
 from api.public.user.models import User
-from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction
+from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction, get_country_polls, get_regional_polls
 from api.public.poll.models import (
     PollCreate, 
     PollRead, 
@@ -19,16 +19,55 @@ from api.public.poll.models import (
 )
 from api.auth.dependencies import get_current_user, get_current_user_optional
 from datetime import datetime
-from sqlalchemy import select
+from api.public.country.models import Country
+from api.public.subregion.models import Subregion
+from api.public.community.models import Community
+from api.public.region.models import Region
 
 router = APIRouter()
 
 @router.get("/")
 def read_polls(
     scope: str | None = None,
+    country: str | None = None,
+    region: int | None = None,
     current_user: User | None = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
+    """
+    Obtener encuestas con filtros opcionales.
+    - scope: Filtrar por alcance (ej: 'NATIONAL', 'INTERNATIONAL', 'REGIONAL', etc.)
+    - country: Filtrar por código de país (CCA2)
+    - region: Filtrar por ID de región
+    """
+    if country:
+        return get_country_polls(
+            db,
+            country_code=country,
+            scope=scope,
+            current_user_id=current_user.id if current_user else None
+        )
+    
+    if region:
+        # Verificar que la región existe
+        region_obj = db.exec(
+            select(Region)
+            .where(Region.id == region)
+        ).first()
+
+        if not region_obj:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No se encontró la región con ID {region}"
+            )
+
+        return get_regional_polls(
+            db,
+            region_id=region,
+            scope=scope,
+            current_user_id=current_user.id if current_user else None
+        )
+    
     return get_all_polls(
         db, 
         scope=scope, 

@@ -1,9 +1,9 @@
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
-from api.public.subnation_division.models import SubnationDivision
+from api.public.subregion.models import Subregion
 from api.public.community.models import Community
 
-class Subnation(SQLModel, table=True):
+class Region(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=100)
     area: Optional[float] = Field(default=None, description="Area in square kilometers")
@@ -16,9 +16,11 @@ class Subnation(SQLModel, table=True):
     famous_landmark: Optional[str] = Field(default=None, description="Famous landmark")
     country_cca2: Optional[str] = Field(default=None, description="Country ISO 3166-1 alpha-2 code")
     community_id: int = Field(foreign_key="community.id")
-    country_id: Optional[int] = Field(default=None, foreign_key="country.id")
+    country_id: int = Field(foreign_key="country.id")
 
     # Relationships
-    community: Community = Relationship(back_populates="subnation")
-    country: Optional["Country"] = Relationship(back_populates="subnations")
-    subnation_divisions: list["SubnationDivision"] = Relationship(back_populates="subnation")
+    community: Community = Relationship(back_populates="region")
+    country: "Country" = Relationship(back_populates="regions")
+    subregions: list["Subregion"] = Relationship(back_populates="region")
+
+from api.public.country.models import Country
