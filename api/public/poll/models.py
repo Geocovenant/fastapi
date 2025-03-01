@@ -25,7 +25,7 @@ class ReactionType(str, Enum):
 
 class PollBase(SQLModel):
     title: str = Field(max_length=100, index=True)
-    description: Optional[str] = Field(max_length=500, nullable=True)
+    description: Optional[str] = Field(max_length=5000, nullable=True)
     type: PollType = Field(default=PollType.BINARY)
     is_anonymous: bool = Field(default=True)
     ends_at: Optional[datetime] = Field(nullable=True)
@@ -38,6 +38,7 @@ class Poll(PollBase, table=True):
     status: PollStatus = Field(default=PollStatus.PUBLISHED)
     created_at: datetime = Field(default=datetime.utcnow)
     updated_at: datetime = Field(default=datetime.utcnow)
+    views_count: int = Field(default=0)
 
     # Relationships
     communities: list["Community"] = Relationship(back_populates="polls", link_model=PollCommunityLink)
@@ -158,3 +159,10 @@ class PollCustomResponse(SQLModel, table=True):
     
     option: "PollOption" = Relationship(back_populates="custom_responses")
     user: "User" = Relationship(back_populates="poll_custom_responses")
+
+class PaginatedResponse(SQLModel):
+    items: list
+    total: int
+    page: int
+    size: int
+    pages: int

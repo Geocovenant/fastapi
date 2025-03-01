@@ -12,8 +12,55 @@ from api.public.poll.models import PollComment
 from api.utils.generic_models import PollCommunityLink
 from api.public.country.models import Country
 from api.public.region.models import Region
+from math import ceil
 
-def get_all_polls(db: Session, scope: str | None = None, current_user_id: int | None = None):
+def get_all_polls(
+    db: Session, 
+    scope: str | None = None, 
+    current_user_id: int | None = None,
+    page: int = 1,
+    size: int = 10
+):
+    """
+    Obtiene todas las encuestas con paginación
+    """
+    # Calcular el offset para la paginación
+    offset = (page - 1) * size
+
+    # Primero obtenemos el total de encuestas para la paginación
+    total_query = select(func.count(Poll.id))
+    if scope:
+        total_query = total_query.where(Poll.scope == scope)
+    total = db.exec(total_query).first()
+    total_pages = ceil(total / size)
+
+    # Consulta principal para obtener solo las encuestas primero
+    polls_query = select(Poll, User).join(User, Poll.creator_id == User.id)
+    
+    if scope:
+        polls_query = polls_query.where(Poll.scope == scope)
+    
+    # Agregar ordenamiento y paginación
+    polls_query = polls_query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
+    
+    polls_results = db.exec(polls_query).all()
+
+    # Obtener los IDs de las encuestas para las consultas relacionadas
+    poll_ids = [poll.id for poll, _ in polls_results]
+
+    # Obtener las opciones para estas encuestas
+    options = db.exec(
+        select(PollOption)
+        .where(PollOption.poll_id.in_(poll_ids))
+    ).all()
+
+    # Agrupar opciones por poll_id
+    options_by_poll = {}
+    for option in options:
+        if option.poll_id not in options_by_poll:
+            options_by_poll[option.poll_id] = []
+        options_by_poll[option.poll_id].append(option)
+
     # Primero obtenemos el conteo de reacciones por tipo para cada encuesta
     reactions_count = db.exec(
         select(
@@ -48,7 +95,7 @@ def get_all_polls(db: Session, scope: str | None = None, current_user_id: int | 
         for comment in comments_count
     }
 
-    # Obtener los votos del usuario actual si está autenticado
+    # Obtener votos del usuario actual si está autenticado
     user_votes = {}
     if current_user_id:
         user_votes_query = select(PollVote).where(
@@ -72,53 +119,50 @@ def get_all_polls(db: Session, scope: str | None = None, current_user_id: int | 
             for reaction in user_reactions_result
         }
 
-    # Consulta principal para obtener encuestas, opciones y usuarios
-    query = select(Poll, PollOption, User).join(PollOption).join(User, Poll.creator_id == User.id)
-    
-    if scope:
-        query = query.where(Poll.scope == scope)
-    
-    results = db.exec(query).all()
-    
+    # Procesar resultados
     polls_dict = {}
-    for poll, option, user in results:
-        if poll.id not in polls_dict:
-            poll_dict = poll.dict()
-            if not poll.is_anonymous:
-                poll_dict['creator_username'] = user.username
-                del poll_dict['creator_id']
-            else:
-                del poll_dict['creator_id']
-            
-            poll_dict['reactions'] = reactions_dict.get(poll.id, {'LIKE': 0, 'DISLIKE': 0})
-            poll_dict['comments_count'] = comments_dict.get(poll.id, 0)
-            poll_dict['user_reaction'] = user_reactions.get(poll.id, None)
-            poll_dict['user_voted_options'] = list(user_votes.get(poll.id, set())) if current_user_id else None
-            
-            # Añadir países si el scope es INTERNATIONAL
-            if poll.scope == "INTERNATIONAL":
-                # Obtener los países a través de las comunidades
-                countries = db.exec(
-                    select(Country.cca2)
-                    .join(Community, Community.id == Country.community_id)
-                    .join(PollCommunityLink)
-                    .where(PollCommunityLink.poll_id == poll.id)
-                    .distinct()
-                ).all()
-                # Como countries ya contiene directamente los strings cca2
-                poll_dict['countries'] = [country for country in countries if country]
-            
-            polls_dict[poll.id] = poll_dict
-            polls_dict[poll.id]['options'] = []
-
-        option_dict = option.dict()
-        option_dict['voted'] = False
-        if current_user_id and poll.id in user_votes:
-            option_dict['voted'] = option.id in user_votes[poll.id]
+    for poll, user in polls_results:
+        poll_dict = poll.dict()
+        if not poll.is_anonymous:
+            poll_dict['creator_username'] = user.username
+            del poll_dict['creator_id']
+        else:
+            del poll_dict['creator_id']
         
-        polls_dict[poll.id]['options'].append(option_dict)
-    
-    return list(polls_dict.values())
+        poll_dict['reactions'] = reactions_dict.get(poll.id, {'LIKE': 0, 'DISLIKE': 0})
+        poll_dict['comments_count'] = comments_dict.get(poll.id, 0)
+        poll_dict['user_reaction'] = user_reactions.get(poll.id, None)
+        poll_dict['user_voted_options'] = list(user_votes.get(poll.id, set())) if current_user_id else None
+        
+        # Añadir países si el scope es INTERNATIONAL
+        if poll.scope == "INTERNATIONAL":
+            countries = db.exec(
+                select(Country.cca2)
+                .join(Community, Community.id == Country.community_id)
+                .join(PollCommunityLink)
+                .where(PollCommunityLink.poll_id == poll.id)
+                .distinct()
+            ).all()
+            poll_dict['countries'] = [country for country in countries if country]
+        
+        # Agregar las opciones de la encuesta
+        poll_dict['options'] = []
+        for option in options_by_poll.get(poll.id, []):
+            option_dict = option.dict()
+            option_dict['voted'] = False
+            if current_user_id and poll.id in user_votes:
+                option_dict['voted'] = option.id in user_votes[poll.id]
+            poll_dict['options'].append(option_dict)
+        
+        polls_dict[poll.id] = poll_dict
+
+    return {
+        "items": list(polls_dict.values()),
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": total_pages
+    }
 
 def generate_unique_slug(db: Session, title: str) -> str:
     # Genera el slug base
@@ -420,15 +464,20 @@ def create_or_update_reaction(db: Session, poll_id: int, user_id: int, reaction_
     
     return poll_dict
 
-def get_country_polls(db: Session, country_code: str, scope: str | None = None, current_user_id: int | None = None):
+def get_country_polls(
+    db: Session, 
+    country_code: str, 
+    scope: str | None = None, 
+    current_user_id: int | None = None,
+    page: int = 1,
+    size: int = 10
+):
     """
-    Obtiene todas las encuestas asociadas a un país específico.
-    Incluye:
-    - Encuestas nacionales del país (scope = NATIONAL)
-    - Encuestas internacionales que incluyen al país (scope = INTERNATIONAL)
-    - Encuestas subnacionales del país (scope = REGIONAL)
-    Permite filtrar por scope específico
+    Obtiene todas las encuestas asociadas a un país específico con paginación.
     """
+    # Calcular el offset para la paginación
+    offset = (page - 1) * size
+
     # Verificar que el país existe
     country = db.exec(
         select(Country).where(Country.cca2 == country_code)
@@ -440,29 +489,36 @@ def get_country_polls(db: Session, country_code: str, scope: str | None = None, 
             detail=f"País con código {country_code} no encontrado"
         )
 
-    # Construir la consulta base para obtener encuestas
+    # Obtener el total de encuestas para la paginación
+    total_query = (
+        select(func.count(distinct(Poll.id)))
+        .join(PollCommunityLink)
+        .join(Community)
+        .join(Country)
+        .where(Country.cca2 == country_code)
+    )
+    
+    if scope:
+        total_query = total_query.where(Poll.scope == scope)
+    
+    total = db.exec(total_query).first()
+    total_pages = ceil(total / size)
+
+    # Modificar la consulta principal para incluir paginación
     query = (
         select(Poll, PollOption, User)
         .join(PollOption)
         .join(User, Poll.creator_id == User.id)
-        .join(PollCommunityLink, Poll.id == PollCommunityLink.poll_id)
-        .join(Community, PollCommunityLink.community_id == Community.id)
-        .join(Country, Country.community_id == Community.id)
+        .join(PollCommunityLink)
+        .join(Community)
+        .join(Country)
         .where(Country.cca2 == country_code)
     )
 
-    # Aplicar filtro por scope si se especifica
     if scope:
         query = query.where(Poll.scope == scope)
-    else:
-        # Si no hay scope específico, mostrar todos los tipos de encuestas relevantes
-        query = query.where(
-            (Poll.scope == "NATIONAL") | 
-            (Poll.scope == "INTERNATIONAL") |
-            (Poll.scope == "REGIONAL")
-        )
 
-    query = query.distinct()
+    query = query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
 
     # Obtener las encuestas
     results = db.exec(query).all()
@@ -562,16 +618,24 @@ def get_country_polls(db: Session, country_code: str, scope: str | None = None, 
         
         polls_dict[poll.id]['options'].append(option_dict)
     
-    return list(polls_dict.values())
+    return {
+        "items": list(polls_dict.values()),
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": total_pages
+    }
 
 def get_regional_polls(
     db: Session,
     region_id: int,
     scope: str | None = None,
-    current_user_id: int | None = None
+    current_user_id: int | None = None,
+    page: int = 1,
+    size: int = 10
 ):
     """
-    Obtener todas las encuestas asociadas a una región específica.
+    Obtener todas las encuestas asociadas a una región específica con paginación.
     """
     # Primero obtener la comunidad asociada a la región
     region_community = db.exec(
@@ -583,7 +647,25 @@ def get_regional_polls(
     if not region_community:
         return []
 
-    # Construir la consulta para obtener las encuestas
+    offset = (page - 1) * size
+
+    # Obtener el total para la paginación
+    total_query = (
+        select(func.count(distinct(Poll.id)))
+        .join(PollCommunityLink)
+        .where(
+            PollCommunityLink.community_id == region_community.id,
+            Poll.status == PollStatus.PUBLISHED
+        )
+    )
+
+    if scope:
+        total_query = total_query.where(Poll.scope == scope)
+
+    total = db.exec(total_query).first()
+    total_pages = ceil(total / size)
+
+    # Modificar la consulta principal
     query = (
         select(Poll)
         .distinct()
@@ -597,16 +679,20 @@ def get_regional_polls(
     if scope:
         query = query.where(Poll.scope == scope)
 
-    # Ordenar por fecha de creación, más recientes primero
-    query = query.order_by(Poll.created_at.desc())
+    query = query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
 
     polls = db.exec(query).all()
     
-    # Enriquecer cada encuesta con información adicional
-    return [
-        enrich_poll(db, poll, current_user_id)
-        for poll in polls
-    ]
+    return {
+        "items": [
+            enrich_poll(db, poll, current_user_id)
+            for poll in polls
+        ],
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": total_pages
+    }
 
 def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> dict:
     """
@@ -647,7 +733,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     ).first()
 
     # Obtener votos del usuario actual si está autenticado
-    user_voted_options = None
+    user_voted_options = []  # Inicializar como lista vacía en lugar de None
     if current_user_id:
         votes = db.exec(
             select(PollVote.option_id)
@@ -684,7 +770,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     poll_dict['options'] = [
         {
             **option.dict(),
-            'voted': option.id in user_voted_options if current_user_id else False
+            'voted': option.id in user_voted_options if user_voted_options else False
         }
         for option in options
     ]

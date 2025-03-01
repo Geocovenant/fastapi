@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Query
 from api.database import get_session
 from sqlmodel import Session, select
 from api.public.user.models import User
-from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction, get_country_polls, get_regional_polls
+from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction, get_country_polls, get_regional_polls, enrich_poll
 from api.public.poll.models import (
     PollCreate, 
     PollRead, 
@@ -31,21 +31,27 @@ def read_polls(
     scope: str | None = None,
     country: str | None = None,
     region: int | None = None,
+    page: int = Query(default=1, ge=1, description="Número de página"),
+    size: int = Query(default=10, ge=1, le=100, description="Elementos por página"),
     current_user: User | None = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
     """
-    Obtener encuestas con filtros opcionales.
+    Obtener encuestas con filtros opcionales y paginación.
     - scope: Filtrar por alcance (ej: 'NATIONAL', 'INTERNATIONAL', 'REGIONAL', etc.)
     - country: Filtrar por código de país (CCA2)
     - region: Filtrar por ID de región
+    - page: Número de página (default: 1)
+    - size: Elementos por página (default: 10, max: 100)
     """
     if country:
         return get_country_polls(
             db,
             country_code=country,
             scope=scope,
-            current_user_id=current_user.id if current_user else None
+            current_user_id=current_user.id if current_user else None,
+            page=page,
+            size=size
         )
     
     if region:
@@ -65,13 +71,17 @@ def read_polls(
             db,
             region_id=region,
             scope=scope,
-            current_user_id=current_user.id if current_user else None
+            current_user_id=current_user.id if current_user else None,
+            page=page,
+            size=size
         )
     
     return get_all_polls(
         db, 
         scope=scope, 
-        current_user_id=current_user.id if current_user else None
+        current_user_id=current_user.id if current_user else None,
+        page=page,
+        size=size
     )
 
 @router.post("/", response_model=PollRead, status_code=status.HTTP_201_CREATED)
@@ -320,3 +330,33 @@ def delete_poll_comment(
 
     db.delete(comment)
     db.commit()
+
+@router.get("/{poll_id_or_slug}")
+def read_poll(
+    poll_id_or_slug: str,
+    current_user: User | None = Depends(get_current_user_optional),
+    db: Session = Depends(get_session)
+):
+    """
+    Obtener una encuesta específica por ID o slug.
+    No requiere autenticación.
+    """
+    # Determinar si es un ID o un slug
+    if poll_id_or_slug.isdigit():
+        poll = db.get(Poll, int(poll_id_or_slug))
+    else:
+        poll = db.exec(select(Poll).where(Poll.slug == poll_id_or_slug)).first()
+    
+    if not poll:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Encuesta no encontrada"
+        )
+    
+    # Incrementar contador de vistas
+    poll.views_count += 1
+    db.add(poll)
+    db.commit()
+    
+    # Enriquecer la encuesta con información adicional
+    return enrich_poll(db, poll, current_user.id if current_user else None)

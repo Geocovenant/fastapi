@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 9a020a755ade
+Revision ID: ef7f7f471a6d
 Revises: 
-Create Date: 2025-02-28 17:46:07.846219
+Create Date: 2025-03-01 04:22:50.581847
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = '9a020a755ade'
+revision: str = 'ef7f7f471a6d'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -117,7 +117,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_debate_title'), 'debate', ['title'], unique=False)
     op.create_table('poll',
     sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
-    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=5000), nullable=True),
     sa.Column('type', sa.Enum('BINARY', 'SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'OPEN_CHOICE', 'RANKING', 'SCALE', name='polltype'), nullable=False),
     sa.Column('is_anonymous', sa.Boolean(), nullable=False),
     sa.Column('ends_at', sa.DateTime(), nullable=True),
@@ -128,6 +128,7 @@ def upgrade() -> None:
     sa.Column('status', sa.Enum('DRAFT', 'CLOSED', 'PUBLISHED', name='pollstatus'), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('views_count', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

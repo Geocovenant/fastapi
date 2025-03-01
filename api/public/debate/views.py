@@ -71,7 +71,17 @@ def create_debate(
         for code in debate_data.country_codes:
             country = get_country_by_code(session, code)
             if country and country.community:
+                # Añadir la comunidad al debate
                 new_debate.communities.append(country.community)
+                
+                # Crear automáticamente un punto de vista para este país
+                pov = PointOfView(
+                    name=country.name,  # Usar el nombre del país como nombre del punto de vista
+                    debate_id=new_debate.id,
+                    created_by_id=current_user.id,
+                    community_id=country.community.id
+                )
+                session.add(pov)
     
     elif debate_data.type == DebateType.NATIONAL:
         # National debate - add national community
@@ -388,6 +398,27 @@ def vote_opinion(
 
 def get_debate_read(session, debate):
     """Build DebateRead object from a debate in the database"""
+    
+    # Obtener las comunidades con sus cca2 si corresponde
+    communities = []
+    for community in debate.communities:
+        # Buscar el país asociado a esta comunidad si el debate es internacional o nacional
+        cca2 = None
+        if debate.type in [DebateType.INTERNATIONAL, DebateType.NATIONAL]:
+            # Ejecutar una consulta para obtener el country relacionado con la comunidad
+            country = session.exec(
+                select(Country)
+                .where(Country.community_id == community.id)
+            ).first()
+            if country:
+                cca2 = country.cca2
+                
+        communities.append(CommunityMinimal(
+            id=community.id,
+            name=community.name,
+            cca2=cca2
+        ))
+
     return DebateRead(
         id=debate.id,
         title=debate.title,
@@ -406,13 +437,7 @@ def get_debate_read(session, debate):
             username=debate.creator.username,
             image=debate.creator.image
         ),
-        communities=[
-            CommunityMinimal(
-                id=community.id,
-                name=community.name,
-                level=community.level
-            ) for community in debate.communities
-        ],
+        communities=communities,  # Usar la lista de comunidades modificada
         tags=[tag.name for tag in debate.tags],
         points_of_view=[
             get_point_of_view_read(session, pov)
