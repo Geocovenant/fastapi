@@ -10,6 +10,9 @@ class PollType(str, Enum):
     BINARY = "BINARY"
     SINGLE_CHOICE = "SINGLE_CHOICE"
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
+    OPEN_CHOICE = "OPEN_CHOICE"  # Nueva opción que permite respuestas personalizadas
+    RANKING = "RANKING"  # Nueva opción para clasificar por orden de preferencia
+    SCALE = "SCALE"  # Nueva opción para valoraciones en escala
 
 class PollStatus(str, Enum):
     DRAFT = "DRAFT"
@@ -50,6 +53,8 @@ class PollOption(SQLModel, table=True):
     poll_id: int = Field(foreign_key="poll.id")
     text: str = Field(max_length=150)
     votes: int = Field(default=0)
+    is_custom_option: bool = Field(default=False)  # Nuevo campo para identificar si es la opción "Otro"
+    custom_responses: list["PollCustomResponse"] = Relationship(back_populates="option")  # Nueva relación
 
     # Relationships
     poll: Poll = Relationship(back_populates="options")
@@ -91,6 +96,7 @@ class PollComment(SQLModel, table=True):
 
 class PollOptionCreate(SQLModel):
     text: str = Field(max_length=150)
+    is_custom_option: bool = Field(default=False)
 
 class PollCreate(PollBase):
     options: list[PollOptionCreate]
@@ -131,11 +137,24 @@ class PollRead(PollBase):
     options: list[PollOptionRead]
     communities: list[CommunityBase]
     reactions: PollReactionCount
-    comments_count: int = 0  # Nuevo campo para el conteo de comentarios
-    countries: Optional[list[str]] = None  # Lista de códigos CCA2 de países
+    comments_count: int = 0
+    countries: Optional[list[str]] = None
+    user_reaction: Optional[ReactionType] = None
+    user_voted_options: Optional[list[int]] = None  # Nueva key para los IDs de opciones votadas
 
 class PollVoteCreate(SQLModel):
     option_ids: list[int] = Field(description="Lista de IDs de las opciones seleccionadas")
 
 class PollReactionCreate(SQLModel):
     reaction: ReactionType
+
+# Nueva tabla para almacenar respuestas personalizadas
+class PollCustomResponse(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    option_id: int = Field(foreign_key="polloption.id")
+    user_id: int = Field(foreign_key="users.id")
+    response_text: str = Field(max_length=200)
+    created_at: datetime = Field(default=datetime.utcnow)
+    
+    option: "PollOption" = Relationship(back_populates="custom_responses")
+    user: "User" = Relationship(back_populates="poll_custom_responses")

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from api.database import get_session
-from sqlmodel import Session, select, func
+from sqlmodel import Session, select
 from api.public.user.models import User
 from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction, get_country_polls, get_regional_polls
 from api.public.poll.models import (

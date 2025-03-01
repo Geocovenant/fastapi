@@ -5,6 +5,8 @@ from api.public.user import views as user
 from api.public.poll import views as poll
 from api.public.region import views as region
 from api.public.subregion import views as subregion
+from api.public.debate import views as debate
+from api.public.tag import views as tag
 
 api = APIRouter()
 
@@ -19,6 +21,16 @@ api.include_router(
     tags=["Countries"]
 )
 api.include_router(
+    debate.router,
+    prefix="/debates",
+    tags=["Debates"]
+)
+api.include_router(
+    poll.router,
+    prefix="/polls",
+    tags=["Polls"]
+)
+api.include_router(
     region.router,
     prefix="/regions",
     tags=["Regions"]
@@ -29,9 +41,9 @@ api.include_router(
     tags=["Subregion"]
 )
 api.include_router(
-    poll.router,
-    prefix="/polls",
-    tags=["Polls"]
+    tag.router,
+    prefix="/tags",
+    tags=["Tags"]
 )
 api.include_router(
     user.router,

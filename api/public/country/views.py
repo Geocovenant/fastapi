@@ -25,7 +25,7 @@ def get_country_divisions(
     db: Session = Depends(get_session)
 ):
     """
-    Obtiene todas las divisiones (subnaciones) de un país específico usando su código de país (cca2)
+    Retrieves all divisions (subnations) of a specific country using its country code (cca2)
     """
     regions = db.exec(
         select(Region).where(Region.country_cca2 == country_code.upper())
@@ -34,7 +34,7 @@ def get_country_divisions(
     if not regions:
         raise HTTPException(
             status_code=404,
-            detail=f"No se encontraron divisiones para el país con código {country_code}"
+            detail=f"No divisions found for the country with code {country_code}"
         )
     
     return regions

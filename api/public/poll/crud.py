@@ -1,5 +1,5 @@
 from sqlmodel import Session, select, func
-from api.public.poll.models import Poll, PollOption, PollCreate, PollVote, PollReaction, ReactionType
+from api.public.poll.models import Poll, PollOption, PollCreate, PollVote, PollReaction, ReactionType, PollCustomResponse
 from api.public.community.models import Community
 from slugify import slugify
 from datetime import datetime
@@ -60,6 +60,18 @@ def get_all_polls(db: Session, scope: str | None = None, current_user_id: int | 
                 user_votes[vote.poll_id] = set()
             user_votes[vote.poll_id].add(vote.option_id)
 
+    # Obtener las reacciones del usuario actual si está autenticado
+    user_reactions = {}
+    if current_user_id:
+        user_reactions_query = select(PollReaction).where(
+            PollReaction.user_id == current_user_id
+        )
+        user_reactions_result = db.exec(user_reactions_query).all()
+        user_reactions = {
+            reaction.poll_id: reaction.reaction 
+            for reaction in user_reactions_result
+        }
+
     # Consulta principal para obtener encuestas, opciones y usuarios
     query = select(Poll, PollOption, User).join(PollOption).join(User, Poll.creator_id == User.id)
     
@@ -80,6 +92,8 @@ def get_all_polls(db: Session, scope: str | None = None, current_user_id: int | 
             
             poll_dict['reactions'] = reactions_dict.get(poll.id, {'LIKE': 0, 'DISLIKE': 0})
             poll_dict['comments_count'] = comments_dict.get(poll.id, 0)
+            poll_dict['user_reaction'] = user_reactions.get(poll.id, None)
+            poll_dict['user_voted_options'] = list(user_votes.get(poll.id, set())) if current_user_id else None
             
             # Añadir países si el scope es INTERNATIONAL
             if poll.scope == "INTERNATIONAL":
@@ -215,7 +229,7 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
     db.refresh(db_poll)
     return db_poll
 
-def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int) -> Poll:
+def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int, custom_response: str | None = None) -> Poll:
     # Verificar que la encuesta existe
     poll = db.get(Poll, poll_id)
     if not poll:
@@ -280,6 +294,23 @@ def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int) 
         # Incrementar el contador de votos de la nueva opción
         option = db.get(PollOption, option_id)
         option.votes += 1
+    
+    # Si hay una respuesta personalizada, verificar que la opción permite respuestas personalizadas
+    if custom_response:
+        option = db.get(PollOption, option_ids[0])
+        if not option or not option.is_custom_option:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Esta opción no permite respuestas personalizadas"
+            )
+            
+        # Crear la respuesta personalizada
+        custom = PollCustomResponse(
+            option_id=option.id,
+            user_id=user_id,
+            response_text=custom_response
+        )
+        db.add(custom)
     
     db.commit()
     db.refresh(poll)
@@ -482,6 +513,18 @@ def get_country_polls(db: Session, country_code: str, scope: str | None = None, 
                 user_votes[vote.poll_id] = set()
             user_votes[vote.poll_id].add(vote.option_id)
 
+    # Obtener las reacciones del usuario actual si está autenticado
+    user_reactions = {}
+    if current_user_id:
+        user_reactions_query = select(PollReaction).where(
+            PollReaction.user_id == current_user_id
+        )
+        user_reactions_result = db.exec(user_reactions_query).all()
+        user_reactions = {
+            reaction.poll_id: reaction.reaction 
+            for reaction in user_reactions_result
+        }
+
     # Procesar resultados
     polls_dict = {}
     for poll, option, user in results:
@@ -495,6 +538,8 @@ def get_country_polls(db: Session, country_code: str, scope: str | None = None, 
             
             poll_dict['reactions'] = reactions_dict.get(poll.id, {'LIKE': 0, 'DISLIKE': 0})
             poll_dict['comments_count'] = comments_dict.get(poll.id, 0)
+            poll_dict['user_reaction'] = user_reactions.get(poll.id, None)
+            poll_dict['user_voted_options'] = list(user_votes.get(poll.id, set())) if current_user_id else None
             
             # Añadir países si el scope es INTERNATIONAL
             if poll.scope == "INTERNATIONAL":
@@ -602,7 +647,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     ).first()
 
     # Obtener votos del usuario actual si está autenticado
-    user_votes = set()
+    user_voted_options = None
     if current_user_id:
         votes = db.exec(
             select(PollVote.option_id)
@@ -611,7 +656,21 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
                 PollVote.user_id == current_user_id
             )
         ).all()
-        user_votes = {vote for vote in votes}
+        if votes:
+            user_voted_options = [vote for vote in votes]
+
+    # Obtener la reacción del usuario actual si está autenticado
+    user_reaction = None
+    if current_user_id:
+        reaction = db.exec(
+            select(PollReaction)
+            .where(
+                PollReaction.poll_id == poll.id,
+                PollReaction.user_id == current_user_id
+            )
+        ).first()
+        if reaction:
+            user_reaction = reaction.reaction
 
     # Construir el diccionario de la encuesta
     poll_dict = poll.dict()
@@ -625,7 +684,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     poll_dict['options'] = [
         {
             **option.dict(),
-            'voted': option.id in user_votes if current_user_id else False
+            'voted': option.id in user_voted_options if current_user_id else False
         }
         for option in options
     ]
@@ -633,5 +692,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     # Agregar reacciones y comentarios
     poll_dict['reactions'] = reactions_dict
     poll_dict['comments_count'] = comments_count or 0
+    poll_dict['user_reaction'] = user_reaction
+    poll_dict['user_voted_options'] = user_voted_options
 
     return poll_dict

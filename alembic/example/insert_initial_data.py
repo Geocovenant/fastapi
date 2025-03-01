@@ -1,7 +1,7 @@
 """Insert initial data from JSON files
 
 Revision ID: insert_initial_data
-Revises: f33be99499c3
+Revises: 81f0ff06a109
 Create Date: 2024-01-01 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 # revision identifiers, used by Alembic.
 revision = 'insert_initial_data'
-down_revision = 'f33be99499c3'
+down_revision = '81f0ff06a109'
 branch_labels = None
 depends_on = None
 

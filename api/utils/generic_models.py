@@ -16,3 +16,19 @@ class PollCommunityLink(SQLModel, table=True):
 class PollTagLink(SQLModel, table=True):
     poll_id: int = Field(foreign_key="poll.id", primary_key=True)
     tag_id: int = Field(foreign_key="tag.id", primary_key=True)
+
+class DebateTagLink(SQLModel, table=True):
+    debate_id: Optional[int] = Field(
+        default=None, foreign_key="debate.id", primary_key=True
+    )
+    tag_id: Optional[int] = Field(
+        default=None, foreign_key="tag.id", primary_key=True
+    )
+
+class DebateCommunityLink(SQLModel, table=True):
+    debate_id: Optional[int] = Field(
+        default=None, foreign_key="debate.id", primary_key=True
+    )
+    community_id: Optional[int] = Field(
+        default=None, foreign_key="community.id", primary_key=True
+    )

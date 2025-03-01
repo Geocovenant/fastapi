@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 1a5939189d74
+Revision ID: 9a020a755ade
 Revises: 
-Create Date: 2025-02-25 22:59:55.243078
+Create Date: 2025-02-28 17:46:07.846219
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = '1a5939189d74'
+revision: str = '9a020a755ade'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -45,7 +45,7 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('role', sa.Enum('ADMIN', 'USER', 'GUEST', 'MODERATOR', 'BOT', name='userrole'), nullable=True),
     sa.Column('bio', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True),
-    sa.Column('location', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
+    sa.Column('country', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
     sa.Column('website', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
     sa.Column('cover', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
     sa.Column('gender', sqlmodel.sql.sqltypes.AutoString(length=1), nullable=True),
@@ -87,10 +87,38 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_continent_name'), 'continent', ['name'], unique=True)
+    op.create_table('debate',
+    sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=10000), nullable=True),
+    sa.Column('views_count', sa.BigInteger(), nullable=True),
+    sa.Column('images', sa.JSON(), nullable=True),
+    sa.Column('language', sa.Enum('EN', 'ES', 'FR', name='languagecode'), nullable=False),
+    sa.Column('public', sa.Boolean(), nullable=False),
+    sa.Column('slug', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('status', sa.Enum('OPEN', 'PENDING', 'CLOSED', 'REJECTED', 'ARCHIVED', 'RESOLVED', name='debatestatus'), nullable=False),
+    sa.Column('type', sa.Enum('GLOBAL', 'INTERNATIONAL', 'NATIONAL', 'REGIONAL', 'SUBREGIONAL', 'LOCAL', name='debatetype'), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(), nullable=True),
+    sa.Column('approved_by_id', sa.Integer(), nullable=True),
+    sa.Column('rejected_by_id', sa.Integer(), nullable=True),
+    sa.Column('approved_at', sa.DateTime(), nullable=True),
+    sa.Column('rejected_at', sa.DateTime(), nullable=True),
+    sa.Column('moderation_notes', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.ForeignKeyConstraint(['approved_by_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['rejected_by_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_debate_created_at'), 'debate', ['created_at'], unique=False)
+    op.create_index(op.f('ix_debate_slug'), 'debate', ['slug'], unique=True)
+    op.create_index(op.f('ix_debate_title'), 'debate', ['title'], unique=False)
     op.create_table('poll',
     sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
     sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True),
-    sa.Column('type', sa.Enum('BINARY', 'SINGLE_CHOICE', 'MULTIPLE_CHOICE', name='polltype'), nullable=False),
+    sa.Column('type', sa.Enum('BINARY', 'SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'OPEN_CHOICE', 'RANKING', 'SCALE', name='polltype'), nullable=False),
     sa.Column('is_anonymous', sa.Boolean(), nullable=False),
     sa.Column('ends_at', sa.DateTime(), nullable=True),
     sa.Column('scope', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
@@ -161,6 +189,45 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_country_name'), 'country', ['name'], unique=True)
+    op.create_table('debatechangelog',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('debate_id', sa.Integer(), nullable=False),
+    sa.Column('changed_by_id', sa.Integer(), nullable=False),
+    sa.Column('changed_at', sa.DateTime(), nullable=False),
+    sa.Column('field_changed', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('old_value', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('new_value', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('reason', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.ForeignKeyConstraint(['changed_by_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['debate_id'], ['debate.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('debatecommunitylink',
+    sa.Column('debate_id', sa.Integer(), nullable=False),
+    sa.Column('community_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
+    sa.ForeignKeyConstraint(['debate_id'], ['debate.id'], ),
+    sa.PrimaryKeyConstraint('debate_id', 'community_id')
+    )
+    op.create_table('debatetaglink',
+    sa.Column('debate_id', sa.Integer(), nullable=False),
+    sa.Column('tag_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['debate_id'], ['debate.id'], ),
+    sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], ),
+    sa.PrimaryKeyConstraint('debate_id', 'tag_id')
+    )
+    op.create_table('pointofview',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('debate_id', sa.Integer(), nullable=False),
+    sa.Column('created_by_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('community_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
+    sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['debate_id'], ['debate.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('pollcomment',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('poll_id', sa.Integer(), nullable=False),
@@ -184,6 +251,7 @@ def upgrade() -> None:
     sa.Column('poll_id', sa.Integer(), nullable=False),
     sa.Column('text', sqlmodel.sql.sqltypes.AutoString(length=150), nullable=False),
     sa.Column('votes', sa.Integer(), nullable=False),
+    sa.Column('is_custom_option', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['poll_id'], ['poll.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -203,6 +271,27 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['poll_id'], ['poll.id'], ),
     sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], ),
     sa.PrimaryKeyConstraint('poll_id', 'tag_id')
+    )
+    op.create_table('opinion',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('point_of_view_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('content', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['point_of_view_id'], ['pointofview.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('pollcustomresponse',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('option_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('response_text', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['option_id'], ['polloption.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('pollvote',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -230,6 +319,16 @@ def upgrade() -> None:
     sa.Column('country_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
     sa.ForeignKeyConstraint(['country_id'], ['country.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('opinionvote',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('opinion_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('value', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['opinion_id'], ['opinion.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('subregion',
@@ -275,13 +374,20 @@ def downgrade() -> None:
     op.drop_table('locality')
     op.drop_index(op.f('ix_subregion_name'), table_name='subregion')
     op.drop_table('subregion')
+    op.drop_table('opinionvote')
     op.drop_table('region')
     op.drop_table('pollvote')
+    op.drop_table('pollcustomresponse')
+    op.drop_table('opinion')
     op.drop_table('polltaglink')
     op.drop_table('pollreaction')
     op.drop_table('polloption')
     op.drop_table('pollcommunitylink')
     op.drop_table('pollcomment')
+    op.drop_table('pointofview')
+    op.drop_table('debatetaglink')
+    op.drop_table('debatecommunitylink')
+    op.drop_table('debatechangelog')
     op.drop_index(op.f('ix_country_name'), table_name='country')
     op.drop_table('country')
     op.drop_table('userfollowlink')
@@ -290,6 +396,10 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_poll_title'), table_name='poll')
     op.drop_index(op.f('ix_poll_slug'), table_name='poll')
     op.drop_table('poll')
+    op.drop_index(op.f('ix_debate_title'), table_name='debate')
+    op.drop_index(op.f('ix_debate_slug'), table_name='debate')
+    op.drop_index(op.f('ix_debate_created_at'), table_name='debate')
+    op.drop_table('debate')
     op.drop_index(op.f('ix_continent_name'), table_name='continent')
     op.drop_table('continent')
     op.drop_table('accounts')

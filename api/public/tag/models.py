@@ -1,6 +1,6 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
-from api.utils.generic_models import PollTagLink
+from api.utils.generic_models import PollTagLink, DebateTagLink
 
 class TagBase(SQLModel):
     name: str = Field(max_length=50, unique=True, index=True)
@@ -10,6 +10,7 @@ class Tag(TagBase, table=True):
 
     # Relationships
     polls: list["Poll"] = Relationship(back_populates="tags", link_model=PollTagLink)
+    debates: list["Debate"] = Relationship(back_populates="tags", link_model=DebateTagLink)
 
 class TagCreate(TagBase):
     pass
