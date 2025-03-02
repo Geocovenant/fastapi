@@ -707,7 +707,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     - Options and votes
     - Reactions
     - Creator information
-    - Comments count
+    - Comments count and full comments
     - Current user voting status
     """
     # Get creator
@@ -738,6 +738,23 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
         select(func.count(PollComment.id))
         .where(PollComment.poll_id == poll.id)
     ).first()
+
+    # Get full comments with user info
+    comments = db.exec(
+        select(PollComment, User)
+        .join(User)
+        .where(PollComment.poll_id == poll.id)
+        .order_by(PollComment.created_at.desc())
+    ).all()
+    
+    comments_list = [
+        {
+            **comment.dict(),
+            "username": user.username,
+            "can_edit": current_user_id and current_user_id == comment.user_id
+        }
+        for comment, user in comments
+    ]
 
     # Get current user votes if authenticated
     user_voted_options = []  # Initialize as empty list instead of None
@@ -792,6 +809,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     # Add reactions and comments
     poll_dict['reactions'] = reactions_dict
     poll_dict['comments_count'] = comments_count or 0
+    poll_dict['comments'] = comments_list
     poll_dict['user_reaction'] = user_reaction
     poll_dict['user_voted_options'] = user_voted_options
 

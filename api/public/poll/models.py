@@ -133,6 +133,15 @@ class UserMinimal(SQLModel):
     username: str
     image: Optional[str] = None
 
+class PollCommentRead(SQLModel):
+    id: int
+    user_id: int
+    content: str
+    created_at: datetime
+    updated_at: datetime
+    username: str
+    can_edit: bool = False
+
 class PollRead(PollBase):
     id: int
     slug: str
@@ -144,9 +153,10 @@ class PollRead(PollBase):
     communities: list[CommunityBase]
     reactions: PollReactionCount
     comments_count: int = 0
+    comments: list[PollCommentRead] = []  # Nueva lista de comentarios
     countries: Optional[list[str]] = None
     user_reaction: Optional[ReactionType] = None
-    user_voted_options: Optional[list[int]] = None  # New key for the IDs of voted options
+    user_voted_options: Optional[list[int]] = None
 
 class PollVoteCreate(SQLModel):
     option_ids: list[int] = Field(description="List of IDs of selected options")

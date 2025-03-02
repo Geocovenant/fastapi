@@ -107,7 +107,7 @@ from api.public.project.models import (
 )
 
 # Modelos de issues
-from api.public.issues.models import (
+from api.public.issue.models import (
     Issue,
     IssueBase,
     IssueCreate,

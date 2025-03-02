@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Header, Query
 from api.database import get_session
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from api.public.user.models import User
 from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction, get_country_polls, get_regional_polls, enrich_poll
 from api.public.poll.models import (
@@ -15,7 +15,8 @@ from api.public.poll.models import (
     PollReactionCreate,
     PollComment,
     PollCommentCreate,
-    PollCommentUpdate
+    PollCommentUpdate,
+    PollCommunityLink,
 )
 from api.auth.dependencies import get_current_user, get_current_user_optional
 from datetime import datetime
@@ -23,6 +24,7 @@ from api.public.country.models import Country
 from api.public.subregion.models import Subregion
 from api.public.community.models import Community
 from api.public.region.models import Region
+from typing import Optional
 
 router = APIRouter()
 
@@ -31,6 +33,7 @@ def read_polls(
     scope: str | None = None,
     country: str | None = None,
     region: int | None = None,
+    subregion: int | None = None,  # Añadimos el parámetro subregion
     page: int = Query(default=1, ge=1, description="Número de página"),
     size: int = Query(default=10, ge=1, le=100, description="Elementos por página"),
     current_user: User | None = Depends(get_current_user_optional),
@@ -38,12 +41,62 @@ def read_polls(
 ):
     """
     Obtener encuestas con filtros opcionales y paginación.
-    - scope: Filtrar por alcance (ej: 'NATIONAL', 'INTERNATIONAL', 'REGIONAL', etc.)
+    - scope: Filtrar por alcance (ej: 'NATIONAL', 'INTERNATIONAL', 'REGIONAL', 'SUBREGIONAL', etc.)
     - country: Filtrar por código de país (CCA2)
     - region: Filtrar por ID de región
+    - subregion: Filtrar por ID de subregión
     - page: Número de página (default: 1)
     - size: Elementos por página (default: 10, max: 100)
     """
+    # Si se especifica subregión y el scope es SUBREGIONAL
+    if subregion and scope == 'SUBREGIONAL':
+        # Verificar que la subregión existe
+        subregion_obj = db.exec(
+            select(Subregion)
+            .where(Subregion.id == subregion)
+        ).first()
+
+        if not subregion_obj:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No se encontró la subregión con ID {subregion}"
+            )
+
+        # Primero obtenemos la comunidad asociada a la subregión
+        community_id = subregion_obj.community_id
+        
+        # Ahora filtramos los polls que están asociados a esta comunidad y tienen el scope SUBREGIONAL
+        query = (
+            select(Poll)
+            .join(PollCommunityLink)
+            .where(
+                Poll.scope == scope,
+                PollCommunityLink.community_id == community_id
+            )
+        )
+        
+        # Aplicar paginación
+        total = db.scalar(select(func.count()).select_from(query.subquery()))
+        
+        # Ejecutar la consulta
+        polls = db.exec(query).all()
+        
+        # Enriquecer las encuestas si hay un usuario autenticado
+        if current_user:
+            polls = [
+                enrich_poll(db, poll, current_user.id)
+                for poll in polls
+            ]
+            
+        return {
+            "items": polls,
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": (total + size - 1) // size
+        }
+    
+    # Resto del código original
     if country:
         return get_country_polls(
             db,
