@@ -1,7 +1,7 @@
 from enum import Enum
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional, List
+from typing import Optional
 from api.public.tag.models import Tag
 from api.utils.generic_models import ProjectCommunityLink
 

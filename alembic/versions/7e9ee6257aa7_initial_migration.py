@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 411063f9c651
+Revision ID: 7e9ee6257aa7
 Revises: 
-Create Date: 2025-03-02 03:19:42.138856
+Create Date: 2025-03-02 03:53:44.345484
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = '411063f9c651'
+revision: str = '7e9ee6257aa7'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,6 +30,13 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['parent_id'], ['community.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('issuecategory',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_issuecategory_name'), 'issuecategory', ['name'], unique=False)
     op.create_table('tag',
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=50), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -434,11 +441,116 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_locality_name'), 'locality', ['name'], unique=True)
+    op.create_table('institution',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('level', sa.Enum('MUNICIPAL', 'PROVINCIAL', 'REGIONAL', 'NATIONAL', name='institutionlevel'), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=True),
+    sa.Column('parent_id', sa.Integer(), nullable=True),
+    sa.Column('community_id', sa.Integer(), nullable=True),
+    sa.Column('region_id', sa.Integer(), nullable=True),
+    sa.Column('subregion_id', sa.Integer(), nullable=True),
+    sa.Column('locality_id', sa.Integer(), nullable=True),
+    sa.Column('contact_email', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=True),
+    sa.Column('phone', sqlmodel.sql.sqltypes.AutoString(length=50), nullable=True),
+    sa.Column('website', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=True),
+    sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
+    sa.ForeignKeyConstraint(['locality_id'], ['locality.id'], ),
+    sa.ForeignKeyConstraint(['parent_id'], ['institution.id'], ),
+    sa.ForeignKeyConstraint(['region_id'], ['region.id'], ),
+    sa.ForeignKeyConstraint(['subregion_id'], ['subregion.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_institution_level'), 'institution', ['level'], unique=False)
+    op.create_index(op.f('ix_institution_name'), 'institution', ['name'], unique=False)
+    op.create_table('issue',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=5000), nullable=False),
+    sa.Column('status', sa.Enum('OPEN', 'IN_REVIEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REJECTED', name='issuestatus'), nullable=False),
+    sa.Column('location_description', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True),
+    sa.Column('latitude', sa.Float(), nullable=True),
+    sa.Column('longitude', sa.Float(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('slug', sqlmodel.sql.sqltypes.AutoString(length=250), nullable=False),
+    sa.Column('support_count', sa.Integer(), nullable=False),
+    sa.Column('community_id', sa.Integer(), nullable=True),
+    sa.Column('region_id', sa.Integer(), nullable=True),
+    sa.Column('subregion_id', sa.Integer(), nullable=True),
+    sa.Column('locality_id', sa.Integer(), nullable=True),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('category_id', sa.Integer(), nullable=False),
+    sa.Column('institution_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['category_id'], ['issuecategory.id'], ),
+    sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['institution_id'], ['institution.id'], ),
+    sa.ForeignKeyConstraint(['locality_id'], ['locality.id'], ),
+    sa.ForeignKeyConstraint(['region_id'], ['region.id'], ),
+    sa.ForeignKeyConstraint(['subregion_id'], ['subregion.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_issue_slug'), 'issue', ['slug'], unique=True)
+    op.create_index(op.f('ix_issue_status'), 'issue', ['status'], unique=False)
+    op.create_index(op.f('ix_issue_title'), 'issue', ['title'], unique=False)
+    op.create_table('issuecomment',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('issue_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('content', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['issue_id'], ['issue.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('issueimage',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('issue_id', sa.Integer(), nullable=False),
+    sa.Column('url', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['issue_id'], ['issue.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('issuesupport',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('issue_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['issue_id'], ['issue.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('issueupdate',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('issue_id', sa.Integer(), nullable=False),
+    sa.Column('institution_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('content', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=False),
+    sa.Column('new_status', sa.Enum('OPEN', 'IN_REVIEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REJECTED', name='issuestatus'), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['institution_id'], ['institution.id'], ),
+    sa.ForeignKeyConstraint(['issue_id'], ['issue.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table('issueupdate')
+    op.drop_table('issuesupport')
+    op.drop_table('issueimage')
+    op.drop_table('issuecomment')
+    op.drop_index(op.f('ix_issue_title'), table_name='issue')
+    op.drop_index(op.f('ix_issue_status'), table_name='issue')
+    op.drop_index(op.f('ix_issue_slug'), table_name='issue')
+    op.drop_table('issue')
+    op.drop_index(op.f('ix_institution_name'), table_name='institution')
+    op.drop_index(op.f('ix_institution_level'), table_name='institution')
+    op.drop_table('institution')
     op.drop_index(op.f('ix_locality_name'), table_name='locality')
     op.drop_table('locality')
     op.drop_index(op.f('ix_subregion_name'), table_name='subregion')
@@ -486,5 +598,7 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_index(op.f('ix_tag_name'), table_name='tag')
     op.drop_table('tag')
+    op.drop_index(op.f('ix_issuecategory_name'), table_name='issuecategory')
+    op.drop_table('issuecategory')
     op.drop_table('community')
     # ### end Alembic commands ###

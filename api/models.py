@@ -106,6 +106,34 @@ from api.public.project.models import (
     CommitmentType
 )
 
+# Modelos de issues
+from api.public.issues.models import (
+    Issue,
+    IssueBase,
+    IssueCreate,
+    IssueRead,
+    IssueCategory,
+    IssueCategoryBase,
+    IssueCategoryCreate,
+    IssueCategoryRead,
+    Institution,
+    InstitutionBase,
+    InstitutionCreate,
+    InstitutionRead,
+    IssueSupport,
+    IssueComment,
+    IssueCommentBase,
+    IssueCommentCreate,
+    IssueCommentRead,
+    IssueUpdate,
+    IssueUpdateBase,
+    IssueUpdateCreate,
+    IssueUpdateRead,
+    IssueStatus,
+    InstitutionLevel,
+    IssueImage
+)
+
 # Importación centralizada de todos los modelos 
 # para resolver referencias circulares
 

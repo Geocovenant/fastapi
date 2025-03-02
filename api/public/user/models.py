@@ -91,6 +91,12 @@ class User(UserBase, table=True):
     project_commitments: list["ProjectCommitment"] = Relationship(back_populates="user")
     project_donations: list["ProjectDonation"] = Relationship(back_populates="user")
 
+    # Relationships for issues
+    issues_created: list["Issue"] = Relationship(back_populates="creator")
+    issue_supports: list["IssueSupport"] = Relationship(back_populates="user")
+    issue_comments: list["IssueComment"] = Relationship(back_populates="user")
+    issue_updates: list["IssueUpdate"] = Relationship(back_populates="user")
+
 # Additional models required by Auth.js
 class Account(SQLModel, table=True):
     __tablename__ = "accounts"
