@@ -10,9 +10,9 @@ class PollType(str, Enum):
     BINARY = "BINARY"
     SINGLE_CHOICE = "SINGLE_CHOICE"
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
-    OPEN_CHOICE = "OPEN_CHOICE"  # Nueva opción que permite respuestas personalizadas
-    RANKING = "RANKING"  # Nueva opción para clasificar por orden de preferencia
-    SCALE = "SCALE"  # Nueva opción para valoraciones en escala
+    OPEN_CHOICE = "OPEN_CHOICE"  # New option that allows custom responses
+    RANKING = "RANKING"  # New option to rank by preference order
+    SCALE = "SCALE"  # New option for scale ratings
 
 class PollStatus(str, Enum):
     DRAFT = "DRAFT"
@@ -54,8 +54,8 @@ class PollOption(SQLModel, table=True):
     poll_id: int = Field(foreign_key="poll.id")
     text: str = Field(max_length=150)
     votes: int = Field(default=0)
-    is_custom_option: bool = Field(default=False)  # Nuevo campo para identificar si es la opción "Otro"
-    custom_responses: list["PollCustomResponse"] = Relationship(back_populates="option")  # Nueva relación
+    is_custom_option: bool = Field(default=False)  # New field to identify if it's the "Other" option
+    custom_responses: list["PollCustomResponse"] = Relationship(back_populates="option")  # New relationship
 
     # Relationships
     poll: Poll = Relationship(back_populates="options")
@@ -102,10 +102,10 @@ class PollOptionCreate(SQLModel):
 class PollCreate(PollBase):
     options: list[PollOptionCreate]
     community_ids: list[int] = Field(default=[])
-    country_codes: Optional[list[str]] = Field(default=None, description="Lista de códigos CCA2 de países para encuestas internacionales")
-    country_code: Optional[str] = Field(default=None, description="Código CCA2 del país para encuestas nacionales")
-    region_id: Optional[int] = Field(default=None, description="ID de la región para encuestas regionales")
-    subregion_id: Optional[int] = Field(default=None, description="ID de la subdivisión nacional para encuestas subnacionales")
+    country_codes: Optional[list[str]] = Field(default=None, description="List of CCA2 country codes for international polls")
+    country_code: Optional[str] = Field(default=None, description="CCA2 country code for national polls")
+    region_id: Optional[int] = Field(default=None, description="Region ID for regional polls")
+    subregion_id: Optional[int] = Field(default=None, description="National subdivision ID for subnational polls")
 
 class CommunityBase(SQLModel):
     id: int
@@ -120,7 +120,7 @@ class PollOptionRead(SQLModel):
     id: int
     text: str
     votes: int
-    voted: bool = False  # Nuevo campo para indicar si el usuario votó esta opción
+    voted: bool = False  # New field to indicate if the user voted for this option
 
 class PollCommentCreate(SQLModel):
     content: str = Field(max_length=500)
@@ -128,10 +128,15 @@ class PollCommentCreate(SQLModel):
 class PollCommentUpdate(SQLModel):
     content: str = Field(max_length=500)
 
+class UserMinimal(SQLModel):
+    id: int
+    username: str
+    image: Optional[str] = None
+
 class PollRead(PollBase):
     id: int
     slug: str
-    creator_username: Optional[str] = None
+    creator: Optional[UserMinimal] = None
     status: PollStatus
     created_at: datetime
     updated_at: datetime
@@ -141,15 +146,15 @@ class PollRead(PollBase):
     comments_count: int = 0
     countries: Optional[list[str]] = None
     user_reaction: Optional[ReactionType] = None
-    user_voted_options: Optional[list[int]] = None  # Nueva key para los IDs de opciones votadas
+    user_voted_options: Optional[list[int]] = None  # New key for the IDs of voted options
 
 class PollVoteCreate(SQLModel):
-    option_ids: list[int] = Field(description="Lista de IDs de las opciones seleccionadas")
+    option_ids: list[int] = Field(description="List of IDs of selected options")
 
 class PollReactionCreate(SQLModel):
     reaction: ReactionType
 
-# Nueva tabla para almacenar respuestas personalizadas
+# New table to store custom responses
 class PollCustomResponse(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     option_id: int = Field(foreign_key="polloption.id")

@@ -1,4 +1,4 @@
-from sqlmodel import Session, select, func
+from sqlmodel import Session, select, func, distinct
 from api.public.poll.models import Poll, PollOption, PollCreate, PollVote, PollReaction, ReactionType, PollCustomResponse
 from api.public.community.models import Community
 from slugify import slugify
@@ -22,46 +22,46 @@ def get_all_polls(
     size: int = 10
 ):
     """
-    Obtiene todas las encuestas con paginación
+    Gets all polls with pagination
     """
-    # Calcular el offset para la paginación
+    # Calculate offset for pagination
     offset = (page - 1) * size
 
-    # Primero obtenemos el total de encuestas para la paginación
+    # First get the total number of polls for pagination
     total_query = select(func.count(Poll.id))
     if scope:
         total_query = total_query.where(Poll.scope == scope)
     total = db.exec(total_query).first()
     total_pages = ceil(total / size)
 
-    # Consulta principal para obtener solo las encuestas primero
+    # Main query to get only the polls first
     polls_query = select(Poll, User).join(User, Poll.creator_id == User.id)
     
     if scope:
         polls_query = polls_query.where(Poll.scope == scope)
     
-    # Agregar ordenamiento y paginación
+    # Add sorting and pagination
     polls_query = polls_query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
     
     polls_results = db.exec(polls_query).all()
 
-    # Obtener los IDs de las encuestas para las consultas relacionadas
+    # Get poll IDs for related queries
     poll_ids = [poll.id for poll, _ in polls_results]
 
-    # Obtener las opciones para estas encuestas
+    # Get options for these polls
     options = db.exec(
         select(PollOption)
         .where(PollOption.poll_id.in_(poll_ids))
     ).all()
 
-    # Agrupar opciones por poll_id
+    # Group options by poll_id
     options_by_poll = {}
     for option in options:
         if option.poll_id not in options_by_poll:
             options_by_poll[option.poll_id] = []
         options_by_poll[option.poll_id].append(option)
 
-    # Primero obtenemos el conteo de reacciones por tipo para cada encuesta
+    # First get the reaction count by type for each poll
     reactions_count = db.exec(
         select(
             PollReaction.poll_id,
@@ -73,14 +73,14 @@ def get_all_polls(
         )
     ).all()
     
-    # Creamos un diccionario para almacenar los conteos
+    # Create a dictionary to store counts
     reactions_dict = {}
     for reaction in reactions_count:
         if reaction.poll_id not in reactions_dict:
             reactions_dict[reaction.poll_id] = {'LIKE': 0, 'DISLIKE': 0}
         reactions_dict[reaction.poll_id][reaction.reaction] = reaction.count
 
-    # Obtener el conteo de comentarios por encuesta
+    # Get comment count by poll
     comments_count = db.exec(
         select(
             PollComment.poll_id,
@@ -95,7 +95,7 @@ def get_all_polls(
         for comment in comments_count
     }
 
-    # Obtener votos del usuario actual si está autenticado
+    # Get current user's votes if authenticated
     user_votes = {}
     if current_user_id:
         user_votes_query = select(PollVote).where(
@@ -107,7 +107,7 @@ def get_all_polls(
                 user_votes[vote.poll_id] = set()
             user_votes[vote.poll_id].add(vote.option_id)
 
-    # Obtener las reacciones del usuario actual si está autenticado
+    # Get current user's reactions if authenticated
     user_reactions = {}
     if current_user_id:
         user_reactions_query = select(PollReaction).where(
@@ -119,22 +119,29 @@ def get_all_polls(
             for reaction in user_reactions_result
         }
 
-    # Procesar resultados
+    # Process results
     polls_dict = {}
     for poll, user in polls_results:
         poll_dict = poll.dict()
-        if not poll.is_anonymous:
-            poll_dict['creator_username'] = user.username
-            del poll_dict['creator_id']
+        
+        # Replace creator_id with creator object
+        if not poll.is_anonymous and user:
+            poll_dict['creator'] = {
+                'id': user.id,
+                'username': user.username,
+                'image': user.image
+            }
         else:
-            del poll_dict['creator_id']
+            poll_dict['creator'] = None
+        
+        del poll_dict['creator_id']
         
         poll_dict['reactions'] = reactions_dict.get(poll.id, {'LIKE': 0, 'DISLIKE': 0})
         poll_dict['comments_count'] = comments_dict.get(poll.id, 0)
         poll_dict['user_reaction'] = user_reactions.get(poll.id, None)
         poll_dict['user_voted_options'] = list(user_votes.get(poll.id, set())) if current_user_id else None
         
-        # Añadir países si el scope es INTERNATIONAL
+        # Add countries if scope is INTERNATIONAL
         if poll.scope == "INTERNATIONAL":
             countries = db.exec(
                 select(Country.cca2)
@@ -145,7 +152,7 @@ def get_all_polls(
             ).all()
             poll_dict['countries'] = [country for country in countries if country]
         
-        # Agregar las opciones de la encuesta
+        # Add poll options
         poll_dict['options'] = []
         for option in options_by_poll.get(poll.id, []):
             option_dict = option.dict()
@@ -165,26 +172,26 @@ def get_all_polls(
     }
 
 def generate_unique_slug(db: Session, title: str) -> str:
-    # Genera el slug base
+    # Generate base slug
     base_slug = slugify(title)
     slug = base_slug
     
-    # Verifica si el slug existe
+    # Check if slug exists
     while db.query(Poll).filter(Poll.slug == slug).first() is not None:
-        # Si existe, añade un sufijo aleatorio
+        # If it exists, add a random suffix
         random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
         slug = f"{base_slug}-{random_suffix}"
     
     return slug
 
 def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
-    # Genera un slug único
+    # Generate a unique slug
     unique_slug = generate_unique_slug(db, poll_data.title)
     
-    # Obtener el tiempo actual
+    # Get current time
     current_time = datetime.utcnow()
     
-    # Crear la encuesta
+    # Create the poll
     db_poll = Poll(
         **poll_data.dict(exclude={'options', 'community_ids', 'country_codes', 'country_code', 'region_id'}),
         creator_id=user_id,
@@ -196,7 +203,7 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
     db.commit()
     db.refresh(db_poll)
     
-    # Crear las opciones de la encuesta
+    # Create poll options
     for option_data in poll_data.options:
         db_option = PollOption(
             poll_id=db_poll.id,
@@ -204,9 +211,9 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
         )
         db.add(db_option)
     
-    # Asociar las comunidades con la encuesta según el scope
+    # Associate communities with the poll based on scope
     if poll_data.scope == "INTERNATIONAL" and poll_data.country_codes:
-        # Buscar las comunidades asociadas a los códigos de país
+        # Find communities associated with country codes
         communities = db.exec(
             select(Community)
             .join(Country, Country.community_id == Community.id)
@@ -216,12 +223,12 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
         if not communities:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No se encontraron comunidades para los códigos de país proporcionados"
+                detail="No communities found for the provided country codes"
             )
             
         db_poll.communities.extend(communities)
     elif poll_data.scope == "NATIONAL" and poll_data.country_code:
-        # Buscar la comunidad asociada al código de país nacional
+        # Find community associated with national country code
         country = db.exec(
             select(Country)
             .where(Country.cca2 == poll_data.country_code)
@@ -230,40 +237,40 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
         if not country or not country.community_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"No se encontró una comunidad para el país {poll_data.country_code}"
+                detail=f"No community found for country {poll_data.country_code}"
             )
             
         community = db.get(Community, country.community_id)
         if community:
             db_poll.communities.append(community)
     elif poll_data.scope == "REGIONAL" and poll_data.region_id:
-        # Buscar la comunidad asociada a la región
+        # Find community associated with region
         region = db.get(Region, poll_data.region_id)
         if not region or not region.community_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"No se encontró una comunidad para la región con ID {poll_data.region_id}"
+                detail=f"No community found for region with ID {poll_data.region_id}"
             )
             
         community = db.get(Community, region.community_id)
         if community:
             db_poll.communities.append(community)
     elif poll_data.scope == "SUBREGIONAL" and poll_data.subregion_id:
-        # Buscar la comunidad asociada a la subdivisión nacional
+        # Find community associated with national subdivision
         from api.public.subregion.models import Subregion
         
         subregion = db.get(Subregion, poll_data.subregion_id)
         if not subregion or not subregion.community_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"No se encontró una comunidad para la subdivisión nacional con ID {poll_data.subregion_id}"
+                detail=f"No community found for national subdivision with ID {poll_data.subregion_id}"
             )
             
         community = db.get(Community, subregion.community_id)
         if community:
             db_poll.communities.append(community)
     elif poll_data.community_ids:
-        # Para otros scopes, usar community_ids directamente
+        # For other scopes, use community_ids directly
         communities = db.exec(
             select(Community).where(Community.id.in_(poll_data.community_ids))
         ).all()
@@ -274,22 +281,22 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
     return db_poll
 
 def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int, custom_response: str | None = None) -> Poll:
-    # Verificar que la encuesta existe
+    # Verify poll exists
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
     
-    # Verificar que la encuesta está publicada
+    # Verify poll is published
     if poll.status != PollStatus.PUBLISHED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se puede votar en una encuesta que no está publicada"
+            detail="Cannot vote on a poll that is not published"
         )
     
-    # Verificar que las opciones pertenecen a la encuesta
+    # Verify options belong to the poll
     valid_options = db.exec(
         select(PollOption).where(
             PollOption.poll_id == poll_id,
@@ -300,18 +307,18 @@ def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int, 
     if len(valid_options) != len(option_ids):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Algunas opciones no son válidas para esta encuesta"
+            detail="Some options are not valid for this poll"
         )
     
-    # Verificar el tipo de votación
+    # Verify voting type
     if poll.type == PollType.BINARY or poll.type == PollType.SINGLE_CHOICE:
         if len(option_ids) > 1:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Esta encuesta solo permite una opción"
+                detail="This poll only allows one option"
             )
     
-    # Buscar votos existentes del usuario en esta encuesta
+    # Find existing user votes in this poll
     existing_votes = db.exec(
         select(PollVote).where(
             PollVote.poll_id == poll_id,
@@ -319,14 +326,14 @@ def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int, 
         )
     ).all()
     
-    # Eliminar votos anteriores
+    # Remove previous votes
     for vote in existing_votes:
-        # Decrementar el contador de votos de la opción anterior
+        # Decrement vote counter for previous option
         old_option = db.get(PollOption, vote.option_id)
-        old_option.votes = max(0, old_option.votes - 1)  # Evitar números negativos
+        old_option.votes = max(0, old_option.votes - 1)  # Avoid negative numbers
         db.delete(vote)
     
-    # Crear los nuevos votos
+    # Create new votes
     for option_id in option_ids:
         vote = PollVote(
             poll_id=poll_id,
@@ -335,20 +342,20 @@ def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int, 
         )
         db.add(vote)
         
-        # Incrementar el contador de votos de la nueva opción
+        # Increment vote counter for new option
         option = db.get(PollOption, option_id)
         option.votes += 1
     
-    # Si hay una respuesta personalizada, verificar que la opción permite respuestas personalizadas
+    # If there's a custom response, verify the option allows custom responses
     if custom_response:
         option = db.get(PollOption, option_ids[0])
         if not option or not option.is_custom_option:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Esta opción no permite respuestas personalizadas"
+                detail="This option does not allow custom responses"
             )
             
-        # Crear la respuesta personalizada
+        # Create custom response
         custom = PollCustomResponse(
             option_id=option.id,
             user_id=user_id,
@@ -362,26 +369,26 @@ def create_vote(db: Session, poll_id: int, option_ids: list[int], user_id: int, 
 
 def create_or_update_reaction(db: Session, poll_id: int, user_id: int, reaction_type: ReactionType) -> Poll:
     """
-    Crea o actualiza una reacción en una encuesta.
-    Si la reacción ya existe y es del mismo tipo, se elimina.
-    Si la reacción ya existe y es de diferente tipo, se actualiza.
+    Creates or updates a reaction on a poll.
+    If the reaction already exists and is of the same type, it is removed.
+    If the reaction already exists and is of a different type, it is updated.
     """
-    # Verificar que la encuesta existe
+    # Verify poll exists
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
     
-    # Verificar que la encuesta está publicada
+    # Verify poll is published
     if poll.status != PollStatus.PUBLISHED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se puede reaccionar a una encuesta que no está publicada"
+            detail="Cannot react to a poll that is not published"
         )
     
-    # Buscar si ya existe una reacción del usuario
+    # Check if user already has a reaction
     existing_reaction = db.exec(
         select(PollReaction).where(
             PollReaction.poll_id == poll_id,
@@ -391,15 +398,15 @@ def create_or_update_reaction(db: Session, poll_id: int, user_id: int, reaction_
     
     if existing_reaction:
         if existing_reaction.reaction == reaction_type:
-            # Si la reacción es la misma, eliminarla
+            # If reaction is the same, remove it
             db.delete(existing_reaction)
         else:
-            # Si la reacción es diferente, actualizarla
+            # If reaction is different, update it
             existing_reaction.reaction = reaction_type
             existing_reaction.reacted_at = datetime.utcnow()
             db.add(existing_reaction)
     else:
-        # Crear nueva reacción
+        # Create new reaction
         new_reaction = PollReaction(
             poll_id=poll_id,
             user_id=user_id,
@@ -410,19 +417,19 @@ def create_or_update_reaction(db: Session, poll_id: int, user_id: int, reaction_
     
     db.commit()
     
-    # Obtener la encuesta actualizada con toda su información
+    # Get updated poll with all its information
     query = select(Poll, PollOption, User).join(PollOption).join(User, Poll.creator_id == User.id).where(Poll.id == poll_id)
     result = db.exec(query).first()
     
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Error al obtener la encuesta actualizada"
+            detail="Error getting updated poll"
         )
     
     poll, option, user = result
     
-    # Obtener el conteo actualizado de reacciones
+    # Get updated reaction count
     reactions_count = db.exec(
         select(
             PollReaction.reaction,
@@ -434,7 +441,7 @@ def create_or_update_reaction(db: Session, poll_id: int, user_id: int, reaction_
         )
     ).all()
     
-    # Crear el diccionario de la encuesta
+    # Create poll dictionary
     poll_dict = poll.dict()
     if not poll.is_anonymous:
         poll_dict['creator_username'] = user.username
@@ -442,20 +449,20 @@ def create_or_update_reaction(db: Session, poll_id: int, user_id: int, reaction_
     else:
         del poll_dict['creator_id']
     
-    # Agregar conteo de reacciones
+    # Add reaction count
     reactions_dict = {'LIKE': 0, 'DISLIKE': 0}
     for reaction in reactions_count:
         reactions_dict[reaction.reaction] = reaction.count
     
     poll_dict['reactions'] = reactions_dict
     
-    # Obtener todas las opciones de la encuesta
+    # Get all poll options
     options = db.exec(
         select(PollOption).where(PollOption.poll_id == poll_id)
     ).all()
     poll_dict['options'] = [option.dict() for option in options]
     
-    # Obtener las comunidades asociadas a la encuesta
+    # Get communities associated with the poll
     communities = [
         {"id": c.id, "name": c.name, "description": c.description}
         for c in poll.communities
@@ -473,12 +480,12 @@ def get_country_polls(
     size: int = 10
 ):
     """
-    Obtiene todas las encuestas asociadas a un país específico con paginación.
+    Gets all polls associated with a specific country with pagination.
     """
-    # Calcular el offset para la paginación
+    # Calculate offset for pagination
     offset = (page - 1) * size
 
-    # Verificar que el país existe
+    # Verify country exists
     country = db.exec(
         select(Country).where(Country.cca2 == country_code)
     ).first()
@@ -486,10 +493,10 @@ def get_country_polls(
     if not country:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"País con código {country_code} no encontrado"
+            detail=f"Country with code {country_code} not found"
         )
 
-    # Obtener el total de encuestas para la paginación
+    # Get total polls for pagination
     total_query = (
         select(func.count(distinct(Poll.id)))
         .join(PollCommunityLink)
@@ -504,7 +511,7 @@ def get_country_polls(
     total = db.exec(total_query).first()
     total_pages = ceil(total / size)
 
-    # Modificar la consulta principal para incluir paginación
+    # Modify main query to include pagination
     query = (
         select(Poll, PollOption, User)
         .join(PollOption)
@@ -520,10 +527,10 @@ def get_country_polls(
 
     query = query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
 
-    # Obtener las encuestas
+    # Get polls
     results = db.exec(query).all()
 
-    # Obtener conteo de reacciones
+    # Get reaction counts
     reactions_count = db.exec(
         select(
             PollReaction.poll_id,
@@ -535,14 +542,14 @@ def get_country_polls(
         )
     ).all()
 
-    # Crear diccionario de reacciones
+    # Create reactions dictionary
     reactions_dict = {}
     for reaction in reactions_count:
         if reaction.poll_id not in reactions_dict:
             reactions_dict[reaction.poll_id] = {'LIKE': 0, 'DISLIKE': 0}
         reactions_dict[reaction.poll_id][reaction.reaction] = reaction.count
 
-    # Obtener conteo de comentarios
+    # Get comments count
     comments_count = db.exec(
         select(
             PollComment.poll_id,
@@ -557,7 +564,7 @@ def get_country_polls(
         for comment in comments_count
     }
 
-    # Obtener votos del usuario actual si está autenticado
+    # Get current user votes if authenticated
     user_votes = {}
     if current_user_id:
         user_votes_query = select(PollVote).where(
@@ -569,7 +576,7 @@ def get_country_polls(
                 user_votes[vote.poll_id] = set()
             user_votes[vote.poll_id].add(vote.option_id)
 
-    # Obtener las reacciones del usuario actual si está autenticado
+    # Get current user reactions if authenticated
     user_reactions = {}
     if current_user_id:
         user_reactions_query = select(PollReaction).where(
@@ -581,7 +588,7 @@ def get_country_polls(
             for reaction in user_reactions_result
         }
 
-    # Procesar resultados
+    # Process results
     polls_dict = {}
     for poll, option, user in results:
         if poll.id not in polls_dict:
@@ -597,7 +604,7 @@ def get_country_polls(
             poll_dict['user_reaction'] = user_reactions.get(poll.id, None)
             poll_dict['user_voted_options'] = list(user_votes.get(poll.id, set())) if current_user_id else None
             
-            # Añadir países si el scope es INTERNATIONAL
+            # Add countries if scope is INTERNATIONAL
             if poll.scope == "INTERNATIONAL":
                 countries = db.exec(
                     select(Country.cca2)
@@ -635,9 +642,9 @@ def get_regional_polls(
     size: int = 10
 ):
     """
-    Obtener todas las encuestas asociadas a una región específica con paginación.
+    Get all polls associated with a specific region with pagination.
     """
-    # Primero obtener la comunidad asociada a la región
+    # First get the community associated with the region
     region_community = db.exec(
         select(Community)
         .join(Region, Community.id == Region.community_id)
@@ -649,7 +656,7 @@ def get_regional_polls(
 
     offset = (page - 1) * size
 
-    # Obtener el total para la paginación
+    # Get total for pagination
     total_query = (
         select(func.count(distinct(Poll.id)))
         .join(PollCommunityLink)
@@ -665,7 +672,7 @@ def get_regional_polls(
     total = db.exec(total_query).first()
     total_pages = ceil(total / size)
 
-    # Modificar la consulta principal
+    # Modify main query
     query = (
         select(Poll)
         .distinct()
@@ -696,23 +703,23 @@ def get_regional_polls(
 
 def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> dict:
     """
-    Enriquece una encuesta con información adicional:
-    - Opciones y votos
-    - Reacciones
-    - Información del creador
-    - Conteo de comentarios
-    - Estado de votación del usuario actual
+    Enriches a poll with additional information:
+    - Options and votes
+    - Reactions
+    - Creator information
+    - Comments count
+    - Current user voting status
     """
-    # Obtener el creador
+    # Get creator
     creator = db.get(User, poll.creator_id)
     
-    # Obtener las opciones
+    # Get options
     options = db.exec(
         select(PollOption)
         .where(PollOption.poll_id == poll.id)
     ).all()
 
-    # Obtener reacciones
+    # Get reactions
     reactions = db.exec(
         select(
             PollReaction.reaction,
@@ -726,14 +733,14 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     for reaction in reactions:
         reactions_dict[reaction.reaction] = reaction.count
 
-    # Obtener conteo de comentarios
+    # Get comments count
     comments_count = db.exec(
         select(func.count(PollComment.id))
         .where(PollComment.poll_id == poll.id)
     ).first()
 
-    # Obtener votos del usuario actual si está autenticado
-    user_voted_options = []  # Inicializar como lista vacía en lugar de None
+    # Get current user votes if authenticated
+    user_voted_options = []  # Initialize as empty list instead of None
     if current_user_id:
         votes = db.exec(
             select(PollVote.option_id)
@@ -745,7 +752,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
         if votes:
             user_voted_options = [vote for vote in votes]
 
-    # Obtener la reacción del usuario actual si está autenticado
+    # Get current user reaction if authenticated
     user_reaction = None
     if current_user_id:
         reaction = db.exec(
@@ -758,15 +765,22 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
         if reaction:
             user_reaction = reaction.reaction
 
-    # Construir el diccionario de la encuesta
+    # Build poll dictionary
     poll_dict = poll.dict()
     
-    # Agregar username del creador si la encuesta no es anónima
+    # Add creator information in standardized format
     if not poll.is_anonymous and creator:
-        poll_dict['creator_username'] = creator.username
+        poll_dict['creator'] = {
+            'id': creator.id,
+            'username': creator.username,
+            'image': creator.image
+        }
+    else:
+        poll_dict['creator'] = None
+    
     del poll_dict['creator_id']
 
-    # Agregar opciones con estado de votación
+    # Add options with voting status
     poll_dict['options'] = [
         {
             **option.dict(),
@@ -775,7 +789,7 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
         for option in options
     ]
 
-    # Agregar reacciones y comentarios
+    # Add reactions and comments
     poll_dict['reactions'] = reactions_dict
     poll_dict['comments_count'] = comments_count or 0
     poll_dict['user_reaction'] = user_reaction

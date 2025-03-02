@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import Optional
 from api.database import get_session
-from api.auth.dependencies import get_current_user
+from api.auth.dependencies import get_current_user, get_current_user_optional
 from api.public.user.models import UserRole
 from api.public.community.models import Community, CommunityLevel
 from api.public.community.crud import get_community_by_id
@@ -160,7 +160,7 @@ def get_debates(
     search: Optional[str] = None,
     skip: int = 0,
     limit: int = 100,
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_current_user_optional),
     session: Session = Depends(get_session)
 ):
     """Get debates with optional filters"""
@@ -212,7 +212,7 @@ def get_debates(
 @router.get("/{debate_id_or_slug}", response_model=DebateRead)
 def get_debate(
     debate_id_or_slug: str,
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_current_user_optional),
     session: Session = Depends(get_session)
 ):
     """Get a specific debate by ID or slug"""

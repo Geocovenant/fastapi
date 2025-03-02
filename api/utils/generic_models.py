@@ -32,3 +32,7 @@ class DebateCommunityLink(SQLModel, table=True):
     community_id: Optional[int] = Field(
         default=None, foreign_key="community.id", primary_key=True
     )
+
+class ProjectCommunityLink(SQLModel, table=True):
+    project_id: int = Field(foreign_key="project.id", primary_key=True)
+    community_id: int = Field(foreign_key="community.id", primary_key=True)

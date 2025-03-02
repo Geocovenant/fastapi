@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, JSON
-from api.utils.generic_models import UserCommunityLink, PollCommunityLink, DebateCommunityLink
+from api.utils.generic_models import UserCommunityLink, PollCommunityLink, DebateCommunityLink, ProjectCommunityLink
 
 class CommunityLevel(str, Enum):
     GLOBAL = "GLOBAL"
@@ -35,6 +35,7 @@ class Community(CommunityBase, table=True):
     region: "Region" = Relationship(back_populates="community")
     subregion: "Subregion" = Relationship(back_populates="community")
     locality: "Locality" = Relationship(back_populates="community")
+    projects: list["Project"] = Relationship(back_populates="communities", link_model=ProjectCommunityLink)
 
 class CommunityRead(CommunityBase):
     id: int

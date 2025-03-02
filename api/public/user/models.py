@@ -86,6 +86,11 @@ class User(UserBase, table=True):
     # Add poll_custom_responses here
     poll_custom_responses: list["PollCustomResponse"] = Relationship(back_populates="user")
 
+    # Relationships for projects
+    projects: list["Project"] = Relationship(back_populates="creator")
+    project_commitments: list["ProjectCommitment"] = Relationship(back_populates="user")
+    project_donations: list["ProjectDonation"] = Relationship(back_populates="user")
+
 # Additional models required by Auth.js
 class Account(SQLModel, table=True):
     __tablename__ = "accounts"

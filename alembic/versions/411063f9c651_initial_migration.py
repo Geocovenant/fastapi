@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: ef7f7f471a6d
+Revision ID: 411063f9c651
 Revises: 
-Create Date: 2025-03-01 04:22:50.581847
+Create Date: 2025-03-02 03:19:42.138856
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = 'ef7f7f471a6d'
+revision: str = '411063f9c651'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -134,6 +134,24 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_poll_slug'), 'poll', ['slug'], unique=True)
     op.create_index(op.f('ix_poll_title'), 'poll', ['title'], unique=False)
+    op.create_table('project',
+    sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=5000), nullable=True),
+    sa.Column('status', sa.Enum('DRAFT', 'OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', name='projectstatus'), nullable=False),
+    sa.Column('goal_amount', sa.Float(), nullable=True),
+    sa.Column('current_amount', sa.Float(), nullable=False),
+    sa.Column('scope', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('slug', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('views_count', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_project_slug'), 'project', ['slug'], unique=True)
+    op.create_index(op.f('ix_project_title'), 'project', ['title'], unique=False)
     op.create_table('sessions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('userId', sa.Integer(), nullable=False),
@@ -273,6 +291,46 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['tag_id'], ['tag.id'], ),
     sa.PrimaryKeyConstraint('poll_id', 'tag_id')
     )
+    op.create_table('projectcommitment',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.Enum('TIME', 'MATERIAL', 'ECONOMIC', name='commitmenttype'), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('quantity', sa.Float(), nullable=True),
+    sa.Column('unit', sqlmodel.sql.sqltypes.AutoString(length=50), nullable=True),
+    sa.Column('fulfilled', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['project_id'], ['project.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('projectcommunitylink',
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('community_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
+    sa.ForeignKeyConstraint(['project_id'], ['project.id'], ),
+    sa.PrimaryKeyConstraint('project_id', 'community_id')
+    )
+    op.create_table('projectdonation',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('amount', sa.Float(), nullable=False),
+    sa.Column('donated_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['project_id'], ['project.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('projectstep',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=True),
+    sa.Column('order', sa.Integer(), nullable=False),
+    sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.ForeignKeyConstraint(['project_id'], ['project.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('opinion',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('point_of_view_id', sa.Integer(), nullable=False),
@@ -302,6 +360,16 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['option_id'], ['polloption.id'], ),
     sa.ForeignKeyConstraint(['poll_id'], ['poll.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('projectresource',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('step_id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.Enum('LABOR', 'MATERIAL', 'ECONOMIC', name='resourcetype'), nullable=False),
+    sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('quantity', sa.Float(), nullable=True),
+    sa.Column('unit', sqlmodel.sql.sqltypes.AutoString(length=50), nullable=True),
+    sa.ForeignKeyConstraint(['step_id'], ['projectstep.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('region',
@@ -377,9 +445,14 @@ def downgrade() -> None:
     op.drop_table('subregion')
     op.drop_table('opinionvote')
     op.drop_table('region')
+    op.drop_table('projectresource')
     op.drop_table('pollvote')
     op.drop_table('pollcustomresponse')
     op.drop_table('opinion')
+    op.drop_table('projectstep')
+    op.drop_table('projectdonation')
+    op.drop_table('projectcommunitylink')
+    op.drop_table('projectcommitment')
     op.drop_table('polltaglink')
     op.drop_table('pollreaction')
     op.drop_table('polloption')
@@ -394,6 +467,9 @@ def downgrade() -> None:
     op.drop_table('userfollowlink')
     op.drop_table('usercommunitylink')
     op.drop_table('sessions')
+    op.drop_index(op.f('ix_project_title'), table_name='project')
+    op.drop_index(op.f('ix_project_slug'), table_name='project')
+    op.drop_table('project')
     op.drop_index(op.f('ix_poll_title'), table_name='poll')
     op.drop_index(op.f('ix_poll_slug'), table_name='poll')
     op.drop_table('poll')

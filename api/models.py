@@ -76,6 +76,46 @@ from api.utils.generic_models import (
     PollCommunityLink,
     DebateCommunityLink,
     DebateTagLink,
-    PollTagLink
+    PollTagLink,
+    ProjectCommunityLink
 )
+
+# Modelos de proyectos
+from api.public.project.models import (
+    Project,
+    ProjectBase,
+    ProjectCreate,
+    ProjectRead,
+    ProjectUpdate,
+    ProjectStep,
+    ProjectStepCreate,
+    ProjectStepRead,
+    ProjectCommitment,
+    ProjectCommitmentCreate,
+    ProjectCommitmentRead,
+    ProjectDonation,
+    ProjectDonationCreate,
+    ProjectDonationRead,
+    ProjectResource,
+    ProjectResourceCreate,
+    ProjectResourceRead,
+    ProjectStepRead,
+    ProjectUpdate,
+    ProjectStatus,
+    ResourceType,
+    CommitmentType
+)
+
+# Importación centralizada de todos los modelos 
+# para resolver referencias circulares
+
+# Importar primero modelos básicos
+from api.public.user.models import User
+from api.public.tag.models import Tag
+from api.public.community.models import Community
+
+# Luego importar modelos que dependen de los básicos
+from api.public.poll.models import Poll, PollOption, PollVote, PollReaction, PollComment, PollCustomResponse
+from api.public.debate.models import Debate, PointOfView, Opinion, OpinionVote, DebateChangeLog
+from api.public.project.models import Project, ProjectStep, ProjectResource, ProjectCommitment, ProjectDonation
 
