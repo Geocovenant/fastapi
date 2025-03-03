@@ -305,7 +305,6 @@ def delete_debate(
 @router.post("/{debate_id}/opinions", response_model=OpinionRead)
 def add_opinion(
     debate_id: int,
-    community_id: int,
     opinion_data: OpinionCreate,
     current_user = Depends(get_current_user),
     session: Session = Depends(get_session)
@@ -320,6 +319,42 @@ def add_opinion(
     # Verificar que el debate no está cerrado
     if debate.status in [DebateStatus.CLOSED, DebateStatus.ARCHIVED, DebateStatus.RESOLVED]:
         raise HTTPException(status_code=400, detail="No se pueden añadir opiniones a debates cerrados o archivados")
+    
+    # Verificar si el usuario ya ha opinado en este debate
+    existing_opinion = session.exec(
+        select(Opinion)
+        .join(PointOfView)
+        .where(
+            PointOfView.debate_id == debate_id,
+            Opinion.user_id == current_user.id
+        )
+    ).first()
+    
+    if existing_opinion:
+        raise HTTPException(
+            status_code=400, 
+            detail="Ya has opinado en este debate. Solo se permite una opinión por usuario."
+        )
+    
+    # Manejar la obtención del community_id según el tipo de debate
+    if debate.type == DebateType.GLOBAL:
+        if not opinion_data.country_cca2:
+            raise HTTPException(status_code=400, detail="Para debates globales se requiere el country_cca2")
+        
+        # Buscar el país por cca2
+        country = session.exec(
+            select(Country)
+            .where(Country.cca2 == opinion_data.country_cca2)
+        ).first()
+        
+        if not country:
+            raise HTTPException(status_code=404, detail="País no encontrado")
+        
+        community_id = country.community_id
+    else:
+        if not opinion_data.community_id:
+            raise HTTPException(status_code=400, detail="Se requiere el community_id para este tipo de debate")
+        community_id = opinion_data.community_id
     
     # Verificar que existe la comunidad
     community = get_community_by_id(session, community_id)
