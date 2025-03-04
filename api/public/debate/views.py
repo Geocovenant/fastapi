@@ -337,9 +337,12 @@ def add_opinion(
         )
     
     # Manejar la obtención del community_id según el tipo de debate
-    if debate.type == DebateType.GLOBAL:
+    if debate.type in [DebateType.GLOBAL, DebateType.INTERNATIONAL]:
         if not opinion_data.country_cca2:
-            raise HTTPException(status_code=400, detail="Para debates globales se requiere el country_cca2")
+            raise HTTPException(
+                status_code=400, 
+                detail="Para debates globales e internacionales se requiere el country_cca2"
+            )
         
         # Buscar el país por cca2
         country = session.exec(
@@ -351,6 +354,17 @@ def add_opinion(
             raise HTTPException(status_code=404, detail="País no encontrado")
         
         community_id = country.community_id
+    elif debate.type == DebateType.NATIONAL:
+        # Para debates nacionales, usamos region_id
+        if not opinion_data.region_id:
+            raise HTTPException(status_code=400, detail="Se requiere el region_id para debates nacionales")
+        
+        # Buscar la región por ID
+        region = get_region_by_id(session, opinion_data.region_id)
+        if not region:
+            raise HTTPException(status_code=404, detail="Región no encontrada")
+        
+        community_id = region.community_id
     else:
         if not opinion_data.community_id:
             raise HTTPException(status_code=400, detail="Se requiere el community_id para este tipo de debate")

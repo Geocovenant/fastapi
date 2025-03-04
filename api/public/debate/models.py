@@ -134,9 +134,10 @@ class PointOfViewCreate(SQLModel):
     community_ids: list[int] = Field(default=[])
 
 class OpinionCreate(SQLModel):
-    content: str = Field(max_length=1000)
-    country_cca2: Optional[str] = Field(default=None, description="CCA2 country code for global debates")
-    community_id: Optional[int] = Field(default=None, description="Community ID for non-global debates")
+    content: str
+    community_id: Optional[int] = None
+    country_cca2: Optional[str] = None
+    region_id: Optional[int] = None
 
 class OpinionVoteCreate(SQLModel):
     opinion_id: int
