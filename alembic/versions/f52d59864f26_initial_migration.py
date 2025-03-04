@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 7e9ee6257aa7
+Revision ID: f52d59864f26
 Revises: 
-Create Date: 2025-03-02 03:53:44.345484
+Create Date: 2025-03-04 08:03:21.772975
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = '7e9ee6257aa7'
+revision: str = 'f52d59864f26'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -170,6 +170,7 @@ def upgrade() -> None:
     op.create_table('usercommunitylink',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('community_id', sa.Integer(), nullable=False),
+    sa.Column('is_public', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['community_id'], ['community.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('user_id', 'community_id')

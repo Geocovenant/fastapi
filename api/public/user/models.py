@@ -5,6 +5,7 @@ from typing import Optional, List
 from pydantic import EmailStr, field_validator
 from api.utils.generic_models import UserCommunityLink, UserFollowLink
 import re
+from sqlalchemy import Column, Boolean
 
 class UserRole(str, Enum):
     ADMIN = "ADMIN"
@@ -35,6 +36,9 @@ class UserBase(SQLModel):
     cover: Optional[str] = Field(default=None, max_length=100, nullable=True)
     gender: Optional[str] = Field(default=None, max_length=1, nullable=True)
     last_login: Optional[datetime] = Field(default=None)
+    
+    # New privacy settings - comentado temporalmente
+    # is_public_in_communities: Optional[bool] = Field(default=False)
 
 class User(UserBase, table=True):
     __tablename__ = "users"
@@ -138,6 +142,7 @@ class UserUpdateSchema(SQLModel):
     cover: Optional[str] = None
     image: Optional[str] = None
     gender: Optional[str] = None
+    is_public_in_communities: Optional[bool] = None
 
 class UsernameUpdateSchema(SQLModel):
     username: str

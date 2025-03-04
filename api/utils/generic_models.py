@@ -4,6 +4,7 @@ from typing import Optional
 class UserCommunityLink(SQLModel, table=True):
     user_id: Optional[int] = Field(foreign_key="users.id", primary_key=True)
     community_id: Optional[int] = Field(foreign_key="community.id", primary_key=True)
+    is_public: bool = Field(default=False)
 
 class UserFollowLink(SQLModel, table=True):
     follower_id: int = Field(foreign_key="users.id", primary_key=True)

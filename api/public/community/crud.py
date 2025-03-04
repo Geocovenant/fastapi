@@ -2,11 +2,43 @@ from fastapi import HTTPException, status
 from sqlmodel import Session, select
 from typing import Optional
 from api.public.community.models import Community
+from api.public.user.models import UserCommunityLink
+from api.public.user.models import User
 
-def get_community(community_id: int, db: Session) -> Community:
+def get_community(community_id: int, db: Session, check_membership: bool = False, current_user: Optional[User] = None):
+    """
+    Obtiene una comunidad por su ID.
+    
+    Args:
+        community_id: ID de la comunidad a obtener
+        db: Sesión de base de datos
+        check_membership: Si es True, verifica que el usuario actual sea miembro
+        current_user: Usuario actual (opcional)
+        
+    Returns:
+        La comunidad si existe y el usuario tiene acceso, None en caso contrario
+    """
     community = db.get(Community, community_id)
+    
     if not community:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Community not found")
+        return None
+        
+    # Solo verificar membresía si se solicita explícitamente
+    if check_membership and current_user:
+        # Verificar si el usuario es miembro de la comunidad
+        is_member = db.exec(
+            select(UserCommunityLink).where(
+                UserCommunityLink.user_id == current_user.id,
+                UserCommunityLink.community_id == community_id
+            )
+        ).first() is not None
+        
+        if not is_member:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No eres miembro de esta comunidad"
+            )
+    
     return community
 
 def get_community_by_id(session: Session, community_id: int) -> Optional[Community]:

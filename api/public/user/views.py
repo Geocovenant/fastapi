@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Body, Query, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from typing import Optional
 import re
 import random
 from api.database import get_session
 from api.auth.dependencies import get_current_user, get_current_user_optional
 from api.public.user.models import User, UserFollowLink, UserUpdateSchema, UsernameUpdateSchema, GenerateUsernameSchema
-from api.utils.generic_models import UserFollowLink
+from api.public.community.models import Community
+from api.utils.generic_models import UserFollowLink, UserCommunityLink
 
 router = APIRouter()
 
@@ -321,3 +322,84 @@ def update_username(
     db.refresh(user)
     
     return user
+
+@router.get("/community/{community_id}/members", deprecated=True)
+def get_community_members_legacy(
+    community_id: int,
+    page: int = Query(1, ge=1),
+    size: int = Query(20, ge=1, le=100),
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_session)
+):
+    """
+    [DEPRECATED] Usa /api/v1/communities/{community_id}/members en su lugar.
+    """
+    from api.public.community.views import get_community_members
+    return get_community_members(community_id, page, size, current_user, db)
+
+@router.patch("/me/privacy", status_code=status.HTTP_200_OK)
+def update_privacy_settings(
+    settings: dict = Body(..., example={"is_public_in_communities": True}),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Actualiza la configuración de privacidad del usuario.
+    Authentication required.
+    """
+    # Get current user from database
+    user = db.get(User, current_user.id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Update privacy settings
+    if "is_public_in_communities" in settings:
+        user.is_public_in_communities = settings["is_public_in_communities"]
+    
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    return user
+
+@router.patch("/me/community/{community_id}/visibility", status_code=status.HTTP_200_OK)
+def update_community_visibility(
+    community_id: int,
+    is_public: bool = Body(..., embed=True),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Actualiza la visibilidad del usuario en una comunidad específica.
+    """
+    # Verificar que existe la comunidad
+    community = db.exec(select(Community).where(Community.id == community_id)).first()
+    if not community:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Comunidad con ID {community_id} no encontrada"
+        )
+    
+    # Verificar que el usuario es miembro de la comunidad
+    user_community_link = db.exec(
+        select(UserCommunityLink).where(
+            UserCommunityLink.user_id == current_user.id,
+            UserCommunityLink.community_id == community_id
+        )
+    ).first()
+    
+    if not user_community_link:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No eres miembro de esta comunidad"
+        )
+    
+    # Actualizar la visibilidad
+    user_community_link.is_public = is_public
+    db.add(user_community_link)
+    db.commit()
+    
+    return {"message": "Visibilidad actualizada correctamente"}
