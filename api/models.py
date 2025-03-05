@@ -1,9 +1,9 @@
 """
-Archivo centralizado que importa todos los modelos de la aplicación
-para facilitar su acceso desde un solo lugar.
+Centralized file that imports all application models
+to facilitate access from a single place.
 """
 
-# Modelos de comunidad
+# Community models
 from api.public.community.models import (
     Community, 
     CommunityBase, 
@@ -11,33 +11,33 @@ from api.public.community.models import (
     CommunityRead
 )
 
-# Modelos de país
+# Country models
 from api.public.country.models import (
     Country
 )
 
-# Modelos de región
+# Region models
 from api.public.region.models import (
     Region
 )
 
-# Modelos de subregión
+# Subregion models
 from api.public.subregion.models import (
     Subregion
 )
 
-# Modelos de localidad
+# Locality models
 from api.public.locality.models import (
     Locality
 )
 
-# Modelos de usuarios
+# User models
 from api.public.user.models import (
     User,
     UserRole
 )
 
-# Modelos de etiquetas
+# Tag models
 from api.public.tag.models import (
     Tag,
     TagBase,
@@ -47,7 +47,7 @@ from api.public.tag.models import (
     TagDelete
 )
 
-# Modelos de debates
+# Debate models
 from api.public.debate.models import (
     Debate, 
     DebateBase,
@@ -70,7 +70,7 @@ from api.public.debate.models import (
     LanguageCode
 )
 
-# Modelos genéricos y relaciones
+# Generic models and relationships
 from api.utils.generic_models import (
     UserCommunityLink,
     PollCommunityLink,
@@ -80,7 +80,7 @@ from api.utils.generic_models import (
     ProjectCommunityLink
 )
 
-# Modelos de proyectos
+# Project models
 from api.public.project.models import (
     Project,
     ProjectBase,
@@ -106,7 +106,7 @@ from api.public.project.models import (
     CommitmentType
 )
 
-# Modelos de issues
+# Issue models
 from api.public.issue.models import (
     Issue,
     IssueBase,
@@ -134,16 +134,27 @@ from api.public.issue.models import (
     IssueImage
 )
 
-# Importación centralizada de todos los modelos 
-# para resolver referencias circulares
+# Report models
+from api.public.report.models import (
+    Report,
+    ReportBase,
+    ReportCreate,
+    ReportResponse,
+    ReportType,
+    ReportStatus,
+    ReportReason
+)
 
-# Importar primero modelos básicos
+# Centralized import of all models 
+# to resolve circular references
+
+# Import basic models first
 from api.public.user.models import User
 from api.public.tag.models import Tag
 from api.public.community.models import Community
 
-# Luego importar modelos que dependen de los básicos
+# Then import models that depend on the basics
 from api.public.poll.models import Poll, PollOption, PollVote, PollReaction, PollComment, PollCustomResponse
 from api.public.debate.models import Debate, PointOfView, Opinion, OpinionVote, DebateChangeLog
 from api.public.project.models import Project, ProjectStep, ProjectResource, ProjectCommitment, ProjectDonation
-
+from api.public.report.models import Report

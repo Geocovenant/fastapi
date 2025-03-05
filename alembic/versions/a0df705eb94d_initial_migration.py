@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: f52d59864f26
+Revision ID: a0df705eb94d
 Revises: 
-Create Date: 2025-03-04 08:03:21.772975
+Create Date: 2025-03-04 20:49:41.001066
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = 'f52d59864f26'
+revision: str = 'a0df705eb94d'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -159,6 +159,26 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_project_slug'), 'project', ['slug'], unique=True)
     op.create_index(op.f('ix_project_title'), 'project', ['title'], unique=False)
+    op.create_table('reports',
+    sa.Column('type', sa.Enum('POLL', 'DEBATE', 'PROJECT', 'ISSUE', 'COMMENT', 'USER', name='reporttype'), nullable=False),
+    sa.Column('reason', sa.Enum('INAPPROPRIATE', 'SPAM', 'HARMFUL', 'MISINFORMATION', 'HATE_SPEECH', 'SCAM', 'FALSE_INFO', 'DUPLICATED', 'FAKE', 'OTHER', name='reportreason'), nullable=False),
+    sa.Column('details', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=True),
+    sa.Column('item_id', sa.Integer(), nullable=False),
+    sa.Column('status', sa.Enum('PENDING', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED', name='reportstatus'), nullable=False),
+    sa.Column('resolution_notes', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=True),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('resolved_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('reporter_id', sa.Integer(), nullable=False),
+    sa.Column('resolved_by_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['reporter_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['resolved_by_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index('idx_report_reporter', 'reports', ['reporter_id'], unique=False)
+    op.create_index('idx_report_status', 'reports', ['status'], unique=False)
+    op.create_index('idx_report_type_item', 'reports', ['type', 'item_id'], unique=False)
     op.create_table('sessions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('userId', sa.Integer(), nullable=False),
@@ -580,6 +600,10 @@ def downgrade() -> None:
     op.drop_table('userfollowlink')
     op.drop_table('usercommunitylink')
     op.drop_table('sessions')
+    op.drop_index('idx_report_type_item', table_name='reports')
+    op.drop_index('idx_report_status', table_name='reports')
+    op.drop_index('idx_report_reporter', table_name='reports')
+    op.drop_table('reports')
     op.drop_index(op.f('ix_project_title'), table_name='project')
     op.drop_index(op.f('ix_project_slug'), table_name='project')
     op.drop_table('project')

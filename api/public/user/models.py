@@ -101,6 +101,16 @@ class User(UserBase, table=True):
     issue_comments: list["IssueComment"] = Relationship(back_populates="user")
     issue_updates: list["IssueUpdate"] = Relationship(back_populates="user")
 
+    # Relaciones para reportes
+    reports_created: list["Report"] = Relationship(
+        back_populates="reporter",
+        sa_relationship_kwargs={"foreign_keys": "[Report.reporter_id]"}
+    )
+    reports_resolved: list["Report"] = Relationship(
+        back_populates="resolved_by",
+        sa_relationship_kwargs={"foreign_keys": "[Report.resolved_by_id]"}
+    )
+
 # Additional models required by Auth.js
 class Account(SQLModel, table=True):
     __tablename__ = "accounts"

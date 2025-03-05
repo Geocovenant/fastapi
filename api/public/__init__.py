@@ -9,6 +9,7 @@ from api.public.debate import views as debate
 from api.public.project import views as project
 from api.public.issue import views as issue
 from api.public.tag import views as tag
+from api.public.report import views as report
 
 api = APIRouter()
 
@@ -61,4 +62,9 @@ api.include_router(
     user.router,
     prefix="/users",
     tags=["Users"]
+)
+api.include_router(
+    report.router,
+    prefix="/reports",
+    tags=["Reports"]
 )

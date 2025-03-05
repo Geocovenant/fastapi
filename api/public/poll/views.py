@@ -33,24 +33,24 @@ def read_polls(
     scope: str | None = None,
     country: str | None = None,
     region: int | None = None,
-    subregion: int | None = None,  # Añadimos el parámetro subregion
-    page: int = Query(default=1, ge=1, description="Número de página"),
-    size: int = Query(default=10, ge=1, le=100, description="Elementos por página"),
+    subregion: int | None = None,  # Added subregion parameter
+    page: int = Query(default=1, ge=1, description="Page number"),
+    size: int = Query(default=10, ge=1, le=100, description="Items per page"),
     current_user: User | None = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
     """
-    Obtener encuestas con filtros opcionales y paginación.
-    - scope: Filtrar por alcance (ej: 'NATIONAL', 'INTERNATIONAL', 'REGIONAL', 'SUBREGIONAL', etc.)
-    - country: Filtrar por código de país (CCA2)
-    - region: Filtrar por ID de región
-    - subregion: Filtrar por ID de subregión
-    - page: Número de página (default: 1)
-    - size: Elementos por página (default: 10, max: 100)
+    Get polls with optional filters and pagination.
+    - scope: Filter by scope (e.g., 'NATIONAL', 'INTERNATIONAL', 'REGIONAL', 'SUBREGIONAL', etc.)
+    - country: Filter by country code (CCA2)
+    - region: Filter by region ID
+    - subregion: Filter by subregion ID
+    - page: Page number (default: 1)
+    - size: Items per page (default: 10, max: 100)
     """
-    # Si se especifica subregión y el scope es SUBREGIONAL
+    # If subregion is specified and the scope is SUBREGIONAL
     if subregion and scope == 'SUBREGIONAL':
-        # Verificar que la subregión existe
+        # Verify that the subregion exists
         subregion_obj = db.exec(
             select(Subregion)
             .where(Subregion.id == subregion)
@@ -59,13 +59,13 @@ def read_polls(
         if not subregion_obj:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No se encontró la subregión con ID {subregion}"
+                detail=f"Subregion with ID {subregion} not found"
             )
 
-        # Primero obtenemos la comunidad asociada a la subregión
+        # First, get the community associated with the subregion
         community_id = subregion_obj.community_id
         
-        # Ahora filtramos los polls que están asociados a esta comunidad y tienen el scope SUBREGIONAL
+        # Now filter the polls that are associated with this community and have the scope SUBREGIONAL
         query = (
             select(Poll)
             .join(PollCommunityLink)
@@ -75,13 +75,13 @@ def read_polls(
             )
         )
         
-        # Aplicar paginación
+        # Apply pagination
         total = db.scalar(select(func.count()).select_from(query.subquery()))
         
-        # Ejecutar la consulta
+        # Execute the query
         polls = db.exec(query).all()
         
-        # Enriquecer las encuestas si hay un usuario autenticado
+        # Enrich the polls if there is an authenticated user
         if current_user:
             polls = [
                 enrich_poll(db, poll, current_user.id)
@@ -96,7 +96,7 @@ def read_polls(
             "pages": (total + size - 1) // size
         }
     
-    # Resto del código original
+    # Rest of the original code
     if country:
         return get_country_polls(
             db,
@@ -108,7 +108,7 @@ def read_polls(
         )
     
     if region:
-        # Verificar que la región existe
+        # Verify that the region exists
         region_obj = db.exec(
             select(Region)
             .where(Region.id == region)
@@ -117,7 +117,7 @@ def read_polls(
         if not region_obj:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No se encontró la región con ID {region}"
+                detail=f"Region with ID {region} not found"
             )
 
         return get_regional_polls(
@@ -144,13 +144,13 @@ def create_new_poll(
     db: Session = Depends(get_session)
 ):
     """
-    Crear una nueva encuesta.
-    Requiere autenticación.
+    Create a new poll.
+    Requires authentication.
     """
     if len(poll_data.options) < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La encuesta debe tener al menos 2 opciones"
+            detail="The poll must have at least 2 options"
         )
     
     return create_poll(db, poll_data, current_user.id)
@@ -163,41 +163,41 @@ def vote_poll(
     db: Session = Depends(get_session)
 ):
     """
-    Votar en una encuesta.
-    Si option_ids está vacío, elimina los votos existentes del usuario.
-    Requiere autenticación.
+    Vote in a poll.
+    If option_ids is empty, remove the user's existing votes.
+    Requires authentication.
     """
-    # Primero obtener la encuesta
+    # First, get the poll
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
     
-    # Validar el estado de la encuesta
+    # Validate the poll's status
     if poll.status != PollStatus.PUBLISHED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"No se puede votar en esta encuesta porque su estado es {poll.status}"
+            detail=f"Cannot vote in this poll because its status is {poll.status}"
         )
     
-    # Validar si la encuesta ha expirado
+    # Validate if the poll has expired
     if poll.ends_at and poll.ends_at < datetime.utcnow():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Esta encuesta expiró el {poll.ends_at}"
+            detail=f"This poll expired on {poll.ends_at}"
         )
 
-    # Si option_ids está vacío, solo eliminamos los votos existentes
+    # If option_ids is empty, just remove the existing votes
     if len(vote_data.option_ids) == 0:
-        # Buscar y eliminar votos existentes
+        # Find and delete existing votes
         existing_votes = db.query(PollVote).filter(
             PollVote.poll_id == poll_id,
             PollVote.user_id == current_user.id
         ).all()
         
-        # Decrementar contadores de votos y eliminar los votos
+        # Decrement vote counters and delete the votes
         for vote in existing_votes:
             option = db.get(PollOption, vote.option_id)
             if option:
@@ -208,7 +208,7 @@ def vote_poll(
         db.refresh(poll)
         return poll
 
-    # Si hay option_ids, continuar con la validación normal...
+    # If there are option_ids, continue with the normal validation...
     valid_options = []
     for option_id in vote_data.option_ids:
         option = db.query(PollOption).filter(
@@ -218,16 +218,16 @@ def vote_poll(
         if not option:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"La opción {option_id} no existe en la encuesta {poll_id}"
+                detail=f"Option {option_id} does not exist in poll {poll_id}"
             )
         valid_options.append(option)
 
-    # Validar el número de opciones según el tipo de encuesta
+    # Validate the number of options according to the poll type
     if poll.type == PollType.BINARY or poll.type == PollType.SINGLE_CHOICE:
         if len(vote_data.option_ids) != 1:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Este tipo de encuesta solo permite seleccionar una opción"
+                detail="This type of poll only allows selecting one option"
             )
 
     return create_vote(db, poll_id, vote_data.option_ids, current_user.id)
@@ -240,10 +240,10 @@ def react_to_poll(
     db: Session = Depends(get_session)
 ):
     """
-    Reaccionar a una encuesta con LIKE o DISLIKE.
-    Si ya existe una reacción del mismo tipo, se elimina.
-    Si existe una reacción diferente, se actualiza.
-    Requiere autenticación.
+    React to a poll with LIKE or DISLIKE.
+    If a reaction of the same type already exists, it is removed.
+    If a different reaction exists, it is updated.
+    Requires authentication.
     """
     return create_or_update_reaction(
         db, 
@@ -259,14 +259,14 @@ def get_poll_comments(
     db: Session = Depends(get_session)
 ):
     """
-    Obtener todos los comentarios de una encuesta específica.
-    No requiere autenticación.
+    Get all comments for a specific poll.
+    Does not require authentication.
     """
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
 
     comments = db.exec(
@@ -293,14 +293,14 @@ def create_poll_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Crear un nuevo comentario en una encuesta.
-    Requiere autenticación.
+    Create a new comment on a poll.
+    Requires authentication.
     """
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
 
     new_comment = PollComment(
@@ -329,20 +329,20 @@ def update_poll_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Actualizar un comentario existente.
-    Solo el autor puede editar su comentario.
+    Update an existing comment.
+    Only the author can edit their comment.
     """
     comment = db.get(PollComment, comment_id)
     if not comment or comment.poll_id != poll_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Comentario no encontrado"
+            detail="Comment not found"
         )
 
     if comment.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tienes permiso para editar este comentario"
+            detail="You do not have permission to edit this comment"
         )
 
     comment.content = comment_data.content
@@ -365,20 +365,20 @@ def delete_poll_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Eliminar un comentario.
-    Solo el autor puede eliminar su comentario.
+    Delete a comment.
+    Only the author can delete their comment.
     """
     comment = db.get(PollComment, comment_id)
     if not comment or comment.poll_id != poll_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Comentario no encontrado"
+            detail="Comment not found"
         )
 
     if comment.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tienes permiso para eliminar este comentario"
+            detail="You do not have permission to delete this comment"
         )
 
     db.delete(comment)
@@ -391,10 +391,10 @@ def read_poll(
     db: Session = Depends(get_session)
 ):
     """
-    Obtener una encuesta específica por ID o slug.
-    No requiere autenticación.
+    Get a specific poll by ID or slug.
+    Does not require authentication.
     """
-    # Determinar si es un ID o un slug
+    # Determine if it is an ID or a slug
     if poll_id_or_slug.isdigit():
         poll = db.get(Poll, int(poll_id_or_slug))
     else:
@@ -403,13 +403,45 @@ def read_poll(
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
     
-    # Incrementar contador de vistas
+    # Increment view count
     poll.views_count += 1
     db.add(poll)
     db.commit()
     
-    # Enriquecer la encuesta con información adicional
+    # Enrich the poll with additional information
     return enrich_poll(db, poll, current_user.id if current_user else None)
+
+@router.delete("/{poll_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_poll(
+    poll_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Delete a poll.
+    Only the creator of the poll can delete it.
+    Requires authentication.
+    """
+    # Verify that the poll exists
+    poll = db.get(Poll, poll_id)
+    if not poll:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Poll not found"
+        )
+    
+    # Verify that the current user is the creator of the poll
+    if poll.creator_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this poll"
+        )
+    
+    # Delete the poll
+    db.delete(poll)
+    db.commit()
+    
+    # Return 204 No Content (already defined in the decorator)
