@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select, delete
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlmodel import Session, select, delete, func
 from typing import Optional
 from api.database import get_session
 from api.auth.dependencies import get_current_user, get_current_user_optional
@@ -16,7 +16,8 @@ from api.public.debate.models import (
     PointOfView, PointOfViewCreate, Opinion, 
     OpinionCreate, OpinionVote, OpinionVoteCreate,
     DebateType, DebateStatus,
-    UserMinimal, OpinionRead, PointOfViewRead, CommunityMinimal
+    UserMinimal, OpinionRead, PointOfViewRead, CommunityMinimal,
+    PaginatedDebateResponse
 )
 from api.utils.slug import create_slug
 from datetime import datetime
@@ -148,7 +149,7 @@ def create_debate(
     # Build response
     return get_debate_read(session, new_debate)
 
-@router.get("/", response_model=list[DebateRead])
+@router.get("/", response_model=PaginatedDebateResponse)
 def get_debates(
     type: Optional[DebateType] = None,
     community_id: Optional[int] = None, 
@@ -158,12 +159,16 @@ def get_debates(
     locality_id: Optional[int] = None,
     tag: Optional[str] = None,
     search: Optional[str] = None,
-    skip: int = 0,
-    limit: int = 100,
+    page: int = Query(default=1, ge=1, description="Número de página"),
+    size: int = Query(default=10, ge=1, le=100, description="Elementos por página"),
     current_user = Depends(get_current_user_optional),
     session: Session = Depends(get_session)
 ):
     """Get debates with optional filters"""
+    # Calculate offset for pagination
+    offset = (page - 1) * size
+    
+    # Base query
     query = select(Debate).where(Debate.deleted_at == None)
     
     # Apply filters
@@ -199,15 +204,27 @@ def get_debates(
     if search:
         query = query.where(Debate.title.contains(search) | Debate.description.contains(search))
     
+    # Count total for pagination
+    total_query = select(func.count()).select_from(query.subquery())
+    total = session.exec(total_query).first() or 0
+    total_pages = (total + size - 1) // size  # Ceiling division
+    
     # Order by creation date (most recent first)
     query = query.order_by(Debate.created_at.desc())
     
     # Apply pagination
-    query = query.offset(skip).limit(limit)
+    query = query.offset(offset).limit(size)
     
     debates = session.exec(query).all()
     
-    return [get_debate_read(session, debate) for debate in debates]
+    # Prepare response with pagination metadata
+    return {
+        "items": [get_debate_read(session, debate, current_user) for debate in debates],
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": total_pages
+    }
 
 @router.get("/{debate_id_or_slug}", response_model=DebateRead)
 def get_debate(

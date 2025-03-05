@@ -204,4 +204,11 @@ class DebateUpdate(SQLModel):
     public: Optional[bool] = None
     tags: Optional[list[str]] = None
     images: Optional[list[str]] = None
-    community_ids: Optional[list[int]] = None 
+    community_ids: Optional[list[int]] = None
+
+class PaginatedDebateResponse(SQLModel):
+    items: list[DebateRead]
+    total: int
+    page: int
+    size: int
+    pages: int 
