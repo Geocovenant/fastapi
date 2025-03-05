@@ -178,6 +178,7 @@ class OpinionRead(SQLModel):
     upvotes: int = 0
     downvotes: int = 0
     score: int = 0
+    user_vote: Optional[int] = None
 
 class PointOfViewRead(SQLModel):
     id: int

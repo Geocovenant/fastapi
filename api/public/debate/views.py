@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, delete
 from typing import Optional
 from api.database import get_session
 from api.auth.dependencies import get_current_user, get_current_user_optional
@@ -229,7 +229,7 @@ def get_debate(
     debate.views_count += 1
     session.commit()
     
-    return get_debate_read(session, debate)
+    return get_debate_read(session, debate, current_user)
 
 @router.patch("/{debate_id}", response_model=DebateRead)
 def update_debate(
@@ -406,7 +406,7 @@ def add_opinion(
     session.commit()
     session.refresh(new_opinion)
     
-    return get_opinion_read(session, new_opinion)
+    return get_opinion_read(session, new_opinion, current_user)
 
 @router.post("/opinions/{opinion_id}/vote", response_model=OpinionRead)
 def vote_opinion(
@@ -441,11 +441,53 @@ def vote_opinion(
     session.commit()
     session.refresh(opinion)
     
-    return get_opinion_read(session, opinion)
+    return get_opinion_read(session, opinion, current_user)
+
+@router.delete("/opinions/{opinion_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_opinion(
+    opinion_id: int,
+    current_user = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Eliminar una opinión de un debate (solo el propietario o administrador)"""
+    
+    # Verificar que existe la opinión
+    opinion = session.get(Opinion, opinion_id)
+    if not opinion:
+        raise HTTPException(status_code=404, detail="Opinión no encontrada")
+    
+    # Verificar que el usuario es el propietario de la opinión o un administrador
+    if opinion.user_id != current_user.id and current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=403, 
+            detail="No tienes permiso para eliminar esta opinión"
+        )
+    
+    # Verificar si el debate está cerrado o archivado
+    point_of_view = session.get(PointOfView, opinion.point_of_view_id)
+    if point_of_view:
+        debate = session.get(Debate, point_of_view.debate_id)
+        if debate and debate.status in [DebateStatus.CLOSED, DebateStatus.ARCHIVED, DebateStatus.RESOLVED]:
+            raise HTTPException(
+                status_code=400, 
+                detail="No se pueden eliminar opiniones en debates cerrados o archivados"
+            )
+    
+    # Eliminar primero todos los votos asociados a esta opinión
+    session.exec(
+        delete(OpinionVote)
+        .where(OpinionVote.opinion_id == opinion_id)
+    )
+    
+    # Eliminar la opinión
+    session.delete(opinion)
+    session.commit()
+    
+    return None
 
 # Helper functions to build responses
 
-def get_debate_read(session, debate):
+def get_debate_read(session, debate, current_user=None):
     """Build DebateRead object from a debate in the database"""
     
     # Obtener las comunidades con sus cca2 si corresponde
@@ -489,12 +531,12 @@ def get_debate_read(session, debate):
         communities=communities,  # Usar la lista de comunidades modificada
         tags=[tag.name for tag in debate.tags],
         points_of_view=[
-            get_point_of_view_read(session, pov)
+            get_point_of_view_read(session, pov, current_user)
             for pov in debate.points_of_view
         ]
     )
 
-def get_point_of_view_read(session, pov):
+def get_point_of_view_read(session, pov, current_user=None):
     """Build PointOfViewRead object from a PointOfView in the database"""
     # Obtener el cca2 si es un debate nacional o internacional
     cca2 = None
@@ -522,16 +564,25 @@ def get_point_of_view_read(session, pov):
             cca2=cca2
         ) if pov.community else None,
         opinions=[
-            get_opinion_read(session, opinion)
+            get_opinion_read(session, opinion, current_user)
             for opinion in pov.opinions
         ]
     )
 
-def get_opinion_read(session, opinion):
-    """Build OpinionRead object from an Opinion in the database"""
+def get_opinion_read(session, opinion, current_user=None):
+    """Build OpinionRead object from an Opinion in the database with optional user vote"""
     upvotes = sum(1 for vote in opinion.votes if vote.value == 1)
     downvotes = sum(1 for vote in opinion.votes if vote.value == -1)
     score = sum(vote.value for vote in opinion.votes)
+    
+    # Verificar si el usuario actual ha votado esta opinión
+    user_vote = None
+    if current_user:
+        # Buscar el voto del usuario actual
+        for vote in opinion.votes:
+            if vote.user_id == current_user.id:
+                user_vote = vote.value
+                break
     
     return OpinionRead(
         id=opinion.id,
@@ -545,5 +596,6 @@ def get_opinion_read(session, opinion):
         ),
         upvotes=upvotes,
         downvotes=downvotes,
-        score=score
+        score=score,
+        user_vote=user_vote
     )

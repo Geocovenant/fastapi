@@ -36,9 +36,6 @@ class UserBase(SQLModel):
     cover: Optional[str] = Field(default=None, max_length=100, nullable=True)
     gender: Optional[str] = Field(default=None, max_length=1, nullable=True)
     last_login: Optional[datetime] = Field(default=None)
-    
-    # New privacy settings - comentado temporalmente
-    # is_public_in_communities: Optional[bool] = Field(default=False)
 
 class User(UserBase, table=True):
     __tablename__ = "users"
@@ -145,14 +142,13 @@ class VerificationToken(SQLModel, table=True):
     expires: datetime = Field(...)
 
 class UserUpdateSchema(SQLModel):
-    name: Optional[str] = None
     bio: Optional[str] = None
-    country: Optional[str] = None
-    website: Optional[str] = None
     cover: Optional[str] = None
-    image: Optional[str] = None
+    email: Optional[EmailStr] = None
     gender: Optional[str] = None
-    is_public_in_communities: Optional[bool] = None
+    image: Optional[str] = None
+    name: Optional[str] = None
+    website: Optional[str] = None
 
 class UsernameUpdateSchema(SQLModel):
     username: str

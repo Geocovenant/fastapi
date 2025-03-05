@@ -41,8 +41,24 @@ def get_user_profile(
     # Create a copy of the user to manipulate the response
     user_data = user.dict()
     
+    # Count followers and following
+    followers_count = db.exec(
+        select(func.count()).where(UserFollowLink.followed_id == user.id)
+    ).first()
+    
+    following_count = db.exec(
+        select(func.count()).where(UserFollowLink.follower_id == user.id)
+    ).first()
+    
+    # Add counts to the response
+    user_data["followers_count"] = followers_count or 0
+    user_data["following_count"] = following_count or 0
+    
+    # Add is_following field (default to False if not authenticated)
+    user_data["is_following"] = False
+    
     # If there is an authenticated user, check if they follow the queried user
-    if current_user:
+    if current_user and current_user.id != user.id:  # Don't check if user follows themselves
         # Check if the authenticated user follows the queried user
         is_following = db.exec(
             select(UserFollowLink).where(
@@ -51,7 +67,7 @@ def get_user_profile(
             )
         ).first() is not None
         
-        # Add is_following field to the response
+        # Update is_following field in the response
         user_data["is_following"] = is_following
     
     return user_data
@@ -317,48 +333,6 @@ def update_username(
     
     # Update username
     user.username = update_data.username
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    
-    return user
-
-@router.get("/community/{community_id}/members", deprecated=True)
-def get_community_members_legacy(
-    community_id: int,
-    page: int = Query(1, ge=1),
-    size: int = Query(20, ge=1, le=100),
-    current_user: Optional[User] = Depends(get_current_user_optional),
-    db: Session = Depends(get_session)
-):
-    """
-    [DEPRECATED] Usa /api/v1/communities/{community_id}/members en su lugar.
-    """
-    from api.public.community.views import get_community_members
-    return get_community_members(community_id, page, size, current_user, db)
-
-@router.patch("/me/privacy", status_code=status.HTTP_200_OK)
-def update_privacy_settings(
-    settings: dict = Body(..., example={"is_public_in_communities": True}),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_session)
-):
-    """
-    Actualiza la configuración de privacidad del usuario.
-    Authentication required.
-    """
-    # Get current user from database
-    user = db.get(User, current_user.id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    # Update privacy settings
-    if "is_public_in_communities" in settings:
-        user.is_public_in_communities = settings["is_public_in_communities"]
-    
     db.add(user)
     db.commit()
     db.refresh(user)
