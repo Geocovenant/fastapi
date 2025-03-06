@@ -193,6 +193,7 @@ def generate_and_update_username(
     Generate and update the username for the authenticated user.
     Takes a proposed username and tries to assign it to the user.
     If the username is invalid or already taken, generates an alternative.
+    Also adds the user to the global community (ID 1) if not already a member.
     """
     proposed_username = data.base_name.strip()
     
@@ -231,6 +232,11 @@ def generate_and_update_username(
             db.add(user)
             db.commit()
             db.refresh(user)
+            
+            # Verificar si el usuario ya es miembro de la comunidad global (ID 1)
+            # Y añadirlo si no lo es
+            _add_user_to_global_community(db, current_user.id)
+            
             return {"username": proposed_username, "generated": False, "user": user}
     
     # If we're here, either the username is invalid or already taken
@@ -265,6 +271,10 @@ def generate_and_update_username(
         db.add(user)
         db.commit()
         db.refresh(user)
+        
+        # Añadir usuario a la comunidad global (ID 1)
+        _add_user_to_global_community(db, current_user.id)
+        
         return {"username": base_username, "generated": True, "user": user}
     
     # Try with numbers
@@ -292,6 +302,10 @@ def generate_and_update_username(
             db.add(user)
             db.commit()
             db.refresh(user)
+            
+            # Añadir usuario a la comunidad global (ID 1)
+            _add_user_to_global_community(db, current_user.id)
+            
             return {"username": new_username, "generated": True, "user": user}
     
     # If we reach here, we couldn't find an available username
@@ -299,6 +313,32 @@ def generate_and_update_username(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="Could not generate a unique username. Please try with a different base name."
     )
+
+# Función auxiliar para añadir al usuario a la comunidad global (ID 1)
+def _add_user_to_global_community(db: Session, user_id: int):
+    """
+    Añade al usuario a la comunidad global (ID 1) si no es ya miembro.
+    """
+    # Verificar si el usuario ya es miembro de la comunidad global
+    existing_membership = db.exec(
+        select(UserCommunityLink).where(
+            UserCommunityLink.user_id == user_id,
+            UserCommunityLink.community_id == 1  # ID 1 = comunidad global
+        )
+    ).first()
+    
+    # Si no es miembro, añadirlo con visibilidad privada (is_public=False)
+    if not existing_membership:
+        # Verificar que la comunidad global existe
+        community = db.exec(select(Community).where(Community.id == 1)).first()
+        if community:  # Solo añadir si la comunidad existe
+            new_membership = UserCommunityLink(
+                user_id=user_id,
+                community_id=1,
+                is_public=False  # Por defecto, el usuario es privado en la comunidad
+            )
+            db.add(new_membership)
+            db.commit()
 
 @router.patch("/me/username", status_code=status.HTTP_200_OK)
 def update_username(
