@@ -18,15 +18,14 @@ def read(community_id: int, db: Session = Depends(get_session)):
 def get_community_members(
     community_id: int,
     page: int = Query(1, ge=1, description="Número de página"),
-    size: int = Query(20, ge=1, le=100, description="Tamaño de página"),
+    size: int = Query(100, ge=1, le=100, description="Tamaño de página"),
     current_user: Optional[User] = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
     """
     Obtiene los miembros de una comunidad.
-    Muestra solo usuarios que han elegido ser visibles o el usuario autenticado.
-    No requiere autenticación, pero si el usuario está autenticado, se incluirá
-    en la lista incluso si ha elegido no ser visible.
+    Muestra solo usuarios que han elegido ser visibles (is_public=True).
+    No incluye al usuario autenticado si tiene is_public=False.
     """
     # Primero verifica si la comunidad existe, sin verificar membresía
     community = get_community(community_id, db, check_membership=False, current_user=current_user)
@@ -39,7 +38,7 @@ def get_community_members(
     # Calcular offset para paginación
     offset = (page - 1) * size
     
-    # Consulta modificada que selecciona los datos que necesitamos directamente
+    # Consulta que solo selecciona miembros con is_public=True
     query = select(
         User.id,
         User.username,
@@ -51,20 +50,7 @@ def get_community_members(
         UserCommunityLink.is_public == True
     )
     
-    # Si hay un usuario autenticado, incluirlo en los resultados aunque no sea visible
-    if current_user:
-        query = select(
-            User.id,
-            User.username,
-            User.name,
-            User.image,
-            UserCommunityLink.is_public
-        ).join(UserCommunityLink).where(
-            UserCommunityLink.community_id == community_id,
-            (UserCommunityLink.is_public == True) | (User.id == current_user.id)
-        )
-    
-    # Ejecutar consulta y procesar resultados
+    # Ejecutar consulta y procesar resultados - solo usuarios públicos
     rows = db.exec(query.offset(offset).limit(size)).all()
     user_list = []
     for row in rows:
@@ -78,13 +64,65 @@ def get_community_members(
         }
         user_list.append(user_data)
     
-    return {
+    # Contar el número total de miembros públicos
+    total_public_query = select(func.count()).where(
+        UserCommunityLink.community_id == community_id,
+        UserCommunityLink.is_public == True
+    ).select_from(UserCommunityLink)
+    total_public_result = db.exec(total_public_query).first()
+    total_public = total_public_result if total_public_result is None else total_public_result[0]
+    
+    # Contar el número total de miembros anónimos (is_public=False)
+    total_anonymous_query = select(func.count()).where(
+        UserCommunityLink.community_id == community_id,
+        UserCommunityLink.is_public == False
+    ).select_from(UserCommunityLink)
+    total_anonymous_result = db.exec(total_anonymous_query).first()
+    total_anonymous = total_anonymous_result if total_anonymous_result is None else total_anonymous_result[0]
+    
+    # Verificar si el usuario actual está configurado como no público en esta comunidad
+    current_user_is_public = True
+    current_user_is_member = False
+    
+    if current_user:
+        # Modificar esta consulta para asegurar que devuelve exactamente el campo que necesitamos
+        user_community_query = select(UserCommunityLink.is_public).where(
+            UserCommunityLink.user_id == current_user.id,
+            UserCommunityLink.community_id == community_id
+        )
+        user_community_result = db.exec(user_community_query).first()
+        
+        # Verificar si obtuvimos un resultado y acceder al valor de is_public de manera segura
+        if user_community_result:
+            # El usuario es miembro de la comunidad
+            current_user_is_member = True
+            # Acceder directamente al campo seleccionado
+            current_user_is_public = user_community_result[0]
+    
+    # Calcular número de páginas basado solo en usuarios públicos
+    total_pages = (total_public + size - 1) // size if total_public > 0 else 1
+    
+    # Construir la respuesta
+    response = {
         "items": user_list,
-        "total": len(user_list),
+        "total_public": total_public,
+        "total_anonymous": total_anonymous,
         "page": page,
         "size": size,
-        "pages": (len(user_list) + size - 1) // size
+        "pages": total_pages
     }
+    
+    # Añadir información sobre el usuario actual solo si está autenticado
+    if current_user:
+        # Añadir la clave a nivel raíz solicitada
+        response["is_public_current_user"] = current_user_is_public if current_user_is_member else False
+        
+        response["current_user"] = {
+            "is_member": current_user_is_member,
+            "is_public": current_user_is_member and current_user_is_public
+        }
+    
+    return response
 
 @router.post("/{community_id}/join", status_code=status.HTTP_200_OK)
 def join_community(
