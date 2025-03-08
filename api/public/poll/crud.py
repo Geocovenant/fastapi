@@ -13,6 +13,9 @@ from api.utils.generic_models import PollCommunityLink
 from api.public.country.models import Country
 from api.public.region.models import Region
 from math import ceil
+from api.public.tag.crud import get_tag_by_name, create_tag
+from api.public.tag.models import Tag
+from api.utils.generic_models import PollTagLink
 
 def get_all_polls(
     db: Session, 
@@ -60,6 +63,19 @@ def get_all_polls(
         if option.poll_id not in options_by_poll:
             options_by_poll[option.poll_id] = []
         options_by_poll[option.poll_id].append(option)
+
+    # Get tags for all polls
+    tags_by_poll = {}
+    tags_query = db.exec(
+        select(PollTagLink.poll_id, Tag.name)
+        .join(Tag, PollTagLink.tag_id == Tag.id)
+        .where(PollTagLink.poll_id.in_(poll_ids))
+    ).all()
+    
+    for poll_id, tag_name in tags_query:
+        if poll_id not in tags_by_poll:
+            tags_by_poll[poll_id] = []
+        tags_by_poll[poll_id].append(tag_name)
 
     # First get the reaction count by type for each poll
     reactions_count = db.exec(
@@ -161,6 +177,9 @@ def get_all_polls(
                 option_dict['voted'] = option.id in user_votes[poll.id]
             poll_dict['options'].append(option_dict)
         
+        # Add tags
+        poll_dict['tags'] = tags_by_poll.get(poll.id, [])
+        
         polls_dict[poll.id] = poll_dict
 
     return {
@@ -193,7 +212,7 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
     
     # Create the poll
     db_poll = Poll(
-        **poll_data.dict(exclude={'options', 'community_ids', 'country_codes', 'country_code', 'region_id'}),
+        **poll_data.dict(exclude={'options', 'community_ids', 'country_codes', 'country_code', 'region_id', 'subregion_id', 'tags'}),
         creator_id=user_id,
         slug=unique_slug,
         created_at=current_time,
@@ -210,6 +229,13 @@ def create_poll(db: Session, poll_data: PollCreate, user_id: int) -> Poll:
             **option_data.dict()
         )
         db.add(db_option)
+    
+    # Add tags
+    for tag_name in poll_data.tags:
+        tag = get_tag_by_name(db, tag_name)
+        if not tag:
+            tag = create_tag(db, tag_name)
+        db_poll.tags.append(tag)
     
     # Associate communities with the poll based on scope
     if poll_data.scope == "INTERNATIONAL" and poll_data.country_codes:
@@ -530,6 +556,25 @@ def get_country_polls(
     # Get polls
     results = db.exec(query).all()
 
+    # Get poll IDs
+    poll_ids = [poll.id for poll, _, _ in results]
+    
+    # Get tags for all polls
+    from api.public.tag.models import Tag
+    from api.utils.generic_models import PollTagLink
+    
+    tags_by_poll = {}
+    tags_query = db.exec(
+        select(PollTagLink.poll_id, Tag.name)
+        .join(Tag, PollTagLink.tag_id == Tag.id)
+        .where(PollTagLink.poll_id.in_(poll_ids))
+    ).all()
+    
+    for poll_id, tag_name in tags_query:
+        if poll_id not in tags_by_poll:
+            tags_by_poll[poll_id] = []
+        tags_by_poll[poll_id].append(tag_name)
+
     # Get reaction counts
     reactions_count = db.exec(
         select(
@@ -614,6 +659,9 @@ def get_country_polls(
                     .distinct()
                 ).all()
                 poll_dict['countries'] = [country for country in countries if country]
+            
+            # Add tags
+            poll_dict['tags'] = tags_by_poll.get(poll.id, [])
             
             polls_dict[poll.id] = poll_dict
             polls_dict[poll.id]['options'] = []
@@ -812,5 +860,8 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     poll_dict['comments'] = comments_list
     poll_dict['user_reaction'] = user_reaction
     poll_dict['user_voted_options'] = user_voted_options
+
+    # Add tags
+    poll_dict['tags'] = [tag.name for tag in poll.tags]
 
     return poll_dict
