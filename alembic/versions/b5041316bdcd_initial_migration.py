@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 0060762ea632
+Revision ID: b5041316bdcd
 Revises: 
-Create Date: 2025-03-08 04:19:48.034872
+Create Date: 2025-03-08 18:01:13.811567
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 # revision identifiers, used by Alembic.
-revision: str = '0060762ea632'
+revision: str = 'b5041316bdcd'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,6 +32,18 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_community_level'), 'community', ['level'], unique=False)
     op.create_index(op.f('ix_community_name'), 'community', ['name'], unique=False)
+    op.create_table('community_requests',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('country', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('region', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('city', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_community_requests_id'), 'community_requests', ['id'], unique=False)
     op.create_table('issuecategory',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
@@ -629,6 +641,8 @@ def downgrade() -> None:
     op.drop_table('tag')
     op.drop_index(op.f('ix_issuecategory_name'), table_name='issuecategory')
     op.drop_table('issuecategory')
+    op.drop_index(op.f('ix_community_requests_id'), table_name='community_requests')
+    op.drop_table('community_requests')
     op.drop_index(op.f('ix_community_name'), table_name='community')
     op.drop_index(op.f('ix_community_level'), table_name='community')
     op.drop_table('community')

@@ -4,6 +4,8 @@ from typing import Optional
 from api.public.community.models import Community
 from api.public.user.models import UserCommunityLink
 from api.public.user.models import User
+from api.public.community.models import CommunityRequest
+from datetime import datetime
 
 def get_community(community_id: int, db: Session, check_membership: bool = False, current_user: Optional[User] = None):
     """
@@ -139,3 +141,39 @@ def delete_community(session: Session, community_id: int) -> bool:
     session.delete(community)
     session.commit()
     return True
+
+def create_community_request(db: Session, request_data: dict):
+    """
+    Crea una nueva solicitud de comunidad en la base de datos
+    """
+    community_request = CommunityRequest(
+        country=request_data["country"],
+        region=request_data["region"],
+        city=request_data["city"],
+        email=request_data["email"]
+    )
+    db.add(community_request)
+    db.commit()
+    db.refresh(community_request)
+    return community_request
+
+def get_community_requests(db: Session, skip: int = 0, limit: int = 100, status: str = None):
+    """
+    Obtiene todas las solicitudes de comunidad con filtrado opcional por estado
+    """
+    query = db.query(CommunityRequest)
+    if status:
+        query = query.filter(CommunityRequest.status == status)
+    return query.offset(skip).limit(limit).all()
+
+def update_community_request_status(db: Session, request_id: int, status: str):
+    """
+    Actualiza el estado de una solicitud de comunidad
+    """
+    community_request = db.query(CommunityRequest).filter(CommunityRequest.id == request_id).first()
+    if community_request:
+        community_request.status = status
+        community_request.updated_at = datetime.utcnow()
+        db.commit()
+        db.refresh(community_request)
+    return community_request

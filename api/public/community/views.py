@@ -7,6 +7,11 @@ from sqlalchemy import select, func
 from api.public.user.models import User, UserCommunityLink
 from api.auth.dependencies import get_current_user_optional, get_current_user
 from typing import Optional, List
+from pydantic import BaseModel
+import datetime
+
+from api.public.community.models import CommunityRequest
+from api.public.community.crud import create_community_request, get_community_requests, update_community_request_status
 
 router = APIRouter()
 
@@ -269,3 +274,56 @@ def leave_community(
     db.commit()
     
     return {"message": "You have left the community successfully"}
+
+# Modelo Pydantic para validar la solicitud
+class CommunityRequestCreate(BaseModel):
+    country: str
+    region: str
+    city: str
+    email: str
+
+# Modelo para las respuestas
+class CommunityRequestResponse(BaseModel):
+    id: int
+    country: str
+    region: str
+    city: str
+    email: str
+    status: str
+    created_at: datetime.datetime
+    
+    model_config = {"from_attributes": True}
+
+@router.post("/requests/", response_model=CommunityRequestResponse)
+def create_community_request_endpoint(request: CommunityRequestCreate, db: Session = Depends(get_session)):
+    """
+    Endpoint para recibir solicitudes de nuevas comunidades
+    """
+    try:
+        request_data = request.dict()
+        community_request = create_community_request(db, request_data)
+        return community_request
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error al crear la solicitud: {str(e)}")
+
+@router.get("/requests/", response_model=List[CommunityRequestResponse])
+def get_community_requests_endpoint(
+    skip: int = 0, 
+    limit: int = 100, 
+    status: Optional[str] = None, 
+    db: Session = Depends(get_session)
+):
+    """
+    Endpoint para obtener todas las solicitudes de comunidades (con filtro opcional)
+    """
+    return get_community_requests(db, skip, limit, status)
+
+@router.put("/requests/{request_id}/status")
+def update_request_status(request_id: int, status: str, db: Session = Depends(get_session)):
+    """
+    Endpoint para actualizar el estado de una solicitud
+    """
+    updated_request = update_community_request_status(db, request_id, status)
+    if not updated_request:
+        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+    return {"message": "Estado actualizado correctamente", "status": status}

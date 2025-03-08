@@ -3,6 +3,7 @@ from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, JSON
 from api.utils.generic_models import UserCommunityLink, PollCommunityLink, DebateCommunityLink, ProjectCommunityLink
+import datetime
 
 class CommunityLevel(str, Enum):
     GLOBAL = "GLOBAL"
@@ -47,3 +48,18 @@ class Community(CommunityBase, table=True):
 
 class CommunityRead(CommunityBase):
     id: int
+
+class CommunityRequest(SQLModel, table=True):
+    __tablename__ = "community_requests"
+
+    id: int = Field(primary_key=True, index=True)
+    country: str = Field(nullable=False)
+    region: str = Field(nullable=False)
+    city: str = Field(nullable=False)
+    email: str = Field(nullable=False)
+    status: str = Field(default="pending")  # pending, approved, rejected
+    created_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    updated_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return f"<CommunityRequest(id={self.id}, country='{self.country}', region='{self.region}', city='{self.city}')>"

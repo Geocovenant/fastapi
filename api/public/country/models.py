@@ -2,6 +2,8 @@ from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship
 from api.public.continent.models import Continent
 from api.public.community.models import Community
+from sqlalchemy import Column, Integer, String, DateTime
+import datetime
 
 class Country(SQLModel, table=True):
     __tablename__ = "country"
