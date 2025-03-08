@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 
 from api.database import get_session
 from api.public.country.models import Country
-from api.public.country.crud import get_all_countries, get_country_by_name
+from api.public.country.crud import get_all_countries, get_country_by_name, get_country_by_code
 from api.public.region.models import Region
 
 router = APIRouter()
@@ -12,11 +12,14 @@ router = APIRouter()
 def read_countries(db: Session = Depends(get_session)):
     return get_all_countries(db)
 
-@router.get("/{country_name}", response_model=Country)
-def read_country_by_name(country_name: str, db: Session = Depends(get_session)):
-    country = get_country_by_name(db, country_name)
+@router.get("/{country_code}", response_model=Country)
+def read_country_by_code(country_code: str, db: Session = Depends(get_session)):
+    """
+    Obtiene un país utilizando su código CCA2 (ISO 3166-1 alpha-2)
+    """
+    country = get_country_by_code(db, country_code.upper())
     if not country:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="País no encontrado")
     return country
 
 @router.get("/{country_code}/divisions", response_model=list[Region])
