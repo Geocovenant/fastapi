@@ -7,9 +7,10 @@ from api.public.region import views as region
 from api.public.subregion import views as subregion
 from api.public.debate import views as debate
 from api.public.project import views as project
-from api.public.issue import views as issue
+from api.public.issue import views as issue_views
 from api.public.tag import views as tag
 from api.public.report import views as report
+from api.public.organization import views as organization_views
 
 api = APIRouter()
 
@@ -29,7 +30,7 @@ api.include_router(
     tags=["Debates"]
 )
 api.include_router(
-    issue.router,
+    issue_views.router,
     prefix="/issues",
     tags=["Issues"]
 )
@@ -67,4 +68,9 @@ api.include_router(
     report.router,
     prefix="/reports",
     tags=["Reports"]
+)
+api.include_router(
+    organization_views.router,
+    prefix="/organizations",
+    tags=["Organizations"]
 )

@@ -10,13 +10,14 @@ class CommunityLevel(str, Enum):
     CONTINENT = "CONTINENT"
     NATIONAL = "NATIONAL"
     REGIONAL = "REGIONAL"
+    SUBREGIONAL = "SUBREGIONAL"
     LOCAL = "LOCAL"
     CUSTOM = "CUSTOM"
 
 class CommunityBase(SQLModel):
-    name: str = Field(max_length=100, regex=r"^[a-zA-Z0-9_]+$")
+    name: str = Field(max_length=100, index=True)
     description: str = Field(default=None, max_length=500)
-    level: CommunityLevel = Field(default=CommunityLevel.CUSTOM)
+    level: CommunityLevel = Field(default=CommunityLevel.CUSTOM, index=True)
     geo_data: Optional[str] = Field(default=None, sa_column=Column(JSON))
     parent_id: Optional[int] = Field(default=None, foreign_key="community.id")
 
@@ -36,6 +37,13 @@ class Community(CommunityBase, table=True):
     subregion: "Subregion" = Relationship(back_populates="community")
     locality: "Locality" = Relationship(back_populates="community")
     projects: list["Project"] = Relationship(back_populates="communities", link_model=ProjectCommunityLink)
+
+    def get_translated(self, language_code, field):
+        """Obtiene un campo traducido si existe, o el valor por defecto"""
+        for translation in self.translations:
+            if translation.language_code == language_code:
+                return getattr(translation, field)
+        return getattr(self, field)  # Valor por defecto
 
 class CommunityRead(CommunityBase):
     id: int

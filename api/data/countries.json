@@ -538,56 +538,6 @@
     ]
   },
   {
-    "area": 14000000.0,
-    "capitalInfo": {},
-    "cca2": "AQ",
-    "cca3": "ATA",
-    "ccn3": "010",
-    "coatOfArms": {
-      "png": "https://mainfacts.com/media/images/coats_of_arms/aq.png",
-      "svg": "https://mainfacts.com/media/images/coats_of_arms/aq.svg"
-    },
-    "continents": [
-      "Antarctica"
-    ],
-    "flag": "🇦🇶",
-    "flags": {
-      "png": "https://flagcdn.com/w320/aq.png",
-      "svg": "https://flagcdn.com/aq.svg"
-    },
-    "idd": {},
-    "independent": false,
-    "landlocked": false,
-    "latlng": [
-      -90.0,
-      0.0
-    ],
-    "maps": {
-      "googleMaps": "https://goo.gl/maps/kyBuJriu4itiXank7",
-      "openStreetMaps": "https://www.openstreetmap.org/node/36966060"
-    },
-    "name": {
-      "common": "Antarctica",
-      "official": "Antarctica"
-    },
-    "population": 1000,
-    "region": "Antarctic",
-    "status": "officially-assigned",
-    "timezones": [
-      "UTC-03:00",
-      "UTC+03:00",
-      "UTC+05:00",
-      "UTC+06:00",
-      "UTC+07:00",
-      "UTC+08:00",
-      "UTC+10:00",
-      "UTC+12:00"
-    ],
-    "tld": [
-      ".aq"
-    ]
-  },
-  {
     "area": 442.0,
     "capital": [
       "Saint John's"

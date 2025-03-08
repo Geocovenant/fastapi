@@ -1,7 +1,7 @@
 """Insert initial data from JSON files
 
 Revision ID: insert_initial_data
-Revises: a0df705eb94d
+Revises: 0060762ea632
 Create Date: 2024-01-01 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 # revision identifiers, used by Alembic.
 revision = 'insert_initial_data'
-down_revision = 'a0df705eb94d'
+down_revision = '0060762ea632'
 branch_labels = None
 depends_on = None
 
@@ -359,9 +359,9 @@ def upgrade() -> None:
                         community = {
                             'id': next_community_id,
                             'name': division['name'],
-                            'description': f"Local community of {division['name']}",
+                            'description': f"Subregional community of {division['name']}",
                             'parent_id': region_id + 7,  # ID de la comunidad de la subnación
-                            'level': 'LOCAL'
+                            'level': 'SUBREGIONAL'  # Cambiado de 'LOCAL' a 'SUBREGIONAL'
                         }
                         division_communities.append(community)
 

@@ -4,6 +4,7 @@ from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional
 from api.public.tag.models import Tag
 from api.utils.generic_models import PollCommunityLink, PollTagLink
+from pydantic import validator
 
 # Enums
 class PollType(str, Enum):
@@ -31,11 +32,17 @@ class PollBase(SQLModel):
     ends_at: Optional[datetime] = Field(nullable=True)
     scope: str = Field(max_length=100, nullable=True, description="The scope of the poll, e.g. 'GLOBAL', 'INTERNATINAL', 'NATIONAL', etc.")
 
+    @validator("ends_at")
+    def ends_at_must_be_future_if_published(cls, v, values):
+        if v and values.get("status") == PollStatus.PUBLISHED and v < datetime.utcnow():
+            raise ValueError("La fecha de finalización debe ser en el futuro para encuestas publicadas")
+        return v
+
 class Poll(PollBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     slug: str = Field(max_length=100, index=True, unique=True)
     creator_id: int = Field(foreign_key="users.id")
-    status: PollStatus = Field(default=PollStatus.PUBLISHED)
+    status: PollStatus = Field(default=PollStatus.PUBLISHED, index=True)
     created_at: datetime = Field(default=datetime.utcnow)
     updated_at: datetime = Field(default=datetime.utcnow)
     views_count: int = Field(default=0)

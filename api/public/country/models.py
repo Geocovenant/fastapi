@@ -40,5 +40,4 @@ class Country(SQLModel, table=True):
     continent: Optional[Continent] = Relationship(back_populates="countries")
     regions: List["Region"] = Relationship(back_populates="country")
 
-# Mover la importación al final para evitar la importación circular
 from api.public.region.models import Region

@@ -1,14 +1,90 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlmodel import Session
-from api.public.community.models import CommunityRead
+from api.public.community.models import CommunityRead, CommunityLevel
 from api.public.community.crud import get_community
 from api.database import get_session
 from sqlalchemy import select, func
 from api.public.user.models import User, UserCommunityLink
 from api.auth.dependencies import get_current_user_optional, get_current_user
-from typing import Optional
+from typing import Optional, List
 
 router = APIRouter()
+
+@router.get("/search", response_model=CommunityRead)
+def search_community(
+    level: CommunityLevel,
+    country: Optional[str] = None,
+    region: Optional[str] = None,
+    subregion: Optional[str] = None,
+    local: Optional[str] = None,
+    db: Session = Depends(get_session)
+):
+    """
+    Busca una comunidad por nivel y criterios geográficos.
+    Devuelve los datos de la comunidad encontrada.
+    
+    Ejemplos de uso:
+    - /communities/search?level=NATIONAL&country=argentina
+    - /communities/search?level=REGIONAL&country=argentina&region=buenos_aires
+    - /communities/search?level=SUBREGIONAL&country=argentina&region=buenos_aires&subregion=alberti
+    - /communities/search?level=LOCAL&country=argentina&region=buenos_aires&subregion=caba&local=palermo
+    """
+    from api.public.community.models import Community
+    
+    # Consulta usando directamente Session.query para evitar problemas con selects complejos
+    query = db.query(Community).filter(Community.level == level)
+    
+    # Añadir filtros según nivel y parámetros proporcionados
+    if level == CommunityLevel.NATIONAL:
+        if not country:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El parámetro 'country' es obligatorio para nivel NATIONAL"
+            )
+        # Filtrar por nombre del país (ignorando mayúsculas/minúsculas)
+        query = query.filter(func.lower(Community.name) == country.lower())
+    
+    elif level == CommunityLevel.REGIONAL:
+        if not country or not region:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Los parámetros 'country' y 'region' son obligatorios para nivel REGIONAL"
+            )
+        
+        # Reemplazar guiones bajos por espacios para la comparación
+        normalized_region = region.replace('_', ' ')
+        query = query.filter(func.lower(Community.name) == normalized_region.lower())
+    
+    elif level == CommunityLevel.SUBREGIONAL:
+        if not country or not region or not subregion:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Los parámetros 'country', 'region' y 'subregion' son obligatorios para nivel SUBREGIONAL"
+            )
+        
+        # Reemplazar guiones bajos por espacios para la comparación
+        normalized_subregion = subregion.replace('_', ' ')
+        query = query.filter(func.lower(Community.name) == normalized_subregion.lower())
+    
+    elif level == CommunityLevel.LOCAL:
+        if not country or not local:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Los parámetros 'country' y 'local' son obligatorios para nivel LOCAL"
+            )
+        query = query.filter(func.lower(Community.name) == local.lower())
+    
+    # Ejecutar consulta usando first()
+    community = query.first()
+    
+    if not community:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se encontró una comunidad con los criterios especificados"
+        )
+    
+    # El objeto community es ya una instancia de Community
+    return community
 
 @router.get("/{community_id}", response_model=CommunityRead)
 def read(community_id: int, db: Session = Depends(get_session)):
@@ -17,28 +93,28 @@ def read(community_id: int, db: Session = Depends(get_session)):
 @router.get("/{community_id}/members")
 def get_community_members(
     community_id: int,
-    page: int = Query(1, ge=1, description="Número de página"),
-    size: int = Query(100, ge=1, le=100, description="Tamaño de página"),
+    page: int = Query(1, ge=1, description="Page number"),
+    size: int = Query(100, ge=1, le=100, description="Page size"),
     current_user: Optional[User] = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
     """
-    Obtiene los miembros de una comunidad.
-    Muestra solo usuarios que han elegido ser visibles (is_public=True).
-    No incluye al usuario autenticado si tiene is_public=False.
+    Retrieves the members of a community.
+    Shows only users who have chosen to be visible (is_public=True).
+    Does not include the authenticated user if they have is_public=False.
     """
-    # Primero verifica si la comunidad existe, sin verificar membresía
+    # First check if the community exists, without checking membership
     community = get_community(community_id, db, check_membership=False, current_user=current_user)
     if not community:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Comunidad con ID {community_id} no encontrada"
+            detail=f"Community with ID {community_id} not found"
         )
     
-    # Calcular offset para paginación
+    # Calculate offset for pagination
     offset = (page - 1) * size
     
-    # Consulta que solo selecciona miembros con is_public=True
+    # Query that only selects members with is_public=True
     query = select(
         User.id,
         User.username,
@@ -50,7 +126,7 @@ def get_community_members(
         UserCommunityLink.is_public == True
     )
     
-    # Ejecutar consulta y procesar resultados - solo usuarios públicos
+    # Execute query and process results - only public users
     rows = db.exec(query.offset(offset).limit(size)).all()
     user_list = []
     for row in rows:
@@ -64,7 +140,7 @@ def get_community_members(
         }
         user_list.append(user_data)
     
-    # Contar el número total de miembros públicos
+    # Count the total number of public members
     total_public_query = select(func.count()).where(
         UserCommunityLink.community_id == community_id,
         UserCommunityLink.is_public == True
@@ -72,7 +148,7 @@ def get_community_members(
     total_public_result = db.exec(total_public_query).first()
     total_public = total_public_result if total_public_result is None else total_public_result[0]
     
-    # Contar el número total de miembros anónimos (is_public=False)
+    # Count the total number of anonymous members (is_public=False)
     total_anonymous_query = select(func.count()).where(
         UserCommunityLink.community_id == community_id,
         UserCommunityLink.is_public == False
@@ -80,29 +156,29 @@ def get_community_members(
     total_anonymous_result = db.exec(total_anonymous_query).first()
     total_anonymous = total_anonymous_result if total_anonymous_result is None else total_anonymous_result[0]
     
-    # Verificar si el usuario actual está configurado como no público en esta comunidad
+    # Check if the current user is set as not public in this community
     current_user_is_public = True
     current_user_is_member = False
     
     if current_user:
-        # Modificar esta consulta para asegurar que devuelve exactamente el campo que necesitamos
+        # Modify this query to ensure it returns exactly the field we need
         user_community_query = select(UserCommunityLink.is_public).where(
             UserCommunityLink.user_id == current_user.id,
             UserCommunityLink.community_id == community_id
         )
         user_community_result = db.exec(user_community_query).first()
         
-        # Verificar si obtuvimos un resultado y acceder al valor de is_public de manera segura
+        # Check if we got a result and access the is_public value safely
         if user_community_result:
-            # El usuario es miembro de la comunidad
+            # The user is a member of the community
             current_user_is_member = True
-            # Acceder directamente al campo seleccionado
+            # Access the selected field directly
             current_user_is_public = user_community_result[0]
     
-    # Calcular número de páginas basado solo en usuarios públicos
+    # Calculate number of pages based only on public users
     total_pages = (total_public + size - 1) // size if total_public > 0 else 1
     
-    # Construir la respuesta
+    # Build the response
     response = {
         "items": user_list,
         "total_public": total_public,
@@ -112,9 +188,9 @@ def get_community_members(
         "pages": total_pages
     }
     
-    # Añadir información sobre el usuario actual solo si está autenticado
+    # Add information about the current user only if authenticated
     if current_user:
-        # Añadir la clave a nivel raíz solicitada
+        # Add the requested key at the root level
         response["is_public_current_user"] = current_user_is_public if current_user_is_member else False
         
         response["current_user"] = {
@@ -131,18 +207,18 @@ def join_community(
     db: Session = Depends(get_session)
 ):
     """
-    Permite al usuario unirse a una comunidad.
-    Por defecto, el usuario se une en modo privado (is_public=False).
+    Allows a user to join a community.
+    By default, the user joins in private mode (is_public=False).
     """
-    # Verificar que la comunidad existe
+    # Verify that the community exists
     community = get_community(community_id, db, check_membership=False, current_user=current_user)
     if not community:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Comunidad con ID {community_id} no encontrada"
+            detail=f"Community with ID {community_id} not found"
         )
     
-    # Verificar si el usuario ya es miembro
+    # Check if the user is already a member
     existing_membership = db.exec(
         select(UserCommunityLink).where(
             UserCommunityLink.user_id == current_user.id,
@@ -151,19 +227,19 @@ def join_community(
     ).first()
     
     if existing_membership:
-        return {"message": "Ya eres miembro de esta comunidad"}
+        return {"message": "You are already a member of this community"}
     
-    # Crear la relación usuario-comunidad (por defecto en modo privado)
+    # Create the user-community relationship (by default in private mode)
     new_membership = UserCommunityLink(
         user_id=current_user.id,
         community_id=community_id,
-        is_public=False  # Por defecto, el usuario es privado en la comunidad
+        is_public=False  # By default, the user is private in the community
     )
     
     db.add(new_membership)
     db.commit()
     
-    return {"message": "Te has unido a la comunidad correctamente"}
+    return {"message": "You have joined the community successfully"}
 
 @router.delete("/{community_id}/join", status_code=status.HTTP_200_OK)
 def leave_community(
@@ -172,9 +248,9 @@ def leave_community(
     db: Session = Depends(get_session)
 ):
     """
-    Permite al usuario abandonar una comunidad.
+    Allows a user to leave a community.
     """
-    # Verificar que existe la membresía
+    # Verify that the membership exists
     membership = db.exec(
         select(UserCommunityLink).where(
             UserCommunityLink.user_id == current_user.id,
@@ -185,11 +261,11 @@ def leave_community(
     if not membership:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No eres miembro de esta comunidad"
+            detail="You are not a member of this community"
         )
     
-    # Eliminar la membresía
+    # Delete the membership
     db.delete(membership)
     db.commit()
     
-    return {"message": "Has abandonado la comunidad correctamente"}
+    return {"message": "You have left the community successfully"}

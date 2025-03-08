@@ -116,10 +116,6 @@ from api.public.issue.models import (
     IssueCategoryBase,
     IssueCategoryCreate,
     IssueCategoryRead,
-    Institution,
-    InstitutionBase,
-    InstitutionCreate,
-    InstitutionRead,
     IssueSupport,
     IssueComment,
     IssueCommentBase,
@@ -130,7 +126,6 @@ from api.public.issue.models import (
     IssueUpdateCreate,
     IssueUpdateRead,
     IssueStatus,
-    InstitutionLevel,
     IssueImage
 )
 
@@ -145,6 +140,15 @@ from api.public.report.models import (
     ReportReason
 )
 
+# Organization models
+from api.public.organization.models import (
+    Organization,
+    OrganizationBase,
+    OrganizationCreate,
+    OrganizationRead,
+    OrganizationLevel
+)
+
 # Centralized import of all models 
 # to resolve circular references
 
@@ -152,6 +156,7 @@ from api.public.report.models import (
 from api.public.user.models import User
 from api.public.tag.models import Tag
 from api.public.community.models import Community
+from api.public.organization.models import Organization
 
 # Then import models that depend on the basics
 from api.public.poll.models import Poll, PollOption, PollVote, PollReaction, PollComment, PollCustomResponse

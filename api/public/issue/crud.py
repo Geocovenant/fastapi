@@ -8,6 +8,8 @@ from api.public.issue.models import (
 )
 from api.public.community.models import Community
 from api.public.user.models import User
+from api.public.organization.models import Organization
+from api.public.organization.crud import get_organization_by_id
 from api.utils.slug import create_slug
 from datetime import datetime
 from fastapi import HTTPException, status
@@ -160,7 +162,8 @@ def create_issue(db: Session, issue_data: IssueCreate, user_id: int) -> Issue:
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
         location=issue_data.location,
-        images=issue_data.images
+        images=issue_data.images,
+        organization_id=issue_data.organization_id
     )
     db.add(new_issue)
     db.flush()  # Get generated ID
@@ -454,6 +457,9 @@ def enrich_issue(db: Session, issue: Issue, current_user_id: int = None) -> Issu
             cca2=cca2
         ))
     
+    # Get organization
+    organization = db.get(Organization, issue.organization_id)
+    
     # Check if current user supports this issue
     user_supports = False
     if current_user_id:
@@ -489,5 +495,10 @@ def enrich_issue(db: Session, issue: Issue, current_user_id: int = None) -> Issu
         communities=communities,
         comments=comments,
         updates=updates,
-        user_supports=user_supports
+        user_supports=user_supports,
+        organization=OrganizationRead(
+            id=organization.id,
+            name=organization.name,
+            level=organization.level
+        )
     ) 

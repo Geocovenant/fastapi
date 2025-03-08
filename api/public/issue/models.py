@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
 from api.public.user.models import User
+from api.public.organization.models import Organization, OrganizationRead, OrganizationLevel
 
 # Enums
 class IssueStatus(str, Enum):
@@ -13,12 +14,6 @@ class IssueStatus(str, Enum):
     CLOSED = "CLOSED"
     REJECTED = "REJECTED"
 
-class InstitutionLevel(str, Enum):
-    MUNICIPAL = "MUNICIPAL"
-    PROVINCIAL = "PROVINCIAL"
-    REGIONAL = "REGIONAL"
-    NATIONAL = "NATIONAL"
-
 # Model for issue categories
 class IssueCategory(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -27,30 +22,6 @@ class IssueCategory(SQLModel, table=True):
     
     # Relationships
     issues: list["Issue"] = Relationship(back_populates="category")
-
-# Model for institutions
-class Institution(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=200, index=True)
-    level: InstitutionLevel = Field(index=True)
-    description: Optional[str] = Field(default=None, max_length=1000)
-    parent_id: Optional[int] = Field(default=None, foreign_key="institution.id")
-    community_id: Optional[int] = Field(default=None, foreign_key="community.id")
-    region_id: Optional[int] = Field(default=None, foreign_key="region.id")
-    subregion_id: Optional[int] = Field(default=None, foreign_key="subregion.id")
-    locality_id: Optional[int] = Field(default=None, foreign_key="locality.id")
-    contact_email: Optional[str] = Field(default=None, max_length=200)
-    phone: Optional[str] = Field(default=None, max_length=50)
-    website: Optional[str] = Field(default=None, max_length=200)
-    
-    # Relationships
-    parent: Optional["Institution"] = Relationship(
-        back_populates="children", 
-        sa_relationship_kwargs={"remote_side": "Institution.id"}
-    )
-    children: list["Institution"] = Relationship(back_populates="parent")
-    issues: list["Issue"] = Relationship(back_populates="institution")
-    updates: list["IssueUpdate"] = Relationship(back_populates="institution")
 
 # Main model for issue reports
 class Issue(SQLModel, table=True):
@@ -71,12 +42,12 @@ class Issue(SQLModel, table=True):
     locality_id: Optional[int] = Field(default=None, foreign_key="locality.id")
     creator_id: int = Field(foreign_key="users.id")
     category_id: int = Field(foreign_key="issuecategory.id")
-    institution_id: int = Field(foreign_key="institution.id")
+    organization_id: int = Field(foreign_key="organization.id")
     
     # Relationships
     creator: User = Relationship(back_populates="issues_created")
     category: IssueCategory = Relationship(back_populates="issues")
-    institution: Institution = Relationship(back_populates="issues")
+    organization: Organization = Relationship(back_populates="issues")
     supports: list["IssueSupport"] = Relationship(back_populates="issue", cascade_delete=True)
     comments: list["IssueComment"] = Relationship(back_populates="issue", cascade_delete=True)
     updates: list["IssueUpdate"] = Relationship(back_populates="issue", cascade_delete=True)
@@ -120,7 +91,7 @@ class IssueComment(SQLModel, table=True):
 class IssueUpdate(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     issue_id: int = Field(foreign_key="issue.id")
-    institution_id: int = Field(foreign_key="institution.id")
+    organization_id: int = Field(foreign_key="organization.id")
     user_id: int = Field(foreign_key="users.id")
     content: str = Field(max_length=1000)
     new_status: Optional[IssueStatus] = Field(default=None)
@@ -128,29 +99,10 @@ class IssueUpdate(SQLModel, table=True):
     
     # Relationships
     issue: Issue = Relationship(back_populates="updates")
-    institution: Institution = Relationship(back_populates="updates")
+    organization: Organization = Relationship(back_populates="issue_updates")
     user: User = Relationship(back_populates="issue_updates")
 
 # Models for CRUD operations
-class InstitutionBase(SQLModel):
-    name: str = Field(max_length=200)
-    level: InstitutionLevel
-    description: Optional[str] = Field(default=None, max_length=1000)
-    parent_id: Optional[int] = None
-    community_id: Optional[int] = None
-    region_id: Optional[int] = None
-    subregion_id: Optional[int] = None
-    locality_id: Optional[int] = None
-    contact_email: Optional[str] = Field(default=None, max_length=200)
-    phone: Optional[str] = Field(default=None, max_length=50)
-    website: Optional[str] = Field(default=None, max_length=200)
-
-class InstitutionCreate(InstitutionBase):
-    pass
-
-class InstitutionRead(InstitutionBase):
-    id: int
-
 class IssueCategoryBase(SQLModel):
     name: str = Field(max_length=100)
     description: Optional[str] = Field(default=None, max_length=500)
@@ -172,7 +124,7 @@ class IssueBase(SQLModel):
     subregion_id: Optional[int] = None
     locality_id: Optional[int] = None
     category_id: int
-    institution_id: int
+    organization_id: int
 
 class IssueCreate(IssueBase):
     images: Optional[list[str]] = None
@@ -186,7 +138,7 @@ class IssueRead(IssueBase):
     support_count: int
     creator: Optional["UserMinimal"] = None
     category: Optional[IssueCategoryRead] = None
-    institution: Optional[InstitutionRead] = None
+    organization: Optional[OrganizationRead] = None
     images: Optional[list[str]] = None
 
 class UserMinimal(SQLModel):
@@ -217,7 +169,7 @@ class IssueUpdateRead(IssueUpdateBase):
     id: int
     created_at: datetime
     user: UserMinimal
-    institution: InstitutionRead
+    organization: OrganizationRead
 
 class PaginatedResponse(SQLModel):
     items: list
