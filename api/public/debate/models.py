@@ -41,6 +41,7 @@ class DebateBase(SQLModel):
     slug: str = Field(unique=True, index=True, description="Slug for the debate, generated from the title")
     status: DebateStatus = Field(default=DebateStatus.OPEN, description="Debate status")
     type: DebateType = Field(description="Debate type: GLOBAL, INTERNATIONAL, NATIONAL, REGIONAL, SUBREGIONAL, LOCAL")
+    is_anonymous: bool = Field(default=False, description="Whether the debate creator is anonymous")
 
 # Main Debate model, representing the debates table in the database
 class Debate(DebateBase, table=True):
@@ -153,6 +154,7 @@ class DebateCreate(SQLModel):
     images: list[str] = Field(default=[])
     language: LanguageCode = Field(default=LanguageCode.ES)
     public: bool = Field(default=True)
+    is_anonymous: bool = Field(default=False)
     points_of_view: list[PointOfViewCreate] = Field(default=[])
     country_codes: Optional[list[str]] = Field(default=None, description="list of CCA2 country codes for international debates")
     country_code: Optional[str] = Field(default=None, description="CCA2 country code for national debates")
@@ -210,6 +212,7 @@ class DebateRead(DebateBase):
     communities: list[CommunityMinimal] = []
     tags: list[str] = []
     points_of_view: list[PointOfViewRead] = []
+    is_anonymous: bool = False
 
 class DebateUpdate(SQLModel):
     title: Optional[str] = Field(default=None, min_length=5, max_length=100)

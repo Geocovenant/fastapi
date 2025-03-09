@@ -11,9 +11,15 @@ from api.public.issue import views as issue_views
 from api.public.tag import views as tag
 from api.public.report import views as report
 from api.public.organization import views as organization_views
+from api.public.cloudinary import views as cloudinary
 
 api = APIRouter()
 
+api.include_router(
+    cloudinary.router,
+    prefix="/cloudinary",
+    tags=["Cloudinary"],
+)
 api.include_router(
     communities.router,
     prefix="/communities",

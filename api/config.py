@@ -13,6 +13,9 @@ class Settings(BaseSettings):
         "http://localhost:5173/",
         "https://geounity.org/"
     ]
+    CLOUDINARY_CLOUD_NAME: str = "geounity"
+    CLOUDINARY_API_KEY: str = "813557857562179"
+    CLOUDINARY_API_SECRET: str = "cWtbOjvAtiyTk7CJh5Zw6lKZCkQ"
 
     class Config:
         env_file = ".env"

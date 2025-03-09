@@ -42,6 +42,7 @@ def create_debate(
         language=debate_data.language,
         public=debate_data.public,
         images=debate_data.images,
+        is_anonymous=debate_data.is_anonymous,
         creator_id=current_user.id
     )
     
