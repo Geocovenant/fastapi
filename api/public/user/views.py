@@ -12,12 +12,42 @@ from api.utils.generic_models import UserFollowLink, UserCommunityLink
 router = APIRouter()
 
 @router.get("/me")
-def read_me(current_user: User = Depends(get_current_user)):
+def read_me(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
     """
     Get information about the currently authenticated user.
     Authentication required.
+    Includes the list of communities the user belongs to.
     """
-    return current_user
+    # Convertir el usuario actual a diccionario
+    user_data = current_user.dict()
+
+    # Obtener las comunidades del usuario con información de visibilidad
+    communities_query = select(
+        Community, UserCommunityLink.is_public
+    ).join(
+        UserCommunityLink
+    ).where(
+        UserCommunityLink.user_id == current_user.id
+    )
+    
+    communities_result = db.exec(communities_query).all()
+    
+    # Formatear las comunidades para la respuesta
+    user_data["communities"] = [
+        {
+            "id": community.id,
+            "name": community.name,
+            "level": community.level,
+            "description": community.description,
+            "is_public": is_public
+        }
+        for community, is_public in communities_result
+    ]
+
+    return user_data
 
 @router.get("/{username}")
 def get_user_profile(
@@ -29,6 +59,9 @@ def get_user_profile(
     Get information about a user profile by username.
     No authentication required, but if the user is authenticated, 
     additional information will be included such as if they follow the user.
+    For communities:
+    - If viewing own profile: shows all communities
+    - If viewing other profile: shows only public communities
     """
     # Find user by username
     user = db.exec(select(User).where(User.username == username)).first()
@@ -69,6 +102,33 @@ def get_user_profile(
         
         # Update is_following field in the response
         user_data["is_following"] = is_following
+    
+    # Obtener las comunidades del usuario
+    communities_query = select(
+        Community, UserCommunityLink.is_public
+    ).join(
+        UserCommunityLink
+    ).where(
+        UserCommunityLink.user_id == user.id
+    )
+    
+    # Si no es el propio usuario, filtrar solo las comunidades públicas
+    if not current_user or current_user.id != user.id:
+        communities_query = communities_query.where(UserCommunityLink.is_public == True)
+    
+    communities_result = db.exec(communities_query).all()
+    
+    # Formatear las comunidades para la respuesta
+    user_data["communities"] = [
+        {
+            "id": community.id,
+            "name": community.name,
+            "level": community.level,
+            "description": community.description,
+            "is_public": is_public
+        }
+        for community, is_public in communities_result
+    ]
     
     return user_data
 

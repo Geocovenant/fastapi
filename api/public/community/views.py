@@ -3,7 +3,7 @@ from sqlmodel import Session
 from api.public.community.models import CommunityRead, CommunityLevel
 from api.public.community.crud import get_community
 from api.database import get_session
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from api.public.user.models import User, UserCommunityLink
 from api.auth.dependencies import get_current_user_optional, get_current_user
 from typing import Optional, List
@@ -269,8 +269,13 @@ def leave_community(
             detail="You are not a member of this community"
         )
     
-    # Delete the membership
-    db.delete(membership)
+    # Delete the membership using delete statement
+    db.exec(
+        delete(UserCommunityLink).where(
+            UserCommunityLink.user_id == current_user.id,
+            UserCommunityLink.community_id == community_id
+        )
+    )
     db.commit()
     
     return {"message": "You have left the community successfully"}

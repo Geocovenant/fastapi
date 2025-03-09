@@ -41,6 +41,11 @@ api.include_router(
     tags=["Issues"]
 )
 api.include_router(
+    organization_views.router,
+    prefix="/organizations",
+    tags=["Organizations"]
+)
+api.include_router(
     poll.router,
     prefix="/polls",
     tags=["Polls"]
@@ -49,6 +54,11 @@ api.include_router(
     project.router,
     prefix="/projects",
     tags=["Projects"]
+)
+api.include_router(
+    report.router,
+    prefix="/reports",
+    tags=["Reports"]
 )
 api.include_router(
     region.router,
@@ -69,14 +79,4 @@ api.include_router(
     user.router,
     prefix="/users",
     tags=["Users"]
-)
-api.include_router(
-    report.router,
-    prefix="/reports",
-    tags=["Reports"]
-)
-api.include_router(
-    organization_views.router,
-    prefix="/organizations",
-    tags=["Organizations"]
 )
