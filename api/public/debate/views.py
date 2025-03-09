@@ -528,6 +528,17 @@ def get_debate_read(session, debate, current_user=None):
             cca2=cca2
         ))
 
+    # Determinar si debemos mostrar los datos del creador
+    creator = None  # Por defecto no mostramos el creador (anónimo)
+    
+    # Solo mostramos el creador si el debate no es anónimo O si el usuario actual es el creador/admin
+    if not debate.is_anonymous or (current_user and (current_user.id == debate.creator_id or current_user.role == UserRole.ADMIN)):
+        creator = UserMinimal(
+            id=debate.creator.id,
+            username=debate.creator.username,
+            image=debate.creator.image
+        )
+
     return DebateRead(
         id=debate.id,
         title=debate.title,
@@ -541,17 +552,14 @@ def get_debate_read(session, debate, current_user=None):
         views_count=debate.views_count,
         created_at=debate.created_at,
         updated_at=debate.updated_at,
-        creator=UserMinimal(
-            id=debate.creator.id,
-            username=debate.creator.username,
-            image=debate.creator.image
-        ),
-        communities=communities,  # Usar la lista de comunidades modificada
+        creator=creator,  # Ahora puede ser None si es anónimo
+        communities=communities,
         tags=[tag.name for tag in debate.tags],
         points_of_view=[
             get_point_of_view_read(session, pov, current_user)
             for pov in debate.points_of_view
-        ]
+        ],
+        is_anonymous=debate.is_anonymous
     )
 
 def get_point_of_view_read(session, pov, current_user=None):

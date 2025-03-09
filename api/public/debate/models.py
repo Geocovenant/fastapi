@@ -206,7 +206,7 @@ class PointOfViewRead(SQLModel):
 
 class DebateRead(DebateBase):
     id: int
-    creator: UserMinimal
+    creator: Optional[UserMinimal]
     created_at: datetime
     updated_at: Optional[datetime] = None
     communities: list[CommunityMinimal] = []
