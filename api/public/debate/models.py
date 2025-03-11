@@ -169,9 +169,9 @@ class DebateCreate(SQLModel):
         # Validar que se proporcionan datos adecuados según el tipo de debate
         if debate_type == DebateType.NATIONAL and not values.get("country_code"):
             raise ValueError("Los debates nacionales requieren un código de país (country_code)")
-        
-        if debate_type == DebateType.REGIONAL and not values.get("region_id"):
-            raise ValueError("Los debates regionales requieren un ID de región (region_id)")
+            
+        # Ya no validamos region_id para debates regionales
+        # Los debates regionales ahora pueden usar community_ids directamente
             
         return v
 

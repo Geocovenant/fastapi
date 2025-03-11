@@ -22,6 +22,7 @@ from api.public.debate.models import (
 from api.utils.slug import create_slug
 from datetime import datetime
 from api.public.country.models import Country
+from sqlalchemy import text
 
 router = APIRouter()
 
@@ -33,12 +34,25 @@ def create_debate(
 ):
     """Create a new debate"""
     
-    # Create the debate
+    # Generar el slug base a partir del título
+    base_slug = create_slug(debate_data.title)
+    
+    # Verificar si el slug ya existe y crear uno único
+    slug = base_slug
+    counter = 1
+    
+    # Consultar si el slug existe
+    while session.exec(select(Debate).where(Debate.slug == slug)).first() is not None:
+        # Si existe, crear un nuevo slug con un sufijo numérico
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+    
+    # Create the debate con el slug único
     new_debate = Debate(
         title=debate_data.title,
         description=debate_data.description,
         type=debate_data.type,
-        slug=create_slug(debate_data.title),
+        slug=slug,  # Usar el slug único generado
         language=debate_data.language,
         public=debate_data.public,
         images=debate_data.images,
@@ -96,12 +110,12 @@ def create_debate(
     
     elif debate_data.type == DebateType.REGIONAL:
         # Regional debate - add regional community
-        if not debate_data.region_id:
-            raise HTTPException(status_code=400, detail="Region ID is required for regional debates")
-        
-        region = get_region_by_id(session, debate_data.region_id)
-        if region and region.community:
-            new_debate.communities.append(region.community)
+        if debate_data.region_id:
+            # Si se proporciona region_id, usarlo para obtener la comunidad
+            region = get_region_by_id(session, debate_data.region_id)
+            if region and region.community:
+                new_debate.communities.append(region.community)
+        # Si no se proporciona region_id, se usarán los community_ids proporcionados
     
     elif debate_data.type == DebateType.SUBREGIONAL:
         # Subregional debate - add subregional community
@@ -123,7 +137,14 @@ def create_debate(
     
     # Add additional communities
     for community_id in debate_data.community_ids:
-        community = get_community_by_id(session, community_id)
+        # Convertir a entero si viene como string
+        try:
+            community_id_int = int(community_id)
+        except (ValueError, TypeError):
+            # Si no se puede convertir, usar el valor original
+            community_id_int = community_id
+            
+        community = get_community_by_id(session, community_id_int)
         if community:
             new_debate.communities.append(community)
     
@@ -172,13 +193,33 @@ def get_debates(
     # Base query
     query = select(Debate).where(Debate.deleted_at == None)
     
-    # Apply filters
-    if type:
+    # Si se proporciona community_id, primero determinamos a qué nivel de comunidad corresponde
+    if community_id:
+        community = get_community_by_id(session, community_id)
+        if community:
+            # Aplicamos filtros según el nivel de la comunidad
+            query = query.join(Community, Debate.communities).where(Community.id == community_id)
+            
+            # Si es una comunidad nacional, filtramos por debates NATIONAL
+            if community.level == CommunityLevel.NATIONAL:
+                # Solo aplicamos este filtro si no se especificó otro tipo explícitamente
+                if type is None:
+                    query = query.where(Debate.type == DebateType.NATIONAL)
+            # Similar para otros niveles de comunidad
+            elif community.level == CommunityLevel.REGIONAL:
+                if type is None:
+                    query = query.where(Debate.type == DebateType.REGIONAL)
+            elif community.level == CommunityLevel.SUBREGIONAL:
+                if type is None:
+                    query = query.where(Debate.type == DebateType.SUBREGIONAL)
+            elif community.level == CommunityLevel.GLOBAL:
+                if type is None:
+                    query = query.where(Debate.type == DebateType.GLOBAL)
+    # Apply explicit type filter if provided
+    elif type:
         query = query.where(Debate.type == type)
     
-    if community_id:
-        query = query.join(Community, Debate.communities).where(Community.id == community_id)
-    
+    # Aplicar el resto de filtros como antes
     if country_code:
         country = get_country_by_code(session, country_code)
         if country and country.community:

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Header, Query
 from api.database import get_session
 from sqlmodel import Session, select, func
+from sqlalchemy import distinct
 from api.public.user.models import User
 from api.public.poll.crud import get_all_polls, create_poll, create_vote, create_or_update_reaction, get_country_polls, get_regional_polls, enrich_poll
 from api.public.poll.models import (
@@ -33,7 +34,8 @@ def read_polls(
     scope: str | None = None,
     country: str | None = None,
     region: int | None = None,
-    subregion: int | None = None,  # Added subregion parameter
+    subregion: int | None = None,
+    community_id: int | None = None,  # Nuevo parámetro para filtrar por comunidad
     page: int = Query(default=1, ge=1, description="Page number"),
     size: int = Query(default=10, ge=1, le=100, description="Items per page"),
     current_user: User | None = Depends(get_current_user_optional),
@@ -45,10 +47,68 @@ def read_polls(
     - country: Filter by country code (CCA2)
     - region: Filter by region ID
     - subregion: Filter by subregion ID
+    - community_id: Filter by community ID
     - page: Page number (default: 1)
     - size: Items per page (default: 10, max: 100)
     """
-    # If subregion is specified and the scope is SUBREGIONAL
+    # Si se proporciona un community_id, filtramos por esa comunidad
+    if community_id:
+        # Verificar que la comunidad existe
+        community = db.exec(
+            select(Community)
+            .where(Community.id == community_id)
+        ).first()
+        
+        if not community:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Comunidad con ID {community_id} no encontrada"
+            )
+        
+        # Calcular offset para paginación
+        offset = (page - 1) * size
+        
+        # Consulta base que une Poll con PollCommunityLink
+        query = (
+            select(Poll)
+            .join(PollCommunityLink)
+            .where(PollCommunityLink.community_id == community_id)
+        )
+        
+        # Aplicar filtro adicional por scope si se proporciona
+        if scope:
+            query = query.where(Poll.scope == scope)
+            
+        # Otra opción para la consulta
+        total_query = select(func.count()).select_from(
+            select(Poll.id)
+            .join(PollCommunityLink)
+            .where(PollCommunityLink.community_id == community_id)
+            .distinct()
+            .subquery()
+        )
+        total = db.exec(total_query).first() or 0
+        total_pages = (total + size - 1) // size if total > 0 else 1
+        
+        # Aplicar ordenamiento y paginación
+        query = query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
+        
+        # Ejecutar la consulta
+        polls = db.exec(query).all()
+        
+        # Enriquecer con información adicional
+        return {
+            "items": [
+                enrich_poll(db, poll, current_user.id if current_user else None)
+                for poll in polls
+            ],
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": total_pages
+        }
+    
+    # Si hay un parámetro de subregion y el scope es SUBREGIONAL
     if subregion and scope == 'SUBREGIONAL':
         # Verify that the subregion exists
         subregion_obj = db.exec(

@@ -3,12 +3,13 @@ from sqlmodel import Session
 from api.public.community.models import CommunityRead, CommunityLevel
 from api.public.community.crud import get_community
 from api.database import get_session
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func, delete, or_
 from api.public.user.models import User, UserCommunityLink
 from api.auth.dependencies import get_current_user_optional, get_current_user
 from typing import Optional, List
 from pydantic import BaseModel
 import datetime
+import unicodedata
 
 from api.public.community.models import CommunityRequest
 from api.public.community.crud import create_community_request, get_community_requests, update_community_request_status
@@ -30,11 +31,29 @@ def search_community(
     
     Ejemplos de uso:
     - /communities/search?level=NATIONAL&country=argentina
-    - /communities/search?level=REGIONAL&country=argentina&region=buenos_aires
-    - /communities/search?level=SUBREGIONAL&country=argentina&region=buenos_aires&subregion=alberti
-    - /communities/search?level=LOCAL&country=argentina&region=buenos_aires&subregion=caba&local=palermo
+    - /communities/search?level=REGIONAL&country=argentina&region=buenos-aires
+    - /communities/search?level=SUBREGIONAL&country=argentina&region=buenos-aires&subregion=alberti
+    - /communities/search?level=LOCAL&country=argentina&region=buenos-aires&subregion=caba&local=palermo
     """
     from api.public.community.models import Community
+    
+    # Función para normalizar texto: quita acentos, convierte a minúsculas y normaliza separadores
+    def normalize_text(text):
+        if not text:
+            return None
+        # Convertir a minúsculas
+        text = text.lower()
+        # Reemplazar guiones y guiones bajos por espacios
+        text = text.replace('-', ' ').replace('_', ' ')
+        # Normalizar caracteres acentuados y eliminar diacríticos
+        text = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('utf-8')
+        return text
+    
+    # Normalizar todos los parámetros de búsqueda
+    normalized_country = normalize_text(country) if country else None
+    normalized_region = normalize_text(region) if region else None
+    normalized_subregion = normalize_text(subregion) if subregion else None
+    normalized_local = normalize_text(local) if local else None
     
     # Consulta usando directamente Session.query para evitar problemas con selects complejos
     query = db.query(Community).filter(Community.level == level)
@@ -46,8 +65,35 @@ def search_community(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El parámetro 'country' es obligatorio para nivel NATIONAL"
             )
-        # Filtrar por nombre del país (ignorando mayúsculas/minúsculas)
-        query = query.filter(func.lower(Community.name) == country.lower())
+        # Aplicar función de normalización a los nombres en la base de datos para búsqueda flexible
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                func.lower(Community.name), 
+                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+            ),
+            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+            ),
+            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+            ),
+            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+        )
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        query = query.filter(
+            or_(
+                func.lower(Community.name) == normalized_country,
+                normalized_db_name == normalized_country
+            )
+        )
     
     elif level == CommunityLevel.REGIONAL:
         if not country or not region:
@@ -56,9 +102,35 @@ def search_community(
                 detail="Los parámetros 'country' y 'region' son obligatorios para nivel REGIONAL"
             )
         
-        # Reemplazar guiones bajos por espacios para la comparación
-        normalized_region = region.replace('_', ' ')
-        query = query.filter(func.lower(Community.name) == normalized_region.lower())
+        # Búsqueda flexible para el nombre de la región
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                func.lower(Community.name), 
+                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+            ),
+            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+            ),
+            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+            ),
+            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+        )
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        query = query.filter(
+            or_(
+                func.lower(Community.name) == normalized_region,
+                normalized_db_name == normalized_region
+            )
+        )
     
     elif level == CommunityLevel.SUBREGIONAL:
         if not country or not region or not subregion:
@@ -67,9 +139,35 @@ def search_community(
                 detail="Los parámetros 'country', 'region' y 'subregion' son obligatorios para nivel SUBREGIONAL"
             )
         
-        # Reemplazar guiones bajos por espacios para la comparación
-        normalized_subregion = subregion.replace('_', ' ')
-        query = query.filter(func.lower(Community.name) == normalized_subregion.lower())
+        # Búsqueda flexible para el nombre de la subregión
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                func.lower(Community.name), 
+                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+            ),
+            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+            ),
+            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+            ),
+            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+        )
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        query = query.filter(
+            or_(
+                func.lower(Community.name) == normalized_subregion,
+                normalized_db_name == normalized_subregion
+            )
+        )
     
     elif level == CommunityLevel.LOCAL:
         if not country or not local:
@@ -77,7 +175,36 @@ def search_community(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Los parámetros 'country' y 'local' son obligatorios para nivel LOCAL"
             )
-        query = query.filter(func.lower(Community.name) == local.lower())
+        
+        # Búsqueda flexible para el nombre de la localidad
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                func.lower(Community.name), 
+                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+            ),
+            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+            ),
+            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+        )
+        normalized_db_name = func.regexp_replace(
+            func.regexp_replace(
+                normalized_db_name,
+                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+            ),
+            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+        )
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        query = query.filter(
+            or_(
+                func.lower(Community.name) == normalized_local,
+                normalized_db_name == normalized_local
+            )
+        )
     
     # Ejecutar consulta usando first()
     community = query.first()
