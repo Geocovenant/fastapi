@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlmodel import Session
+from sqlmodel import Session, select
 from api.public.community.models import CommunityRead, CommunityLevel
 from api.public.community.crud import get_community
 from api.database import get_session
-from sqlalchemy import select, func, delete, or_
+from sqlalchemy import func, delete, or_
 from api.public.user.models import User, UserCommunityLink
 from api.auth.dependencies import get_current_user_optional, get_current_user
 from typing import Optional, List
@@ -13,6 +13,7 @@ import unicodedata
 
 from api.public.community.models import CommunityRequest
 from api.public.community.crud import create_community_request, get_community_requests, update_community_request_status
+from api.public.region.models import Region
 
 router = APIRouter()
 
@@ -216,7 +217,23 @@ def search_community(
         )
     
     # El objeto community es ya una instancia de Community
-    return community
+    result = CommunityRead.from_orm(community)
+    
+    # Add region_id if the community level is REGIONAL
+    if community.level == CommunityLevel.REGIONAL:
+        # Query the region table to find the region associated with this community
+        region_data = db.exec(
+            select(Region).where(Region.community_id == community.id)
+        ).first()
+        
+        if region_data:
+            # Add the region_id to the response
+            result_dict = result.dict()
+            result_dict["region_id"] = region_data.id
+            # Convert back to the response model
+            result = CommunityRead(**result_dict)
+    
+    return result
 
 @router.get("/{community_id}", response_model=CommunityRead)
 def read(community_id: int, db: Session = Depends(get_session)):
@@ -278,7 +295,7 @@ def get_community_members(
         UserCommunityLink.is_public == True
     ).select_from(UserCommunityLink)
     total_public_result = db.exec(total_public_query).first()
-    total_public = total_public_result if total_public_result is None else total_public_result[0]
+    total_public = 0 if total_public_result is None else total_public_result
     
     # Count the total number of anonymous members (is_public=False)
     total_anonymous_query = select(func.count()).where(
@@ -286,7 +303,7 @@ def get_community_members(
         UserCommunityLink.is_public == False
     ).select_from(UserCommunityLink)
     total_anonymous_result = db.exec(total_anonymous_query).first()
-    total_anonymous = total_anonymous_result if total_anonymous_result is None else total_anonymous_result[0]
+    total_anonymous = 0 if total_anonymous_result is None else total_anonymous_result
     
     # Check if the current user is set as not public in this community
     current_user_is_public = True

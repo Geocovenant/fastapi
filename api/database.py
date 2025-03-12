@@ -1,7 +1,7 @@
 from sqlmodel import create_engine, SQLModel, Session
 from api.config import settings
 
-engine = create_engine(settings.DATABASE_URL, echo=True)
+engine = create_engine(settings.DATABASE_URL, echo=True, pool_size=20, max_overflow=10)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)

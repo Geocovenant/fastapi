@@ -48,6 +48,8 @@ class Community(CommunityBase, table=True):
 
 class CommunityRead(CommunityBase):
     id: int
+    parent_id: Optional[int] = None
+    region_id: Optional[int] = None  # Nuevo campo opcional
 
 class CommunityRequest(SQLModel, table=True):
     __tablename__ = "community_requests"
