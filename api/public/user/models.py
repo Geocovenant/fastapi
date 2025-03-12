@@ -108,6 +108,12 @@ class User(UserBase, table=True):
         sa_relationship_kwargs={"foreign_keys": "[Report.resolved_by_id]"}
     )
 
+    # Agregar esta relación si no existe
+    debate_comments: list["Comment"] = Relationship(back_populates="user")
+
+    # Agregar esta relación
+    project_comments: list["ProjectComment"] = Relationship(back_populates="user")
+
 # Additional models required by Auth.js
 class Account(SQLModel, table=True):
     __tablename__ = "accounts"

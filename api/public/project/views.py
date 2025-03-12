@@ -8,7 +8,7 @@ from api.public.user.models import User, UserRole
 from api.public.project.models import (
     Project, ProjectCreate, ProjectRead, ProjectUpdate, 
     ProjectStatus, ProjectStepCreate, ProjectCommitmentCreate,
-    ProjectDonationCreate
+    ProjectDonationCreate, ProjectComment, ProjectCommentCreate, ProjectCommentRead
 )
 from api.public.project.crud import (
     get_all_projects, create_project, get_project_by_id_or_slug, 
@@ -16,6 +16,9 @@ from api.public.project.crud import (
     add_project_donation, get_project_by_filters
 )
 from api.utils.slug import create_slug
+from api.public.user.models import UserCommunityLink
+from api.public.project.models import ProjectCommunityLink
+from api.utils.shared_models import UserMinimal
 
 router = APIRouter()
 
@@ -161,16 +164,35 @@ def add_commitment(
     db: Session = Depends(get_session)
 ):
     """
-    Add a commitment to a project.
-    Authentication required.
+    Agregar un compromiso a un proyecto.
+    Requiere autenticación y membresía en la comunidad del proyecto.
     """
     project = get_project_by_id_or_slug(db, str(project_id))
+    
+    # Verificar que el usuario es miembro de al menos una de las comunidades del proyecto
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    project_communities = db.exec(
+        select(ProjectCommunityLink.community_id)
+        .where(ProjectCommunityLink.project_id == project_id)
+    ).all()
+    project_community_ids = set(pc.community_id for pc in project_communities)
+    
+    if not user_community_ids.intersection(project_community_ids):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para comprometerte con este proyecto"
+        )
     
     # Verify that the project is open
     if project.status != ProjectStatus.OPEN:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Commitments can only be added to open projects"
+            detail="Solo se pueden agregar compromisos a proyectos abiertos"
         )
     
     return add_project_commitment(db, project_id, current_user.id, commitment_data)
@@ -183,16 +205,90 @@ def add_donation(
     db: Session = Depends(get_session)
 ):
     """
-    Add a donation to a project.
-    Authentication required.
+    Agregar una donación a un proyecto.
+    Requiere autenticación y membresía en la comunidad del proyecto.
     """
     project = get_project_by_id_or_slug(db, str(project_id))
+    
+    # Verificar que el usuario es miembro de al menos una de las comunidades del proyecto
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    project_communities = db.exec(
+        select(ProjectCommunityLink.community_id)
+        .where(ProjectCommunityLink.project_id == project_id)
+    ).all()
+    project_community_ids = set(pc.community_id for pc in project_communities)
+    
+    if not user_community_ids.intersection(project_community_ids):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para donar a este proyecto"
+        )
     
     # Verify that the project is open or in progress
     if project.status not in [ProjectStatus.OPEN, ProjectStatus.IN_PROGRESS]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Donations can only be added to open or in-progress projects"
+            detail="Solo se pueden hacer donaciones a proyectos abiertos o en progreso"
         )
     
     return add_project_donation(db, project_id, current_user.id, donation_data)
+
+@router.post("/{project_id}/comments", response_model=ProjectCommentRead)
+def add_project_comment(
+    project_id: int,
+    comment_data: ProjectCommentCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
+):
+    """
+    Agregar un comentario a un proyecto.
+    Requiere autenticación y membresía en la comunidad del proyecto.
+    """
+    project = get_project_by_id_or_slug(db, str(project_id))
+    
+    # Verificar que el usuario es miembro de al menos una de las comunidades del proyecto
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    project_communities = db.exec(
+        select(ProjectCommunityLink.community_id)
+        .where(ProjectCommunityLink.project_id == project_id)
+    ).all()
+    project_community_ids = set(pc.community_id for pc in project_communities)
+    
+    if not user_community_ids.intersection(project_community_ids):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para comentar en este proyecto"
+        )
+    
+    new_comment = ProjectComment(
+        project_id=project_id,
+        user_id=current_user.id,
+        content=comment_data.content,
+        created_at=datetime.utcnow()
+    )
+    
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    
+    return ProjectCommentRead(
+        id=new_comment.id,
+        content=new_comment.content,
+        created_at=new_comment.created_at,
+        user=UserMinimal(
+            id=current_user.id,
+            username=current_user.username,
+            image=current_user.image
+        ),
+        can_edit=True
+    )

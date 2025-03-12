@@ -7,6 +7,7 @@ from api.public.tag.models import Tag
 from api.public.user.models import User
 from api.public.community.models import Community
 from api.utils.generic_models import DebateTagLink, DebateCommunityLink
+from api.utils.shared_models import UserMinimal
 from pydantic import validator
 
 class DebateType(str, Enum):
@@ -73,6 +74,7 @@ class Debate(DebateBase, table=True):
     communities: list["Community"] = Relationship(back_populates="debates", link_model=DebateCommunityLink)
     points_of_view: list["PointOfView"] = Relationship(back_populates="debate", cascade_delete=True)
     change_logs: list["DebateChangeLog"] = Relationship(back_populates="debate", cascade_delete=True)
+    comments: list["Comment"] = Relationship(back_populates="debate", cascade_delete=True)
 
 # Model for point of view in a debate
 class PointOfView(SQLModel, table=True):
@@ -180,11 +182,6 @@ class CommunityMinimal(SQLModel):
     name: str
     cca2: Optional[str] = None
 
-class UserMinimal(SQLModel):
-    id: int
-    username: str
-    image: Optional[str] = None
-
 class OpinionRead(SQLModel):
     id: int
     content: str
@@ -228,4 +225,28 @@ class PaginatedDebateResponse(SQLModel):
     total: int
     page: int
     size: int
-    pages: int 
+    pages: int
+
+class CommentBase(SQLModel):
+    content: str = Field(max_length=1000, description="Contenido del comentario")
+
+class CommentCreate(CommentBase):
+    pass
+
+class CommentRead(CommentBase):
+    id: int
+    user: UserMinimal
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    can_edit: bool = False
+
+class Comment(CommentBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    debate_id: int = Field(foreign_key="debate.id")
+    user_id: int = Field(foreign_key="users.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = Field(default=None)
+
+    # Relationships
+    debate: "Debate" = Relationship(back_populates="comments")
+    user: User = Relationship(back_populates="debate_comments") 

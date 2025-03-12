@@ -225,14 +225,33 @@ def vote_poll(
     """
     Vote in a poll.
     If option_ids is empty, remove the user's existing votes.
-    Requires authentication.
+    Requires authentication and membership in the poll's community.
     """
     # First, get the poll
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Poll not found"
+            detail="Encuesta no encontrada"
+        )
+    
+    # Verify that the user is a member of at least one of the poll's communities
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    poll_communities = db.exec(
+        select(PollCommunityLink.community_id)
+        .where(PollCommunityLink.poll_id == poll_id)
+    ).all()
+    poll_community_ids = set(pc.community_id for pc in poll_communities)
+    
+    if not user_community_ids.intersection(poll_community_ids):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para votar en esta encuesta"
         )
     
     # Validate the poll's status
@@ -301,10 +320,35 @@ def react_to_poll(
 ):
     """
     React to a poll with LIKE or DISLIKE.
-    If a reaction of the same type already exists, it is removed.
-    If a different reaction exists, it is updated.
-    Requires authentication.
+    Requires authentication and membership in the poll's community.
     """
+    # First, get the poll
+    poll = db.get(Poll, poll_id)
+    if not poll:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Encuesta no encontrada"
+        )
+    
+    # Verify that the user is a member of at least one of the poll's communities
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    poll_communities = db.exec(
+        select(PollCommunityLink.community_id)
+        .where(PollCommunityLink.poll_id == poll_id)
+    ).all()
+    poll_community_ids = set(pc.community_id for pc in poll_communities)
+    
+    if not user_community_ids.intersection(poll_community_ids):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para reaccionar a esta encuesta"
+        )
+    
     return create_or_update_reaction(
         db, 
         poll_id, 
@@ -354,13 +398,32 @@ def create_poll_comment(
 ):
     """
     Create a new comment on a poll.
-    Requires authentication.
+    Requires authentication and membership in the poll's community.
     """
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Poll not found"
+            detail="Encuesta no encontrada"
+        )
+
+    # Verify that the user is a member of at least one of the poll's communities
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    poll_communities = db.exec(
+        select(PollCommunityLink.community_id)
+        .where(PollCommunityLink.poll_id == poll_id)
+    ).all()
+    poll_community_ids = set(pc.community_id for pc in poll_communities)
+    
+    if not user_community_ids.intersection(poll_community_ids):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para comentar en esta encuesta"
         )
 
     new_comment = PollComment(

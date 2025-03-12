@@ -15,6 +15,7 @@ from api.public.issue.crud import (
     update_issue, delete_issue, add_issue_comment,
     add_issue_support, add_issue_update
 )
+from api.public.user.models import UserCommunityLink
 
 router = APIRouter()
 
@@ -162,9 +163,30 @@ def add_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Add a comment to an issue.
-    Authentication required.
+    Agregar un comentario a un issue.
+    Requiere autenticación y membresía en la comunidad del issue.
     """
+    # Verificar que el issue existe
+    issue = db.get(Issue, issue_id)
+    if not issue:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Issue no encontrado"
+        )
+
+    # Verificar que el usuario es miembro de la comunidad del issue
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    if issue.community_id and issue.community_id not in user_community_ids:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para comentar en este issue"
+        )
+
     return add_issue_comment(db, issue_id, current_user.id, comment_data)
 
 @router.post("/{issue_id}/support")
@@ -174,10 +196,31 @@ def toggle_support(
     db: Session = Depends(get_session)
 ):
     """
-    Toggle support for an issue. If the user already supports the issue,
-    their support is removed. Otherwise, support is added.
-    Authentication required.
+    Alternar el apoyo a un issue. Si el usuario ya apoya el issue,
+    se elimina su apoyo. Si no, se agrega.
+    Requiere autenticación y membresía en la comunidad del issue.
     """
+    # Verificar que el issue existe
+    issue = db.get(Issue, issue_id)
+    if not issue:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Issue no encontrado"
+        )
+
+    # Verificar que el usuario es miembro de la comunidad del issue
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    if issue.community_id and issue.community_id not in user_community_ids:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para apoyar este issue"
+        )
+
     return add_issue_support(db, issue_id, current_user.id)
 
 @router.post("/{issue_id}/updates", response_model=IssueUpdateRead, status_code=status.HTTP_201_CREATED)
@@ -188,21 +231,35 @@ def add_update(
     db: Session = Depends(get_session)
 ):
     """
-    Add an update to an issue.
-    Only the creator or an administrator can add updates.
+    Agregar una actualización a un issue.
+    Requiere autenticación y membresía en la comunidad del issue.
+    Solo el creador o un administrador pueden agregar actualizaciones.
     """
     issue = db.get(Issue, issue_id)
     if not issue:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Issue not found"
+            detail="Issue no encontrado"
+        )
+
+    # Verificar que el usuario es miembro de la comunidad del issue
+    user_communities = db.exec(
+        select(UserCommunityLink.community_id)
+        .where(UserCommunityLink.user_id == current_user.id)
+    ).all()
+    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    if issue.community_id and issue.community_id not in user_community_ids:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Debes ser miembro de la comunidad para actualizar este issue"
         )
     
-    # Verify permissions for adding updates
+    # Verificar permisos para agregar actualizaciones
     if issue.creator_id != current_user.id and current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have permission to add updates to this issue"
+            detail="No tienes permiso para agregar actualizaciones a este issue"
         )
     
     return add_issue_update(db, issue_id, current_user.id, update_data) 

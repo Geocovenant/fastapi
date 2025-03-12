@@ -3,7 +3,10 @@ from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional
 from api.public.tag.models import Tag
+from api.public.user.models import User
+from api.public.community.models import Community
 from api.utils.generic_models import ProjectCommunityLink
+from api.utils.shared_models import UserMinimal
 
 class ProjectStatus(str, Enum):
     DRAFT = "DRAFT"         # Project in draft
@@ -44,6 +47,7 @@ class Project(ProjectBase, table=True):
     commitments: list["ProjectCommitment"] = Relationship(back_populates="project", cascade_delete=True)
     donations: list["ProjectDonation"] = Relationship(back_populates="project", cascade_delete=True)
     communities: list["Community"] = Relationship(back_populates="projects", link_model=ProjectCommunityLink)
+    comments: list["ProjectComment"] = Relationship(back_populates="project", cascade_delete=True)
 
 class ProjectStep(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -182,3 +186,25 @@ class ProjectUpdate(SQLModel):
     status: Optional[ProjectStatus] = None
     goal_amount: Optional[float] = None
     community_ids: Optional[list[int]] = None
+
+class ProjectCommentBase(SQLModel):
+    content: str = Field(max_length=1000, description="Contenido del comentario")
+
+class ProjectCommentCreate(ProjectCommentBase):
+    pass
+
+class ProjectCommentRead(ProjectCommentBase):
+    id: int
+    user: UserMinimal
+    created_at: datetime
+    can_edit: bool = False
+
+class ProjectComment(ProjectCommentBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    project_id: int = Field(foreign_key="project.id")
+    user_id: int = Field(foreign_key="users.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Relationships
+    project: "Project" = Relationship(back_populates="comments")
+    user: User = Relationship(back_populates="project_comments")
