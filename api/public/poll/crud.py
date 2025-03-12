@@ -1,3 +1,5 @@
+import random
+import string
 from sqlmodel import Session, select, func, distinct
 from api.public.poll.models import Poll, PollOption, PollCreate, PollVote, PollReaction, ReactionType, PollCustomResponse
 from api.public.community.models import Community
@@ -5,8 +7,6 @@ from slugify import slugify
 from datetime import datetime
 from fastapi import HTTPException, status
 from api.public.poll.models import PollStatus, PollType
-import random
-import string
 from api.public.user.models import User
 from api.public.poll.models import PollComment
 from api.utils.generic_models import PollCommunityLink

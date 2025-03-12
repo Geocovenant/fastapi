@@ -4,38 +4,38 @@ from typing import Optional
 
 def create_slug(text: str, max_length: Optional[int] = 100) -> str:
     """
-    Convierte un texto en un slug adecuado para URLs.
+    Converts a text into a suitable slug for URLs.
     
     Args:
-        text: Texto a convertir en slug
-        max_length: Longitud máxima del slug (por defecto 100 caracteres)
+        text: Text to convert into slug
+        max_length: Maximum length of the slug (default 100 characters)
         
     Returns:
-        Un slug adecuado para URLs
+        A suitable slug for URLs
     """
-    # Normalizar texto (eliminar acentos y convertir a forma compatible)
+    # Normalize text (remove accents and convert to compatible form)
     text = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('ascii')
     
-    # Convertir a minúsculas
+    # Convert to lowercase
     text = text.lower()
     
-    # Reemplazar espacios con guiones
+    # Replace spaces with hyphens
     text = re.sub(r'\s+', '-', text)
     
-    # Eliminar caracteres especiales excepto guiones y alfanuméricos
+    # Remove special characters except hyphens and alphanumeric characters
     text = re.sub(r'[^a-z0-9\-]', '', text)
     
-    # Eliminar guiones múltiples consecutivos
+    # Remove multiple consecutive hyphens
     text = re.sub(r'-+', '-', text)
     
-    # Eliminar guiones al principio o final
+    # Remove hyphens at the beginning or end
     text = text.strip('-')
     
-    # Limitar longitud si es necesario
+    # Limit length if necessary
     if max_length and len(text) > max_length:
         text = text[:max_length].rstrip('-')
     
-    # Asegurar que no esté vacío
+    # Ensure it is not empty
     if not text:
         text = "untitled"
     

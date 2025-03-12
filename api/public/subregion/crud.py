@@ -4,29 +4,29 @@ from api.public.subregion.models import Subregion
 
 def get_subregion_by_id(session: Session, subregion_id: int) -> Optional[Subregion]:
     """
-    Obtiene una subregión por su ID
+    Get a subregion by its ID
     
     Args:
-        session: Sesión de base de datos
-        subregion_id: ID de la subregión a buscar
+        session: Database session
+        subregion_id: ID of the subregion to search for
         
     Returns:
-        Objeto Subregion si se encuentra, None en caso contrario
+        Subregion object if found, None otherwise
     """
     return session.get(Subregion, subregion_id)
 
 def get_subregions(session: Session, region_id: Optional[int] = None, skip: int = 0, limit: int = 100) -> list[Subregion]:
     """
-    Obtiene una lista de subregiones, opcionalmente filtrada por región
+    Get a list of subregions, optionally filtered by region
     
     Args:
-        session: Sesión de base de datos
-        region_id: ID opcional de la región para filtrar
-        skip: Número de registros a saltar
-        limit: Número máximo de registros a devolver
+        session: Database session
+        region_id: Optional ID of the region to filter
+        skip: Number of records to skip
+        limit: Maximum number of records to return
         
     Returns:
-        Lista de objetos Subregion
+        List of Subregion objects
     """
     query = select(Subregion)
     if region_id:
@@ -35,14 +35,14 @@ def get_subregions(session: Session, region_id: Optional[int] = None, skip: int 
 
 def create_subregion(session: Session, subregion_data: dict) -> Subregion:
     """
-    Crea una nueva subregión
+    Create a new subregion
     
     Args:
-        session: Sesión de base de datos
-        subregion_data: Diccionario con los datos de la subregión
+        session: Database session
+        subregion_data: Dictionary with the subregion data
         
     Returns:
-        Objeto Subregion creado
+        Created Subregion object
     """
     subregion = Subregion(**subregion_data)
     session.add(subregion)

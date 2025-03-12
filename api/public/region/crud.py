@@ -4,41 +4,41 @@ from api.public.region.models import Region
 
 def get_region_by_id(session: Session, region_id: int) -> Optional[Region]:
     """
-    Obtiene una región por su ID
+    Gets a region by its ID
     
     Args:
-        session: Sesión de base de datos
-        region_id: ID de la región a buscar
+        session: Database session
+        region_id: ID of the region to search for
         
     Returns:
-        Objeto Region si se encuentra, None en caso contrario
+        Region object if found, None otherwise
     """
     return session.get(Region, region_id)
 
 def get_regions(session: Session, skip: int = 0, limit: int = 100) -> list[Region]:
     """
-    Obtiene una lista de regiones con paginación
+    Gets a list of regions with pagination
     
     Args:
-        session: Sesión de base de datos
-        skip: Número de registros a saltar
-        limit: Número máximo de registros a devolver
+        session: Database session
+        skip: Number of records to skip
+        limit: Maximum number of records to return
         
     Returns:
-        Lista de objetos Region
+        List of Region objects
     """
     return session.exec(select(Region).offset(skip).limit(limit)).all()
 
 def create_region(session: Session, region_data: dict) -> Region:
     """
-    Crea una nueva región
+    Creates a new region
     
     Args:
-        session: Sesión de base de datos
-        region_data: Diccionario con los datos de la región
+        session: Database session
+        region_data: Dictionary with the region data
         
     Returns:
-        Objeto Region creado
+        Created Region object
     """
     region = Region(**region_data)
     session.add(region)

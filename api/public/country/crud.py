@@ -14,14 +14,14 @@ def get_country_by_name(session: Session, country_name: str) -> Country:
 
 def get_country_by_code(session: Session, code: str) -> Optional[Country]:
     """
-    Obtiene un país por su código CCA2
+    Gets a country by its CCA2 code
     
     Args:
-        session: Sesión de base de datos
-        code: Código CCA2 del país (ISO 3166-1 alpha-2)
+        session: Database session
+        code: CCA2 code of the country (ISO 3166-1 alpha-2)
         
     Returns:
-        Objeto Country si se encuentra, None en caso contrario
+        Country object if found, None otherwise
     """
     statement = select(Country).where(Country.cca2 == code)
     result = session.exec(statement).first()

@@ -9,25 +9,25 @@ from datetime import datetime
 
 def get_community(community_id: int, db: Session, check_membership: bool = False, current_user: Optional[User] = None):
     """
-    Obtiene una comunidad por su ID.
+    Get a community by its ID.
     
     Args:
-        community_id: ID de la comunidad a obtener
-        db: Sesión de base de datos
-        check_membership: Si es True, verifica que el usuario actual sea miembro
-        current_user: Usuario actual (opcional)
+        community_id: ID of the community to retrieve
+        db: Database session
+        check_membership: If True, checks that the current user is a member
+        current_user: Current user (optional)
         
     Returns:
-        La comunidad si existe y el usuario tiene acceso, None en caso contrario
+        The community if it exists and the user has access, None otherwise
     """
     community = db.get(Community, community_id)
     
     if not community:
         return None
         
-    # Solo verificar membresía si se solicita explícitamente
+    # Only check membership if explicitly requested
     if check_membership and current_user:
-        # Verificar si el usuario es miembro de la comunidad
+        # Check if the user is a member of the community
         is_member = db.exec(
             select(UserCommunityLink).where(
                 UserCommunityLink.user_id == current_user.id,
@@ -38,21 +38,21 @@ def get_community(community_id: int, db: Session, check_membership: bool = False
         if not is_member:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="No eres miembro de esta comunidad"
+                detail="You are not a member of this community"
             )
     
     return community
 
 def get_community_by_id(session: Session, community_id: int) -> Optional[Community]:
     """
-    Obtiene una comunidad por su ID
+    Get a community by its ID
     
     Args:
-        session: Sesión de base de datos
-        community_id: ID de la comunidad a buscar
+        session: Database session
+        community_id: ID of the community to search for
         
     Returns:
-        Objeto Community si se encuentra, None en caso contrario
+        Community object if found, None otherwise
     """
     return session.get(Community, community_id)
 
@@ -60,17 +60,17 @@ def get_communities(session: Session, parent_id: Optional[int] = None,
                    level: Optional[str] = None, skip: int = 0, 
                    limit: int = 100) -> list[Community]:
     """
-    Obtiene una lista de comunidades, opcionalmente filtrada por comunidad padre o nivel
+    Get a list of communities, optionally filtered by parent community or level
     
     Args:
-        session: Sesión de base de datos
-        parent_id: ID opcional de la comunidad padre para filtrar
-        level: Nivel opcional de comunidad para filtrar
-        skip: Número de registros a saltar
-        limit: Número máximo de registros a devolver
+        session: Database session
+        parent_id: Optional ID of the parent community to filter
+        level: Optional community level to filter
+        skip: Number of records to skip
+        limit: Maximum number of records to return
         
     Returns:
-        Lista de objetos Community
+        List of Community objects
     """
     query = select(Community)
     
@@ -84,14 +84,14 @@ def get_communities(session: Session, parent_id: Optional[int] = None,
 
 def create_community(session: Session, community_data: dict) -> Community:
     """
-    Crea una nueva comunidad
+    Create a new community
     
     Args:
-        session: Sesión de base de datos
-        community_data: Diccionario con los datos de la comunidad
+        session: Database session
+        community_data: Dictionary with community data
         
     Returns:
-        Objeto Community creado
+        Created Community object
     """
     community = Community(**community_data)
     session.add(community)
@@ -102,15 +102,15 @@ def create_community(session: Session, community_data: dict) -> Community:
 def update_community(session: Session, community_id: int, 
                     community_data: dict) -> Optional[Community]:
     """
-    Actualiza una comunidad existente
+    Update an existing community
     
     Args:
-        session: Sesión de base de datos
-        community_id: ID de la comunidad a actualizar
-        community_data: Diccionario con los datos a actualizar
+        session: Database session
+        community_id: ID of the community to update
+        community_data: Dictionary with data to update
         
     Returns:
-        Objeto Community actualizado, None si no se encuentra
+        Updated Community object, None if not found
     """
     community = get_community_by_id(session, community_id)
     if not community:
@@ -125,14 +125,14 @@ def update_community(session: Session, community_id: int,
 
 def delete_community(session: Session, community_id: int) -> bool:
     """
-    Elimina una comunidad
+    Delete a community
     
     Args:
-        session: Sesión de base de datos
-        community_id: ID de la comunidad a eliminar
+        session: Database session
+        community_id: ID of the community to delete
         
     Returns:
-        True si se eliminó correctamente, False si no se encontró
+        True if deleted successfully, False if not found
     """
     community = get_community_by_id(session, community_id)
     if not community:
@@ -144,7 +144,7 @@ def delete_community(session: Session, community_id: int) -> bool:
 
 def create_community_request(db: Session, request_data: dict):
     """
-    Crea una nueva solicitud de comunidad en la base de datos
+    Create a new community request in the database
     """
     community_request = CommunityRequest(
         country=request_data["country"],
@@ -159,7 +159,7 @@ def create_community_request(db: Session, request_data: dict):
 
 def get_community_requests(db: Session, skip: int = 0, limit: int = 100, status: str = None):
     """
-    Obtiene todas las solicitudes de comunidad con filtrado opcional por estado
+    Get all community requests with optional filtering by status
     """
     query = db.query(CommunityRequest)
     if status:
@@ -168,7 +168,7 @@ def get_community_requests(db: Session, skip: int = 0, limit: int = 100, status:
 
 def update_community_request_status(db: Session, request_id: int, status: str):
     """
-    Actualiza el estado de una solicitud de comunidad
+    Update the status of a community request
     """
     community_request = db.query(CommunityRequest).filter(CommunityRequest.id == request_id).first()
     if community_request:

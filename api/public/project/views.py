@@ -164,12 +164,12 @@ def add_commitment(
     db: Session = Depends(get_session)
 ):
     """
-    Agregar un compromiso a un proyecto.
-    Requiere autenticación y membresía en la comunidad del proyecto.
+    Add a commitment to a project.
+    Authentication and membership in the project's community are required.
     """
     project = get_project_by_id_or_slug(db, str(project_id))
     
-    # Verificar que el usuario es miembro de al menos una de las comunidades del proyecto
+    # Verify that the user is a member of at least one of the project's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
@@ -185,14 +185,14 @@ def add_commitment(
     if not user_community_ids.intersection(project_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para comprometerte con este proyecto"
+            detail="You must be a member of the community to commit to this project"
         )
     
     # Verify that the project is open
     if project.status != ProjectStatus.OPEN:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Solo se pueden agregar compromisos a proyectos abiertos"
+            detail="Commitments can only be added to open projects"
         )
     
     return add_project_commitment(db, project_id, current_user.id, commitment_data)
@@ -205,12 +205,12 @@ def add_donation(
     db: Session = Depends(get_session)
 ):
     """
-    Agregar una donación a un proyecto.
-    Requiere autenticación y membresía en la comunidad del proyecto.
+    Add a donation to a project.
+    Authentication and membership in the project's community are required.
     """
     project = get_project_by_id_or_slug(db, str(project_id))
     
-    # Verificar que el usuario es miembro de al menos una de las comunidades del proyecto
+    # Verify that the user is a member of at least one of the project's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
@@ -226,14 +226,14 @@ def add_donation(
     if not user_community_ids.intersection(project_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para donar a este proyecto"
+            detail="You must be a member of the community to donate to this project"
         )
     
     # Verify that the project is open or in progress
     if project.status not in [ProjectStatus.OPEN, ProjectStatus.IN_PROGRESS]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Solo se pueden hacer donaciones a proyectos abiertos o en progreso"
+            detail="Donations can only be made to open or in-progress projects"
         )
     
     return add_project_donation(db, project_id, current_user.id, donation_data)
@@ -246,12 +246,12 @@ def add_project_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Agregar un comentario a un proyecto.
-    Requiere autenticación y membresía en la comunidad del proyecto.
+    Add a comment to a project.
+    Authentication and membership in the project's community are required.
     """
     project = get_project_by_id_or_slug(db, str(project_id))
     
-    # Verificar que el usuario es miembro de al menos una de las comunidades del proyecto
+    # Verify that the user is a member of at least one of the project's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
@@ -267,7 +267,7 @@ def add_project_comment(
     if not user_community_ids.intersection(project_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para comentar en este proyecto"
+            detail="You must be a member of the community to comment on this project"
         )
     
     new_comment = ProjectComment(

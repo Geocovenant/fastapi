@@ -1,2 +1,2 @@
-# Importar todos los modelos para asegurar que SQLAlchemy los detecte
+# Import all models to ensure SQLAlchemy detects them
 from api.models import *

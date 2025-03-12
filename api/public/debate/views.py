@@ -37,25 +37,25 @@ def create_debate(
 ):
     """Create a new debate"""
     
-    # Generar el slug base a partir del título
+    # Generate the base slug from the title
     base_slug = create_slug(debate_data.title)
     
-    # Verificar si el slug ya existe y crear uno único
+    # Check if the slug already exists and create a unique one
     slug = base_slug
     counter = 1
     
-    # Consultar si el slug existe
+    # Check if the slug exists
     while session.exec(select(Debate).where(Debate.slug == slug)).first() is not None:
-        # Si existe, crear un nuevo slug con un sufijo numérico
+        # If it exists, create a new slug with a numeric suffix
         slug = f"{base_slug}-{counter}"
         counter += 1
     
-    # Create the debate con el slug único
+    # Create the debate with the unique slug
     new_debate = Debate(
         title=debate_data.title,
         description=debate_data.description,
         type=debate_data.type,
-        slug=slug,  # Usar el slug único generado
+        slug=slug,  # Use the unique slug generated
         language=debate_data.language,
         public=debate_data.public,
         images=debate_data.images,
@@ -90,12 +90,12 @@ def create_debate(
         for code in debate_data.country_codes:
             country = get_country_by_code(session, code)
             if country and country.community:
-                # Añadir la comunidad al debate
+                # Add the community to the debate
                 new_debate.communities.append(country.community)
                 
-                # Crear automáticamente un punto de vista para este país
+                # Automatically create a point of view for this country
                 pov = PointOfView(
-                    name=country.name,  # Usar el nombre del país como nombre del punto de vista
+                    name=country.name,  # Use the country's name as the point of view name
                     debate_id=new_debate.id,
                     created_by_id=current_user.id,
                     community_id=country.community.id
@@ -114,11 +114,11 @@ def create_debate(
     elif debate_data.type == DebateType.REGIONAL:
         # Regional debate - add regional community
         if debate_data.region_id:
-            # Si se proporciona region_id, usarlo para obtener la comunidad
+            # If region_id is provided, use it to get the community
             region = get_region_by_id(session, debate_data.region_id)
             if region and region.community:
                 new_debate.communities.append(region.community)
-        # Si no se proporciona region_id, se usarán los community_ids proporcionados
+        # If region_id is not provided, the provided community_ids will be used
     
     elif debate_data.type == DebateType.SUBREGIONAL:
         # Subregional debate - add subregional community
@@ -140,11 +140,11 @@ def create_debate(
     
     # Add additional communities
     for community_id in debate_data.community_ids:
-        # Convertir a entero si viene como string
+        # Convert to integer if it comes as a string
         try:
             community_id_int = int(community_id)
         except (ValueError, TypeError):
-            # Si no se puede convertir, usar el valor original
+            # If it cannot be converted, use the original value
             community_id_int = community_id
             
         community = get_community_by_id(session, community_id_int)
@@ -184,8 +184,8 @@ def get_debates(
     locality_id: Optional[int] = None,
     tag: Optional[str] = None,
     search: Optional[str] = None,
-    page: int = Query(default=1, ge=1, description="Número de página"),
-    size: int = Query(default=10, ge=1, le=100, description="Elementos por página"),
+    page: int = Query(default=1, ge=1, description="Page number"),
+    size: int = Query(default=10, ge=1, le=100, description="Items per page"),
     current_user = Depends(get_current_user_optional),
     session: Session = Depends(get_session)
 ):
@@ -196,19 +196,19 @@ def get_debates(
     # Base query
     query = select(Debate).where(Debate.deleted_at == None)
     
-    # Si se proporciona community_id, primero determinamos a qué nivel de comunidad corresponde
+    # If community_id is provided, first determine which level of community it corresponds to
     if community_id:
         community = get_community_by_id(session, community_id)
         if community:
-            # Aplicamos filtros según el nivel de la comunidad
+            # Apply filters according to the level of the community
             query = query.join(Community, Debate.communities).where(Community.id == community_id)
             
-            # Si es una comunidad nacional, filtramos por debates NATIONAL
+            # If it is a national community, filter by NATIONAL debates
             if community.level == CommunityLevel.NATIONAL:
-                # Solo aplicamos este filtro si no se especificó otro tipo explícitamente
+                # Only apply this filter if no other type is explicitly specified
                 if type is None:
                     query = query.where(Debate.type == DebateType.NATIONAL)
-            # Similar para otros niveles de comunidad
+            # Similar for other community levels
             elif community.level == CommunityLevel.REGIONAL:
                 if type is None:
                     query = query.where(Debate.type == DebateType.REGIONAL)
@@ -222,7 +222,7 @@ def get_debates(
     elif type:
         query = query.where(Debate.type == type)
     
-    # Aplicar el resto de filtros como antes
+    # Apply the rest of the filters as before
     if country_code:
         country = get_country_by_code(session, country_code)
         if country and country.community:
@@ -371,18 +371,18 @@ def add_opinion(
     current_user = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    """Añade una opinión a un debate, creando el point of view si es necesario"""
+    """Add an opinion to a debate, creating the point of view if necessary"""
     
-    # Verificar que existe el debate
+    # Check that the debate exists
     debate = session.get(Debate, debate_id)
     if not debate or debate.deleted_at:
-        raise HTTPException(status_code=404, detail="Debate no encontrado")
+        raise HTTPException(status_code=404, detail="Debate not found")
     
-    # Verificar que el debate no está cerrado
+    # Check that the debate is not closed
     if debate.status in [DebateStatus.CLOSED, DebateStatus.ARCHIVED, DebateStatus.RESOLVED]:
-        raise HTTPException(status_code=400, detail="No se pueden añadir opiniones a debates cerrados o archivados")
+        raise HTTPException(status_code=400, detail="Cannot add opinions to closed or archived debates")
     
-    # Verificar si el usuario ya ha opinado en este debate
+    # Check if the user has already opined in this debate
     existing_opinion = session.exec(
         select(Opinion)
         .join(PointOfView)
@@ -395,49 +395,49 @@ def add_opinion(
     if existing_opinion:
         raise HTTPException(
             status_code=400, 
-            detail="Ya has opinado en este debate. Solo se permite una opinión por usuario."
+            detail="You have already opined in this debate. Only one opinion per user is allowed."
         )
     
-    # Manejar la obtención del community_id según el tipo de debate
+    # Handle obtaining the community_id according to the type of debate
     if debate.type in [DebateType.GLOBAL, DebateType.INTERNATIONAL]:
         if not opinion_data.country_cca2:
             raise HTTPException(
                 status_code=400, 
-                detail="Para debates globales e internacionales se requiere el country_cca2"
+                detail="For global and international debates, country_cca2 is required"
             )
         
-        # Buscar el país por cca2
+        # Find the country by cca2
         country = session.exec(
             select(Country)
             .where(Country.cca2 == opinion_data.country_cca2)
         ).first()
         
         if not country:
-            raise HTTPException(status_code=404, detail="País no encontrado")
+            raise HTTPException(status_code=404, detail="Country not found")
         
         community_id = country.community_id
     elif debate.type == DebateType.NATIONAL:
-        # Para debates nacionales, usamos region_id
+        # For national debates, we use region_id
         if not opinion_data.region_id:
-            raise HTTPException(status_code=400, detail="Se requiere el region_id para debates nacionales")
+            raise HTTPException(status_code=400, detail="region_id is required for national debates")
         
-        # Buscar la región por ID
+        # Find the region by ID
         region = get_region_by_id(session, opinion_data.region_id)
         if not region:
-            raise HTTPException(status_code=404, detail="Región no encontrada")
+            raise HTTPException(status_code=404, detail="Region not found")
         
         community_id = region.community_id
     else:
         if not opinion_data.community_id:
-            raise HTTPException(status_code=400, detail="Se requiere el community_id para este tipo de debate")
+            raise HTTPException(status_code=400, detail="community_id is required for this type of debate")
         community_id = opinion_data.community_id
     
-    # Verificar que existe la comunidad
+    # Check that the community exists
     community = get_community_by_id(session, community_id)
     if not community:
-        raise HTTPException(status_code=404, detail="Comunidad no encontrada")
+        raise HTTPException(status_code=404, detail="Community not found")
     
-    # Buscar si ya existe un point of view para este debate y comunidad
+    # Check if a point of view already exists for this debate and community
     pov = session.exec(
         select(PointOfView)
         .where(
@@ -446,18 +446,18 @@ def add_opinion(
         )
     ).first()
     
-    # Si no existe el point of view, crearlo
+    # If the point of view does not exist, create it
     if not pov:
         pov = PointOfView(
-            name=community.name,  # Usar el nombre de la comunidad como nombre del point of view
+            name=community.name,  # Use the community's name as the point of view name
             debate_id=debate_id,
             created_by_id=current_user.id,
             community_id=community_id
         )
         session.add(pov)
-        session.flush()  # Para obtener el ID
+        session.flush()  # To get the ID
     
-    # Crear la opinión
+    # Create the opinion
     new_opinion = Opinion(
         point_of_view_id=pov.id,
         user_id=current_user.id,
@@ -511,37 +511,37 @@ def delete_opinion(
     current_user = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    """Eliminar una opinión de un debate (solo el propietario o administrador)"""
+    """Delete an opinion from a debate (only the owner or admin)"""
     
-    # Verificar que existe la opinión
+    # Check that the opinion exists
     opinion = session.get(Opinion, opinion_id)
     if not opinion:
-        raise HTTPException(status_code=404, detail="Opinión no encontrada")
+        raise HTTPException(status_code=404, detail="Opinion not found")
     
-    # Verificar que el usuario es el propietario de la opinión o un administrador
+    # Check that the user is the owner of the opinion or an admin
     if opinion.user_id != current_user.id and current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=403, 
-            detail="No tienes permiso para eliminar esta opinión"
+            detail="You do not have permission to delete this opinion"
         )
     
-    # Verificar si el debate está cerrado o archivado
+    # Check if the debate is closed or archived
     point_of_view = session.get(PointOfView, opinion.point_of_view_id)
     if point_of_view:
         debate = session.get(Debate, point_of_view.debate_id)
         if debate and debate.status in [DebateStatus.CLOSED, DebateStatus.ARCHIVED, DebateStatus.RESOLVED]:
             raise HTTPException(
                 status_code=400, 
-                detail="No se pueden eliminar opiniones en debates cerrados o archivados"
+                detail="Opinions cannot be deleted in closed or archived debates"
             )
     
-    # Eliminar primero todos los votos asociados a esta opinión
+    # First delete all votes associated with this opinion
     session.exec(
         delete(OpinionVote)
         .where(OpinionVote.opinion_id == opinion_id)
     )
     
-    # Eliminar la opinión
+    # Delete the opinion
     session.delete(opinion)
     session.commit()
     
@@ -556,18 +556,18 @@ def create_opinion(
     db: Session = Depends(get_session)
 ):
     """
-    Crear una nueva opinión en un punto de vista.
-    Requiere autenticación y membresía en la comunidad del debate.
+    Create a new opinion in a point of view.
+    Requires authentication and membership in the debate community.
     """
-    # Verificar que el debate existe
+    # Check that the debate exists
     debate = db.get(Debate, debate_id)
     if not debate:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Debate no encontrado"
+            detail="Debate not found"
         )
 
-    # Verificar que el usuario es miembro de al menos una de las comunidades del debate
+    # Check that the user is a member of at least one of the debate communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
@@ -583,18 +583,18 @@ def create_opinion(
     if not user_community_ids.intersection(debate_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para opinar en este debate"
+            detail="You must be a member of the community to opine in this debate"
         )
 
-    # Verificar que el punto de vista existe y pertenece al debate
+    # Check that the point of view exists and belongs to the debate
     point_of_view = db.get(PointOfView, pov_id)
     if not point_of_view or point_of_view.debate_id != debate_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Punto de vista no encontrado"
+            detail="Point of view not found"
         )
 
-    # Resto del código existente...
+    # Rest of the existing code...
     # [Previous validation code remains unchanged]
 
 @router.post("/{debate_id}/points-of-view/{pov_id}/opinions/{opinion_id}/vote")
@@ -607,18 +607,18 @@ def vote_opinion(
     db: Session = Depends(get_session)
 ):
     """
-    Votar una opinión (1 para positivo, -1 para negativo).
-    Requiere autenticación y membresía en la comunidad del debate.
+    Vote an opinion (1 for positive, -1 for negative).
+    Requires authentication and membership in the debate community.
     """
-    # Verificar que el debate existe
+    # Check that the debate exists
     debate = db.get(Debate, debate_id)
     if not debate:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Debate no encontrado"
+            detail="Debate not found"
         )
 
-    # Verificar que el usuario es miembro de al menos una de las comunidades del debate
+    # Check that the user is a member of at least one of the debate communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
@@ -634,10 +634,10 @@ def vote_opinion(
     if not user_community_ids.intersection(debate_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para votar en este debate"
+            detail="You must be a member of the community to vote in this debate"
         )
 
-    # Resto del código existente...
+    # Rest of the existing code...
     # [Previous validation code remains unchanged]
 
 @router.post("/{debate_id}/comments", response_model=CommentRead)
@@ -648,18 +648,18 @@ def create_debate_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Crear un nuevo comentario en el debate.
-    Requiere autenticación y membresía en la comunidad del debate.
+    Create a new comment in the debate.
+    Requires authentication and membership in the debate community.
     """
-    # Verificar que el debate existe
+    # Check that the debate exists
     debate = db.get(Debate, debate_id)
     if not debate:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Debate no encontrado"
+            detail="Debate not found"
         )
 
-    # Verificar que el usuario es miembro de al menos una de las comunidades del debate
+    # Check that the user is a member of at least one of the debate communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
@@ -675,10 +675,10 @@ def create_debate_comment(
     if not user_community_ids.intersection(debate_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para comentar en este debate"
+            detail="You must be a member of the community to comment in this debate"
         )
 
-    # Resto del código existente...
+    # Rest of the existing code...
     # [Previous validation code remains unchanged]
 
 # Helper functions to build responses
@@ -686,13 +686,13 @@ def create_debate_comment(
 def get_debate_read(session, debate, current_user=None):
     """Build DebateRead object from a debate in the database"""
     
-    # Obtener las comunidades con sus cca2 si corresponde
+    # Get the communities with their cca2 if applicable
     communities = []
     for community in debate.communities:
-        # Buscar el país asociado a esta comunidad si el debate es internacional o nacional
+        # Find the country associated with this community if the debate is international or national
         cca2 = None
         if debate.type in [DebateType.INTERNATIONAL, DebateType.NATIONAL]:
-            # Ejecutar una consulta para obtener el country relacionado con la comunidad
+            # Execute a query to get the country related to the community
             country = session.exec(
                 select(Country)
                 .where(Country.community_id == community.id)
@@ -706,10 +706,10 @@ def get_debate_read(session, debate, current_user=None):
             cca2=cca2
         ))
 
-    # Determinar si debemos mostrar los datos del creador
-    creator = None  # Por defecto no mostramos el creador (anónimo)
+    # Determine if we should show the creator's data
+    creator = None  # By default we do not show the creator (anonymous)
     
-    # Solo mostramos el creador si el debate no es anónimo O si el usuario actual es el creador/admin
+    # We only show the creator if the debate is not anonymous OR if the current user is the creator/admin
     if not debate.is_anonymous or (current_user and (current_user.id == debate.creator_id or current_user.role == UserRole.ADMIN)):
         creator = UserMinimal(
             id=debate.creator.id,
@@ -730,7 +730,7 @@ def get_debate_read(session, debate, current_user=None):
         views_count=debate.views_count,
         created_at=debate.created_at,
         updated_at=debate.updated_at,
-        creator=creator,  # Ahora puede ser None si es anónimo
+        creator=creator,  # Now it can be None if anonymous
         communities=communities,
         tags=[tag.name for tag in debate.tags],
         points_of_view=[
@@ -742,10 +742,10 @@ def get_debate_read(session, debate, current_user=None):
 
 def get_point_of_view_read(session, pov, current_user=None):
     """Build PointOfViewRead object from a PointOfView in the database"""
-    # Obtener el cca2 si es un debate nacional o internacional
+    # Get the cca2 if it is a national or international debate
     cca2 = None
     if pov.debate.type in [DebateType.GLOBAL, DebateType.INTERNATIONAL]:
-        # Ejecutar una consulta para obtener el country relacionado con la comunidad
+        # Execute a query to get the country related to the community
         country = session.exec(
             select(Country)
             .where(Country.community_id == pov.community_id)
@@ -779,10 +779,10 @@ def get_opinion_read(session, opinion, current_user=None):
     downvotes = sum(1 for vote in opinion.votes if vote.value == -1)
     score = sum(vote.value for vote in opinion.votes)
     
-    # Verificar si el usuario actual ha votado esta opinión
+    # Check if the current user has voted on this opinion
     user_vote = None
     if current_user:
-        # Buscar el voto del usuario actual
+        # Find the current user's vote
         for vote in opinion.votes:
             if vote.user_id == current_user.id:
                 user_vote = vote.value

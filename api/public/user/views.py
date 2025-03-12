@@ -21,10 +21,10 @@ def read_me(
     Authentication required.
     Includes the list of communities the user belongs to.
     """
-    # Convertir el usuario actual a diccionario
+    # Convert the current user to a dictionary
     user_data = current_user.dict()
 
-    # Obtener las comunidades del usuario con información de visibilidad
+    # Get the user's communities with visibility information
     communities_query = select(
         Community, UserCommunityLink.is_public
     ).join(
@@ -35,7 +35,7 @@ def read_me(
     
     communities_result = db.exec(communities_query).all()
     
-    # Formatear las comunidades para la respuesta
+    # Format the communities for the response
     user_data["communities"] = [
         {
             "id": community.id,
@@ -103,7 +103,7 @@ def get_user_profile(
         # Update is_following field in the response
         user_data["is_following"] = is_following
     
-    # Obtener las comunidades del usuario
+    # Get the user's communities
     communities_query = select(
         Community, UserCommunityLink.is_public
     ).join(
@@ -112,13 +112,13 @@ def get_user_profile(
         UserCommunityLink.user_id == user.id
     )
     
-    # Si no es el propio usuario, filtrar solo las comunidades públicas
+    # If not the user's own profile, filter only public communities
     if not current_user or current_user.id != user.id:
         communities_query = communities_query.where(UserCommunityLink.is_public == True)
     
     communities_result = db.exec(communities_query).all()
     
-    # Formatear las comunidades para la respuesta
+    # Format the communities for the response
     user_data["communities"] = [
         {
             "id": community.id,
@@ -257,17 +257,17 @@ def generate_and_update_username(
     """
     proposed_username = data.base_name.strip()
     
-    # Lista de palabras reservadas que no se pueden usar como username
+    # List of reserved words that cannot be used as a username
     reserved_words = ["anonymous", "admin", "system", "moderator", "support"]
     
-    # Palabras inapropiadas que no se deben permitir
-    inappropriate_words = ["profanity1", "profanity2", "badword"]  # Reemplazar con palabras reales
+    # Inappropriate words that should not be allowed
+    inappropriate_words = ["profanity1", "profanity2", "badword"]  # Replace with real words
     
-    # Verificar si el username propuesto está en la lista de palabras reservadas
+    # Check if the proposed username is in the list of reserved words
     if proposed_username.lower() in reserved_words:
         is_valid = False
     else:
-        # Verificar si el username propuesto contiene palabras inapropiadas
+        # Check if the proposed username contains inappropriate words
         contains_inappropriate = any(word.lower() in proposed_username.lower() for word in inappropriate_words)
         if contains_inappropriate:
             is_valid = False
@@ -293,8 +293,8 @@ def generate_and_update_username(
             db.commit()
             db.refresh(user)
             
-            # Verificar si el usuario ya es miembro de la comunidad global (ID 1)
-            # Y añadirlo si no lo es
+            # Check if the user is already a member of the global community (ID 1)
+            # And add them if not
             _add_user_to_global_community(db, current_user.id)
             
             return {"username": proposed_username, "generated": False, "user": user}
@@ -332,7 +332,7 @@ def generate_and_update_username(
         db.commit()
         db.refresh(user)
         
-        # Añadir usuario a la comunidad global (ID 1)
+        # Add user to the global community (ID 1)
         _add_user_to_global_community(db, current_user.id)
         
         return {"username": base_username, "generated": True, "user": user}
@@ -363,7 +363,7 @@ def generate_and_update_username(
             db.commit()
             db.refresh(user)
             
-            # Añadir usuario a la comunidad global (ID 1)
+            # Add user to the global community (ID 1)
             _add_user_to_global_community(db, current_user.id)
             
             return {"username": new_username, "generated": True, "user": user}
@@ -374,28 +374,28 @@ def generate_and_update_username(
         detail="Could not generate a unique username. Please try with a different base name."
     )
 
-# Función auxiliar para añadir al usuario a la comunidad global (ID 1)
+# Helper function to add the user to the global community (ID 1)
 def _add_user_to_global_community(db: Session, user_id: int):
     """
-    Añade al usuario a la comunidad global (ID 1) si no es ya miembro.
+    Adds the user to the global community (ID 1) if they are not already a member.
     """
-    # Verificar si el usuario ya es miembro de la comunidad global
+    # Check if the user is already a member of the global community
     existing_membership = db.exec(
         select(UserCommunityLink).where(
             UserCommunityLink.user_id == user_id,
-            UserCommunityLink.community_id == 1  # ID 1 = comunidad global
+            UserCommunityLink.community_id == 1  # ID 1 = global community
         )
     ).first()
     
-    # Si no es miembro, añadirlo con visibilidad privada (is_public=False)
+    # If not a member, add them with private visibility (is_public=False)
     if not existing_membership:
-        # Verificar que la comunidad global existe
+        # Check that the global community exists
         community = db.exec(select(Community).where(Community.id == 1)).first()
-        if community:  # Solo añadir si la comunidad existe
+        if community:  # Only add if the community exists
             new_membership = UserCommunityLink(
                 user_id=user_id,
                 community_id=1,
-                is_public=False  # Por defecto, el usuario es privado en la comunidad
+                is_public=False  # By default, the user is private in the community
             )
             db.add(new_membership)
             db.commit()
@@ -447,17 +447,17 @@ def update_community_visibility(
     db: Session = Depends(get_session)
 ):
     """
-    Actualiza la visibilidad del usuario en una comunidad específica.
+    Update the user's visibility in a specific community.
     """
-    # Verificar que existe la comunidad
+    # Check that the community exists
     community = db.exec(select(Community).where(Community.id == community_id)).first()
     if not community:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Comunidad con ID {community_id} no encontrada"
+            detail=f"Community with ID {community_id} not found"
         )
     
-    # Verificar que el usuario es miembro de la comunidad
+    # Check that the user is a member of the community
     user_community_link = db.exec(
         select(UserCommunityLink).where(
             UserCommunityLink.user_id == current_user.id,
@@ -468,12 +468,12 @@ def update_community_visibility(
     if not user_community_link:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No eres miembro de esta comunidad"
+            detail="You are not a member of this community"
         )
     
-    # Actualizar la visibilidad
+    # Update the visibility
     user_community_link.is_public = is_public
     db.add(user_community_link)
     db.commit()
     
-    return {"message": "Visibilidad actualizada correctamente"}
+    return {"message": "Visibility updated successfully"}

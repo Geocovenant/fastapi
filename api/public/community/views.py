@@ -27,10 +27,10 @@ def search_community(
     db: Session = Depends(get_session)
 ):
     """
-    Busca una comunidad por nivel y criterios geográficos.
-    Devuelve los datos de la comunidad encontrada.
+    Searches for a community by level and geographical criteria.
+    Returns the data of the found community.
     
-    Ejemplos de uso:
+    Usage examples:
     - /communities/search?level=NATIONAL&country=argentina
     - /communities/search?level=REGIONAL&country=argentina&region=buenos-aires
     - /communities/search?level=SUBREGIONAL&country=argentina&region=buenos-aires&subregion=alberti
@@ -38,57 +38,57 @@ def search_community(
     """
     from api.public.community.models import Community
     
-    # Función para normalizar texto: quita acentos, convierte a minúsculas y normaliza separadores
+    # Function to normalize text: removes accents, converts to lowercase, and normalizes separators
     def normalize_text(text):
         if not text:
             return None
-        # Convertir a minúsculas
+        # Convert to lowercase
         text = text.lower()
-        # Reemplazar guiones y guiones bajos por espacios
+        # Replace hyphens and underscores with spaces
         text = text.replace('-', ' ').replace('_', ' ')
-        # Normalizar caracteres acentuados y eliminar diacríticos
+        # Normalize accented characters and remove diacritics
         text = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('utf-8')
         return text
     
-    # Normalizar todos los parámetros de búsqueda
+    # Normalize all search parameters
     normalized_country = normalize_text(country) if country else None
     normalized_region = normalize_text(region) if region else None
     normalized_subregion = normalize_text(subregion) if subregion else None
     normalized_local = normalize_text(local) if local else None
     
-    # Consulta usando directamente Session.query para evitar problemas con selects complejos
+    # Query using Session.query directly to avoid issues with complex selects
     query = db.query(Community).filter(Community.level == level)
     
-    # Añadir filtros según nivel y parámetros proporcionados
+    # Add filters based on level and provided parameters
     if level == CommunityLevel.NATIONAL:
         if not country:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="El parámetro 'country' es obligatorio para nivel NATIONAL"
+                detail="The 'country' parameter is required for NATIONAL level"
             )
-        # Aplicar función de normalización a los nombres en la base de datos para búsqueda flexible
+        # Apply normalization function to names in the database for flexible searching
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
             ),
-            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
             ),
-            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
             ),
-            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_country,
@@ -100,32 +100,32 @@ def search_community(
         if not country or not region:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Los parámetros 'country' y 'region' son obligatorios para nivel REGIONAL"
+                detail="The 'country' and 'region' parameters are required for REGIONAL level"
             )
         
-        # Búsqueda flexible para el nombre de la región
+        # Flexible search for the name of the region
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
             ),
-            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
             ),
-            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
             ),
-            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_region,
@@ -137,32 +137,32 @@ def search_community(
         if not country or not region or not subregion:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Los parámetros 'country', 'region' y 'subregion' son obligatorios para nivel SUBREGIONAL"
+                detail="The 'country', 'region', and 'subregion' parameters are required for SUBREGIONAL level"
             )
         
-        # Búsqueda flexible para el nombre de la subregión
+        # Flexible search for the name of the subregion
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
             ),
-            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
             ),
-            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
             ),
-            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_subregion,
@@ -174,32 +174,32 @@ def search_community(
         if not country or not local:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Los parámetros 'country' y 'local' son obligatorios para nivel LOCAL"
+                detail="The 'country' and 'local' parameters are required for LOCAL level"
             )
         
-        # Búsqueda flexible para el nombre de la localidad
+        # Flexible search for the name of the locality
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Reemplaza todos los guiones y guiones bajos por espacios
+                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
             ),
-            '[áàäâã]', 'a', 'g'  # Reemplaza variantes de 'a'
+            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Reemplaza variantes de 'e'
+                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
             ),
-            '[íìïî]', 'i', 'g'  # Reemplaza variantes de 'i'
+            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Reemplaza variantes de 'o'
+                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
             ),
-            '[úùüû]', 'u', 'g'  # Reemplaza variantes de 'u'
+            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Reemplaza ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_local,
@@ -207,16 +207,16 @@ def search_community(
             )
         )
     
-    # Ejecutar consulta usando first()
+    # Execute query using first()
     community = query.first()
     
     if not community:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No se encontró una comunidad con los criterios especificados"
+            detail=f"No community found with the specified criteria"
         )
     
-    # El objeto community es ya una instancia de Community
+    # The community object is already an instance of Community
     result = CommunityRead.from_orm(community)
     
     # Add region_id if the community level is REGIONAL
@@ -424,14 +424,14 @@ def leave_community(
     
     return {"message": "You have left the community successfully"}
 
-# Modelo Pydantic para validar la solicitud
+# Pydantic model to validate the request
 class CommunityRequestCreate(BaseModel):
     country: str
     region: str
     city: str
     email: str
 
-# Modelo para las respuestas
+# Model for responses
 class CommunityRequestResponse(BaseModel):
     id: int
     country: str
@@ -446,14 +446,14 @@ class CommunityRequestResponse(BaseModel):
 @router.post("/requests/", response_model=CommunityRequestResponse)
 def create_community_request_endpoint(request: CommunityRequestCreate, db: Session = Depends(get_session)):
     """
-    Endpoint para recibir solicitudes de nuevas comunidades
+    Endpoint to receive requests for new communities
     """
     try:
         request_data = request.dict()
         community_request = create_community_request(db, request_data)
         return community_request
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error al crear la solicitud: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error creating the request: {str(e)}")
 
 @router.get("/requests/", response_model=List[CommunityRequestResponse])
 def get_community_requests_endpoint(
@@ -463,16 +463,16 @@ def get_community_requests_endpoint(
     db: Session = Depends(get_session)
 ):
     """
-    Endpoint para obtener todas las solicitudes de comunidades (con filtro opcional)
+    Endpoint to get all community requests (with optional filter)
     """
     return get_community_requests(db, skip, limit, status)
 
 @router.put("/requests/{request_id}/status")
 def update_request_status(request_id: int, status: str, db: Session = Depends(get_session)):
     """
-    Endpoint para actualizar el estado de una solicitud
+    Endpoint to update the status of a request
     """
     updated_request = update_community_request_status(db, request_id, status)
     if not updated_request:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
-    return {"message": "Estado actualizado correctamente", "status": status}
+        raise HTTPException(status_code=404, detail="Request not found")
+    return {"message": "Status updated successfully", "status": status}

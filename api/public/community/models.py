@@ -40,16 +40,16 @@ class Community(CommunityBase, table=True):
     projects: list["Project"] = Relationship(back_populates="communities", link_model=ProjectCommunityLink)
 
     def get_translated(self, language_code, field):
-        """Obtiene un campo traducido si existe, o el valor por defecto"""
+        """Gets a translated field if it exists, or the default value"""
         for translation in self.translations:
             if translation.language_code == language_code:
                 return getattr(translation, field)
-        return getattr(self, field)  # Valor por defecto
+        return getattr(self, field)  # Default value
 
 class CommunityRead(CommunityBase):
     id: int
     parent_id: Optional[int] = None
-    region_id: Optional[int] = None  # Nuevo campo opcional
+    region_id: Optional[int] = None  # New optional field
 
 class CommunityRequest(SQLModel, table=True):
     __tablename__ = "community_requests"

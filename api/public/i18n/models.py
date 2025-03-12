@@ -19,5 +19,5 @@ class CommunityTranslation(SQLModel, table=True):
     language: SupportedLanguage = Relationship()
     
     class Config:
-        # Garantiza que no hay duplicados para la misma comunidad e idioma
+        # Ensures no duplicates for the same community and language
         unique_together = [("community_id", "language_code")] 

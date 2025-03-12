@@ -26,6 +26,7 @@ from api.public.subregion.models import Subregion
 from api.public.community.models import Community
 from api.public.region.models import Region
 from typing import Optional
+from api.utils.generic_models import UserCommunityLink
 
 router = APIRouter()
 
@@ -35,7 +36,7 @@ def read_polls(
     country: str | None = None,
     region: int | None = None,
     subregion: int | None = None,
-    community_id: int | None = None,  # Nuevo parámetro para filtrar por comunidad
+    community_id: int | None = None,  # New parameter to filter by community
     page: int = Query(default=1, ge=1, description="Page number"),
     size: int = Query(default=10, ge=1, le=100, description="Items per page"),
     current_user: User | None = Depends(get_current_user_optional),
@@ -51,9 +52,9 @@ def read_polls(
     - page: Page number (default: 1)
     - size: Items per page (default: 10, max: 100)
     """
-    # Si se proporciona un community_id, filtramos por esa comunidad
+    # If a community_id is provided, filter by that community
     if community_id:
-        # Verificar que la comunidad existe
+        # Check that the community exists
         community = db.exec(
             select(Community)
             .where(Community.id == community_id)
@@ -62,24 +63,24 @@ def read_polls(
         if not community:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Comunidad con ID {community_id} no encontrada"
+                detail=f"Community with ID {community_id} not found"
             )
         
-        # Calcular offset para paginación
+        # Calculate offset for pagination
         offset = (page - 1) * size
         
-        # Consulta base que une Poll con PollCommunityLink
+        # Base query that joins Poll with PollCommunityLink
         query = (
             select(Poll)
             .join(PollCommunityLink)
             .where(PollCommunityLink.community_id == community_id)
         )
         
-        # Aplicar filtro adicional por scope si se proporciona
+        # Apply additional filter by scope if provided
         if scope:
             query = query.where(Poll.scope == scope)
             
-        # Otra opción para la consulta
+        # Another option for the query
         total_query = select(func.count()).select_from(
             select(Poll.id)
             .join(PollCommunityLink)
@@ -90,13 +91,13 @@ def read_polls(
         total = db.exec(total_query).first() or 0
         total_pages = (total + size - 1) // size if total > 0 else 1
         
-        # Aplicar ordenamiento y paginación
+        # Apply sorting and pagination
         query = query.order_by(Poll.created_at.desc()).offset(offset).limit(size)
         
-        # Ejecutar la consulta
+        # Execute the query
         polls = db.exec(query).all()
         
-        # Enriquecer con información adicional
+        # Enrich with additional information
         return {
             "items": [
                 enrich_poll(db, poll, current_user.id if current_user else None)
@@ -108,7 +109,7 @@ def read_polls(
             "pages": total_pages
         }
     
-    # Si hay un parámetro de subregion y el scope es SUBREGIONAL
+    # If there is a subregion parameter and the scope is SUBREGIONAL
     if subregion and scope == 'SUBREGIONAL':
         # Verify that the subregion exists
         subregion_obj = db.exec(
@@ -232,7 +233,7 @@ def vote_poll(
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
     
     # Verify that the user is a member of at least one of the poll's communities
@@ -251,7 +252,7 @@ def vote_poll(
     if not user_community_ids.intersection(poll_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para votar en esta encuesta"
+            detail="You must be a member of the community to vote in this poll"
         )
     
     # Validate the poll's status
@@ -327,7 +328,7 @@ def react_to_poll(
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
     
     # Verify that the user is a member of at least one of the poll's communities
@@ -346,7 +347,7 @@ def react_to_poll(
     if not user_community_ids.intersection(poll_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para reaccionar a esta encuesta"
+            detail="You must be a member of the community to react to this poll"
         )
     
     return create_or_update_reaction(
@@ -404,7 +405,7 @@ def create_poll_comment(
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Encuesta no encontrada"
+            detail="Poll not found"
         )
 
     # Verify that the user is a member of at least one of the poll's communities
@@ -423,7 +424,7 @@ def create_poll_comment(
     if not user_community_ids.intersection(poll_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Debes ser miembro de la comunidad para comentar en esta encuesta"
+            detail="You must be a member of the community to comment on this poll"
         )
 
     new_comment = PollComment(

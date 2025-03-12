@@ -8,7 +8,7 @@ from api.public.user.models import User
 from api.public.community.models import Community
 from api.utils.generic_models import DebateTagLink, DebateCommunityLink
 from api.utils.shared_models import UserMinimal
-from pydantic import validator
+from pydantic import field_validator
 
 class DebateType(str, Enum):
     GLOBAL = "GLOBAL"
@@ -164,23 +164,14 @@ class DebateCreate(SQLModel):
     subregion_id: Optional[int] = Field(default=None, description="Subregion ID for subregional debates")
     locality_id: Optional[int] = Field(default=None, description="Locality ID for local debates")
 
-    @validator("community_ids")
+    @field_validator("community_ids")
     def validate_communities_by_type(cls, v, values):
         debate_type = values.get("type")
         
-        # Validar que se proporcionan datos adecuados según el tipo de debate
         if debate_type == DebateType.NATIONAL and not values.get("country_code"):
-            raise ValueError("Los debates nacionales requieren un código de país (country_code)")
-            
-        # Ya no validamos region_id para debates regionales
-        # Los debates regionales ahora pueden usar community_ids directamente
+            raise ValueError("National debates require a country code (country_code)")
             
         return v
-
-class CommunityMinimal(SQLModel):
-    id: int
-    name: str
-    cca2: Optional[str] = None
 
 class OpinionRead(SQLModel):
     id: int
@@ -228,7 +219,7 @@ class PaginatedDebateResponse(SQLModel):
     pages: int
 
 class CommentBase(SQLModel):
-    content: str = Field(max_length=1000, description="Contenido del comentario")
+    content: str = Field(max_length=1000, description="Content of the comment")
 
 class CommentCreate(CommentBase):
     pass

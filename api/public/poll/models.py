@@ -4,7 +4,7 @@ from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional
 from api.public.tag.models import Tag
 from api.utils.generic_models import PollCommunityLink, PollTagLink
-from pydantic import validator
+from pydantic import field_validator
 
 # Enums
 class PollType(str, Enum):
@@ -30,12 +30,12 @@ class PollBase(SQLModel):
     type: PollType = Field(default=PollType.BINARY)
     is_anonymous: bool = Field(default=True)
     ends_at: Optional[datetime] = Field(nullable=True)
-    scope: str = Field(max_length=100, nullable=True, description="The scope of the poll, e.g. 'GLOBAL', 'INTERNATINAL', 'NATIONAL', etc.")
+    scope: str = Field(max_length=100, nullable=True, description="The scope of the poll, e.g. 'GLOBAL', 'INTERNATIONAL', 'NATIONAL', etc.")
 
-    @validator("ends_at")
+    @field_validator("ends_at")
     def ends_at_must_be_future_if_published(cls, v, values):
         if v and values.get("status") == PollStatus.PUBLISHED and v < datetime.utcnow():
-            raise ValueError("La fecha de finalización debe ser en el futuro para encuestas publicadas")
+            raise ValueError("The end date must be in the future for published polls")
         return v
 
 class Poll(PollBase, table=True):
@@ -113,7 +113,7 @@ class PollCreate(PollBase):
     country_code: Optional[str] = Field(default=None, description="CCA2 country code for national polls")
     region_id: Optional[int] = Field(default=None, description="Region ID for regional polls")
     subregion_id: Optional[int] = Field(default=None, description="National subdivision ID for subnational polls")
-    tags: list[str] = Field(default=[], description="Lista de etiquetas para la encuesta")
+    tags: list[str] = Field(default=[], description="List of tags for the poll")
 
 class CommunityBase(SQLModel):
     id: int
@@ -161,7 +161,7 @@ class PollRead(PollBase):
     communities: list[CommunityBase]
     reactions: PollReactionCount
     comments_count: int = 0
-    comments: list[PollCommentRead] = []  # Nueva lista de comentarios
+    comments: list[PollCommentRead] = []  # New list of comments
     countries: Optional[list[str]] = None
     user_reaction: Optional[ReactionType] = None
     user_voted_options: Optional[list[int]] = None

@@ -22,6 +22,8 @@ from api.public.country.models import Country
 from math import ceil
 import random
 import string
+from api.utils.shared_models import CommunityMinimal
+from api.utils.generic_models import IssueCommunityLink
 
 def get_all_issues(
     db: Session,

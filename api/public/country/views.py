@@ -19,11 +19,11 @@ def read_countries(db: Session = Depends(get_session)):
 @router.get("/{country_code}", response_model=Country)
 def read_country_by_code(country_code: str, db: Session = Depends(get_session)):
     """
-    Obtiene un país utilizando su código CCA2 (ISO 3166-1 alpha-2)
+    Retrieves a country using its CCA2 code (ISO 3166-1 alpha-2)
     """
     country = get_country_by_code(db, country_code.upper())
     if not country:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="País no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
     return country
 
 @router.get("/{country_code}/divisions", response_model=list[Region])
@@ -46,14 +46,14 @@ def get_country_divisions(
     
     return regions
 
-# Modelo Pydantic para validar la solicitud
+# Pydantic model to validate the request
 class CommunityRequestCreate(BaseModel):
     country: str
     region: str
     city: str
     email: str
 
-# Modelo para las respuestas
+# Model for responses
 class CommunityRequestResponse(BaseModel):
     id: int
     country: str
@@ -68,14 +68,14 @@ class CommunityRequestResponse(BaseModel):
 @router.post("/community-requests/", response_model=CommunityRequestResponse)
 def create_community_request(request: CommunityRequestCreate, db: Session = Depends(get_session)):
     """
-    Endpoint para recibir solicitudes de nuevas comunidades
+    Endpoint to receive requests for new communities
     """
     try:
         request_data = request.dict()
         community_request = create_community_request(db, request_data)
         return community_request
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error al crear la solicitud: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error creating the request: {str(e)}")
 
 @router.get("/community-requests/", response_model=List[CommunityRequestResponse])
 def get_community_requests(
@@ -85,16 +85,16 @@ def get_community_requests(
     db: Session = Depends(get_session)
 ):
     """
-    Endpoint para obtener todas las solicitudes de comunidades (con filtro opcional)
+    Endpoint to get all community requests (with optional filtering)
     """
     return get_community_requests(db, skip, limit, status)
 
 @router.put("/community-requests/{request_id}/status")
 def update_request_status(request_id: int, status: str, db: Session = Depends(get_session)):
     """
-    Endpoint para actualizar el estado de una solicitud
+    Endpoint to update the status of a request
     """
     updated_request = update_community_request_status(db, request_id, status)
     if not updated_request:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
-    return {"message": "Estado actualizado correctamente", "status": status}
+        raise HTTPException(status_code=404, detail="Request not found")
+    return {"message": "Status updated successfully", "status": status}

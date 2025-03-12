@@ -1,10 +1,10 @@
+import re
 from enum import Enum
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 from pydantic import EmailStr, field_validator
 from api.utils.generic_models import UserCommunityLink, UserFollowLink
-import re
 from sqlalchemy import Column, Boolean
 
 class UserRole(str, Enum):
@@ -98,7 +98,7 @@ class User(UserBase, table=True):
     issue_comments: list["IssueComment"] = Relationship(back_populates="user")
     issue_updates: list["IssueUpdate"] = Relationship(back_populates="user")
 
-    # Relaciones para reportes
+    # Relationships for reports
     reports_created: list["Report"] = Relationship(
         back_populates="reporter",
         sa_relationship_kwargs={"foreign_keys": "[Report.reporter_id]"}
@@ -108,10 +108,10 @@ class User(UserBase, table=True):
         sa_relationship_kwargs={"foreign_keys": "[Report.resolved_by_id]"}
     )
 
-    # Agregar esta relación si no existe
+    # Add this relationship if it does not exist
     debate_comments: list["Comment"] = Relationship(back_populates="user")
 
-    # Agregar esta relación
+    # Add this relationship
     project_comments: list["ProjectComment"] = Relationship(back_populates="user")
 
 # Additional models required by Auth.js

@@ -12,14 +12,14 @@ def get_divisions_by_region(
     db: Session = Depends(get_session)
 ):
     """
-    Obtiene todas las divisiones de una subnación específica por su ID
+    Retrieves all divisions of a specific subnation by its ID
     """
-    # Primero verificamos que la región existe
+    # First, we check that the subregion exists
     subregion = db.get(Subregion, subregion_id)
     if not subregion:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No se encontró la región con ID {subregion_id}"
+            detail=f"Subregion with ID {subregion_id} not found"
         )
     localities = db.exec(
         select(Locality).where(Locality.subregion_id == subregion_id)
@@ -28,7 +28,7 @@ def get_divisions_by_region(
     if not localities:
         raise HTTPException(
             status_code=404,
-            detail=f"No se encontraron divisiones para la región con ID {subregion_id}"
+            detail=f"No divisions found for the subregion with ID {subregion_id}"
         )
     
     return localities 
