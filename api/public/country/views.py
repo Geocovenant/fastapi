@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import Optional
 from pydantic import BaseModel
 import datetime
 
@@ -77,7 +77,7 @@ def create_community_request(request: CommunityRequestCreate, db: Session = Depe
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error creating the request: {str(e)}")
 
-@router.get("/community-requests/", response_model=List[CommunityRequestResponse])
+@router.get("/community-requests/", response_model=list[CommunityRequestResponse])
 def get_community_requests(
     skip: int = 0, 
     limit: int = 100, 

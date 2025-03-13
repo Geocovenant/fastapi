@@ -5,15 +5,16 @@ from typing import Optional
 from api.public.tag.models import Tag
 from api.utils.generic_models import PollCommunityLink, PollTagLink
 from pydantic import field_validator
+from api.utils.shared_models import UserMinimal, CommunityMinimal
 
 # Enums
 class PollType(str, Enum):
     BINARY = "BINARY"
     SINGLE_CHOICE = "SINGLE_CHOICE"
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
-    OPEN_CHOICE = "OPEN_CHOICE"  # New option that allows custom responses
-    RANKING = "RANKING"  # New option to rank by preference order
-    SCALE = "SCALE"  # New option for scale ratings
+    OPEN_CHOICE = "OPEN_CHOICE"
+    RANKING = "RANKING"
+    SCALE = "SCALE"
 
 class PollStatus(str, Enum):
     DRAFT = "DRAFT"
@@ -33,8 +34,8 @@ class PollBase(SQLModel):
     scope: str = Field(max_length=100, nullable=True, description="The scope of the poll, e.g. 'GLOBAL', 'INTERNATIONAL', 'NATIONAL', etc.")
 
     @field_validator("ends_at")
-    def ends_at_must_be_future_if_published(cls, v, values):
-        if v and values.get("status") == PollStatus.PUBLISHED and v < datetime.utcnow():
+    def ends_at_must_be_future_if_published(cls, v, info):
+        if v and info.data.get("status") == PollStatus.PUBLISHED and v < datetime.utcnow():
             raise ValueError("The end date must be in the future for published polls")
         return v
 
@@ -61,8 +62,8 @@ class PollOption(SQLModel, table=True):
     poll_id: int = Field(foreign_key="poll.id")
     text: str = Field(max_length=150)
     votes: int = Field(default=0)
-    is_custom_option: bool = Field(default=False)  # New field to identify if it's the "Other" option
-    custom_responses: list["PollCustomResponse"] = Relationship(back_populates="option")  # New relationship
+    is_custom_option: bool = Field(default=False)
+    custom_responses: list["PollCustomResponse"] = Relationship(back_populates="option")
 
     # Relationships
     poll: Poll = Relationship(back_populates="options")
@@ -115,11 +116,6 @@ class PollCreate(PollBase):
     subregion_id: Optional[int] = Field(default=None, description="National subdivision ID for subnational polls")
     tags: list[str] = Field(default=[], description="List of tags for the poll")
 
-class CommunityBase(SQLModel):
-    id: int
-    name: str
-    description: Optional[str]
-
 class PollReactionCount(SQLModel):
     LIKE: int = 0
     DISLIKE: int = 0
@@ -128,7 +124,7 @@ class PollOptionRead(SQLModel):
     id: int
     text: str
     votes: int
-    voted: bool = False  # New field to indicate if the user voted for this option
+    voted: bool = False
 
 class PollCommentCreate(SQLModel):
     content: str = Field(max_length=500)
@@ -136,19 +132,12 @@ class PollCommentCreate(SQLModel):
 class PollCommentUpdate(SQLModel):
     content: str = Field(max_length=500)
 
-class UserMinimal(SQLModel):
-    id: int
-    username: str
-    image: Optional[str] = None
-
 class PollCommentRead(SQLModel):
     id: int
-    user_id: int
     content: str
     created_at: datetime
-    updated_at: datetime
-    username: str
-    can_edit: bool = False
+    updated_at: Optional[datetime] = None
+    user: UserMinimal
 
 class PollRead(PollBase):
     id: int
@@ -158,10 +147,10 @@ class PollRead(PollBase):
     created_at: datetime
     updated_at: datetime
     options: list[PollOptionRead]
-    communities: list[CommunityBase]
+    communities: list[CommunityMinimal]
     reactions: PollReactionCount
     comments_count: int = 0
-    comments: list[PollCommentRead] = []  # New list of comments
+    comments: list[PollCommentRead] = []
     countries: Optional[list[str]] = None
     user_reaction: Optional[ReactionType] = None
     user_voted_options: Optional[list[int]] = None
@@ -172,7 +161,6 @@ class PollVoteCreate(SQLModel):
 class PollReactionCreate(SQLModel):
     reaction: ReactionType
 
-# New table to store custom responses
 class PollCustomResponse(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     option_id: int = Field(foreign_key="polloption.id")

@@ -1,9 +1,7 @@
-from typing import Optional, List
+from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from api.public.continent.models import Continent
 from api.public.community.models import Community
-from sqlalchemy import Column, Integer, String, DateTime
-import datetime
 
 class Country(SQLModel, table=True):
     __tablename__ = "country"
@@ -40,6 +38,6 @@ class Country(SQLModel, table=True):
     # Relationships
     community: Community = Relationship(back_populates="country")
     continent: Optional[Continent] = Relationship(back_populates="countries")
-    regions: List["Region"] = Relationship(back_populates="country")
+    regions: list["Region"] = Relationship(back_populates="country")
 
 from api.public.region.models import Region

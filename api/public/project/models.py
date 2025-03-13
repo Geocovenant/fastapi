@@ -9,21 +9,21 @@ from api.utils.generic_models import ProjectCommunityLink
 from api.utils.shared_models import UserMinimal
 
 class ProjectStatus(str, Enum):
-    DRAFT = "DRAFT"         # Project in draft
-    OPEN = "OPEN"           # Project open for collaboration
-    IN_PROGRESS = "IN_PROGRESS"  # Project in execution
-    COMPLETED = "COMPLETED"  # Project finished
-    CANCELLED = "CANCELLED"  # Project cancelled
+    DRAFT = "DRAFT"
+    OPEN = "OPEN"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
 
 class ResourceType(str, Enum):
-    LABOR = "LABOR"         # Labor (work hours)
-    MATERIAL = "MATERIAL"   # Physical materials
-    ECONOMIC = "ECONOMIC"   # Economic resources (money)
+    LABOR = "LABOR"
+    MATERIAL = "MATERIAL"
+    ECONOMIC = "ECONOMIC"
 
 class CommitmentType(str, Enum):
-    TIME = "TIME"           # Time commitment
-    MATERIAL = "MATERIAL"   # Material commitment
-    ECONOMIC = "ECONOMIC"   # Economic commitment
+    TIME = "TIME"
+    MATERIAL = "MATERIAL"
+    ECONOMIC = "ECONOMIC"
 
 class ProjectBase(SQLModel):
     title: str = Field(max_length=100, index=True, description="Project title")

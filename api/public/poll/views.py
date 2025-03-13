@@ -36,7 +36,7 @@ def read_polls(
     country: str | None = None,
     region: int | None = None,
     subregion: int | None = None,
-    community_id: int | None = None,  # New parameter to filter by community
+    community_id: int | None = None,
     page: int = Query(default=1, ge=1, description="Page number"),
     size: int = Query(default=10, ge=1, le=100, description="Items per page"),
     current_user: User | None = Depends(get_current_user_optional),
@@ -52,6 +52,19 @@ def read_polls(
     - page: Page number (default: 1)
     - size: Items per page (default: 10, max: 100)
     """
+    # Filtrar parámetros indefinidos
+    if country == "undefined" or country == "null":
+        country = None
+    
+    if community_id == "undefined" or community_id == "null" or community_id == 0:
+        community_id = None
+        
+    if region == "undefined" or region == "null" or region == 0:
+        region = None
+        
+    if subregion == "undefined" or subregion == "null" or subregion == 0:
+        subregion = None
+    
     # If a community_id is provided, filter by that community
     if community_id:
         # Check that the community exists

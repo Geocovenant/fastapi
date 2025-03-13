@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, JSON
-from api.utils.generic_models import UserCommunityLink, PollCommunityLink, DebateCommunityLink, ProjectCommunityLink
+from api.utils.generic_models import UserCommunityLink, PollCommunityLink, DebateCommunityLink, ProjectCommunityLink, IssueCommunityLink
 import datetime
 
 class CommunityLevel(str, Enum):
@@ -38,6 +38,7 @@ class Community(CommunityBase, table=True):
     subregion: "Subregion" = Relationship(back_populates="community")
     locality: "Locality" = Relationship(back_populates="community")
     projects: list["Project"] = Relationship(back_populates="communities", link_model=ProjectCommunityLink)
+    issues: list["Issue"] = Relationship(back_populates="communities", link_model=IssueCommunityLink)
 
     def get_translated(self, language_code, field):
         """Gets a translated field if it exists, or the default value"""

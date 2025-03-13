@@ -1,5 +1,5 @@
 from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional, List
+from typing import Optional
 
 class Language(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -7,7 +7,7 @@ class Language(SQLModel, table=True):
     name: str = Field(max_length=50, unique=True, index=True)
     
     # Relationship
-    countries: List["Country"] = Relationship(back_populates="languages", link_model="CountryLanguageLink")
+    countries: list["Country"] = Relationship(back_populates="languages", link_model="CountryLanguageLink")
 
 class CountryLanguageLink(SQLModel, table=True):
     country_id: int = Field(foreign_key="country.id", primary_key=True)

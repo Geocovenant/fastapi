@@ -1,6 +1,6 @@
 from sqlmodel import select, Session, or_
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from .models import Report, ReportCreate, ReportStatus
 from api.public.user.models import User
@@ -19,7 +19,7 @@ def create_report(db: Session, report_data: ReportCreate, reporter_id: int) -> R
     db.refresh(db_report)
     return db_report
 
-def get_reports(db: Session, skip: int = 0, limit: int = 100) -> List[Report]:
+def get_reports(db: Session, skip: int = 0, limit: int = 100) -> list[Report]:
     """Get all reports"""
     return db.exec(select(Report).offset(skip).limit(limit)).all()
 
@@ -27,7 +27,7 @@ def get_report(db: Session, report_id: int) -> Optional[Report]:
     """Get a specific report by ID"""
     return db.get(Report, report_id)
 
-def get_reports_by_status(db: Session, status: ReportStatus, skip: int = 0, limit: int = 100) -> List[Report]:
+def get_reports_by_status(db: Session, status: ReportStatus, skip: int = 0, limit: int = 100) -> list[Report]:
     """Get reports by status"""
     return db.exec(select(Report).where(Report.status == status).offset(skip).limit(limit)).all()
 
@@ -52,7 +52,7 @@ def update_report_status(db: Session, report_id: int, status: ReportStatus, reso
     db.refresh(db_report)
     return db_report
 
-def get_reports_by_item(db: Session, item_type: str, item_id: int) -> List[Report]:
+def get_reports_by_item(db: Session, item_type: str, item_id: int) -> list[Report]:
     """Get all reports for a specific item"""
     return db.exec(
         select(Report)

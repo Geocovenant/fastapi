@@ -13,12 +13,12 @@ from api.public.locality.models import Locality
 from api.public.tag.crud import get_tag_by_name, create_tag
 from api.public.debate.models import (
     Debate, DebateCreate, DebateRead, DebateUpdate, 
-    PointOfView, PointOfViewCreate, Opinion, 
+    PointOfView, Opinion, 
     OpinionCreate, OpinionVote, OpinionVoteCreate,
     DebateType, DebateStatus,
     UserMinimal, OpinionRead, PointOfViewRead, CommunityMinimal,
     PaginatedDebateResponse,
-    Comment, CommentCreate, CommentRead
+    CommentCreate, CommentRead
 )
 from api.utils.slug import create_slug
 from datetime import datetime

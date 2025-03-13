@@ -5,7 +5,6 @@ from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 from pydantic import EmailStr, field_validator
 from api.utils.generic_models import UserCommunityLink, UserFollowLink
-from sqlalchemy import Column, Boolean
 
 class UserRole(str, Enum):
     ADMIN = "ADMIN"

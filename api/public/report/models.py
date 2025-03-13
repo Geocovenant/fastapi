@@ -1,8 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from sqlmodel import Field, SQLModel, Relationship, Column, DateTime
-from typing import Optional, List
-from pydantic import EmailStr, field_validator
+from typing import Optional
 import sqlalchemy
 
 class ReportType(str, Enum):

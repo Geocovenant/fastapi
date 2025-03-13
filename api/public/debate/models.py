@@ -1,13 +1,13 @@
 from enum import Enum
 from typing import Optional
 from datetime import datetime
-from sqlmodel import Field, Relationship, SQLModel
-from sqlalchemy import Column, JSON, BigInteger
+from sqlmodel import Field, Relationship, SQLModel, Column
+from sqlalchemy import JSON, BigInteger
 from api.public.tag.models import Tag
 from api.public.user.models import User
 from api.public.community.models import Community
 from api.utils.generic_models import DebateTagLink, DebateCommunityLink
-from api.utils.shared_models import UserMinimal
+from api.utils.shared_models import UserMinimal, CommunityMinimal
 from pydantic import field_validator
 
 class DebateType(str, Enum):
@@ -165,10 +165,10 @@ class DebateCreate(SQLModel):
     locality_id: Optional[int] = Field(default=None, description="Locality ID for local debates")
 
     @field_validator("community_ids")
-    def validate_communities_by_type(cls, v, values):
-        debate_type = values.get("type")
+    def validate_communities_by_type(cls, v, info):
+        debate_type = info.data.get("type")
         
-        if debate_type == DebateType.NATIONAL and not values.get("country_code"):
+        if debate_type == DebateType.NATIONAL and not info.data.get("country_code"):
             raise ValueError("National debates require a country code (country_code)")
             
         return v

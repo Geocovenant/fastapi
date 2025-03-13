@@ -49,21 +49,46 @@ def read_issues(
     - page: Page number (default: 1)
     - size: Items per page (default: 10, max: 100)
     """
-    return get_all_issues(
-        db, 
-        status=status,
-        scope=scope,
-        community_id=community_id,
-        country_code=country_code,
-        region_id=region_id,
-        subregion_id=subregion_id,
-        locality_id=locality_id,
-        creator_id=creator_id,
-        search=search,
-        current_user_id=current_user.id if current_user else None,
-        page=page,
-        size=size
-    )
+    # Filtrar parámetros indefinidos o nulos
+    if country_code == "undefined" or country_code == "null":
+        country_code = None
+    
+    if community_id == "undefined" or community_id == "null" or community_id == 0:
+        community_id = None
+        
+    if region_id == "undefined" or region_id == "null" or region_id == 0:
+        region_id = None
+        
+    if subregion_id == "undefined" or subregion_id == "null" or subregion_id == 0:
+        subregion_id = None
+        
+    if locality_id == "undefined" or locality_id == "null" or locality_id == 0:
+        locality_id = None
+    
+    try:
+        return get_all_issues(
+            db, 
+            status=status,
+            scope=scope,
+            community_id=community_id,
+            country_code=country_code,
+            region_id=region_id,
+            subregion_id=subregion_id,
+            locality_id=locality_id,
+            creator_id=creator_id,
+            search=search,
+            current_user_id=current_user.id if current_user else None,
+            page=page,
+            size=size
+        )
+    except Exception as e:
+        # Registrar el error para depuración
+        print(f"Error al obtener issues: {str(e)}")
+        # Devolver una respuesta amigable
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error al procesar los parámetros de consulta. Verifique que los valores sean correctos."
+        )
 
 @router.post("/", response_model=IssueRead, status_code=status.HTTP_201_CREATED)
 def create_new_issue(
@@ -174,14 +199,20 @@ def add_comment(
             detail="Issue not found"
         )
 
-    # Verify that the user is a member of the issue's community
+    # Verify that the user is a member of at least one of the issue's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
     ).all()
     user_community_ids = set(uc.community_id for uc in user_communities)
     
-    if issue.community_id and issue.community_id not in user_community_ids:
+    issue_communities = db.exec(
+        select(IssueCommunityLink.community_id)
+        .where(IssueCommunityLink.issue_id == issue_id)
+    ).all()
+    issue_community_ids = set(ic.community_id for ic in issue_communities)
+    
+    if not user_community_ids.intersection(issue_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You must be a member of the community to comment on this issue"
@@ -208,14 +239,20 @@ def toggle_support(
             detail="Issue not found"
         )
 
-    # Verify that the user is a member of the issue's community
+    # Verify that the user is a member of at least one of the issue's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
     ).all()
     user_community_ids = set(uc.community_id for uc in user_communities)
     
-    if issue.community_id and issue.community_id not in user_community_ids:
+    issue_communities = db.exec(
+        select(IssueCommunityLink.community_id)
+        .where(IssueCommunityLink.issue_id == issue_id)
+    ).all()
+    issue_community_ids = set(ic.community_id for ic in issue_communities)
+    
+    if not user_community_ids.intersection(issue_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You must be a member of the community to support this issue"
@@ -242,14 +279,20 @@ def add_update(
             detail="Issue not found"
         )
 
-    # Verify that the user is a member of the issue's community
+    # Verify that the user is a member of at least one of the issue's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
     ).all()
     user_community_ids = set(uc.community_id for uc in user_communities)
     
-    if issue.community_id and issue.community_id not in user_community_ids:
+    issue_communities = db.exec(
+        select(IssueCommunityLink.community_id)
+        .where(IssueCommunityLink.issue_id == issue_id)
+    ).all()
+    issue_community_ids = set(ic.community_id for ic in issue_communities)
+    
+    if not user_community_ids.intersection(issue_community_ids):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You must be a member of the community to update this issue"

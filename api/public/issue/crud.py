@@ -1,15 +1,15 @@
+import random
+import string
 from sqlmodel import Session, select, func, distinct
 from api.public.issue.models import (
     Issue, IssueCreate, IssueUpdate, 
     IssueComment, IssueCommentCreate, IssueSupport,
     IssueUpdate as IssueUpdateModel, IssueUpdateCreate,
     IssueRead, IssueCommentRead, IssueUpdateRead,
-    UserMinimal
+    UserMinimal, IssueImage, IssueScope
 )
-from api.public.community.models import Community
 from api.public.user.models import User
 from api.public.organization.models import Organization
-from api.public.organization.crud import get_organization_by_id
 from api.utils.slug import create_slug
 from datetime import datetime
 from fastapi import HTTPException, status
@@ -20,10 +20,9 @@ from api.public.subregion.crud import get_subregion_by_id
 from api.public.locality.models import Locality
 from api.public.country.models import Country
 from math import ceil
-import random
-import string
 from api.utils.shared_models import CommunityMinimal
 from api.utils.generic_models import IssueCommunityLink
+from api.public.tag.crud import get_tag_by_name, create_tag
 
 def get_all_issues(
     db: Session,
@@ -165,34 +164,42 @@ def create_issue(db: Session, issue_data: IssueCreate, user_id: int) -> Issue:
         updated_at=datetime.utcnow(),
         location=issue_data.location,
         images=issue_data.images,
-        organization_id=issue_data.organization_id
+        organization_id=issue_data.organization_id,
+        is_anonymous=issue_data.is_anonymous
     )
     db.add(new_issue)
     db.flush()  # Get generated ID
     
+    # Add tags to the issue
+    for tag_name in issue_data.tags:
+        tag = get_tag_by_name(db, tag_name)
+        if not tag:
+            tag = create_tag(db, tag_name)
+        new_issue.tags.append(tag)
+    
     # Add communities based on the issue's scope
-    if issue_data.scope == "INTERNATIONAL" and issue_data.country_codes:
+    if issue_data.scope == IssueScope.INTERNATIONAL and issue_data.country_codes:
         for code in issue_data.country_codes:
             country = get_country_by_code(db, code)
             if country and country.community:
                 new_issue.communities.append(country.community)
     
-    elif issue_data.scope == "NATIONAL" and issue_data.country_code:
+    elif issue_data.scope == IssueScope.NATIONAL and issue_data.country_code:
         country = get_country_by_code(db, issue_data.country_code)
         if country and country.community:
             new_issue.communities.append(country.community)
     
-    elif issue_data.scope == "REGIONAL" and issue_data.region_id:
+    elif issue_data.scope == IssueScope.REGIONAL and issue_data.region_id:
         region = get_region_by_id(db, issue_data.region_id)
         if region and region.community:
             new_issue.communities.append(region.community)
     
-    elif issue_data.scope == "SUBREGIONAL" and issue_data.subregion_id:
+    elif issue_data.scope == IssueScope.SUBREGIONAL and issue_data.subregion_id:
         subregion = get_subregion_by_id(db, issue_data.subregion_id)
         if subregion and subregion.community:
             new_issue.communities.append(subregion.community)
     
-    elif issue_data.scope == "LOCAL" and issue_data.locality_id:
+    elif issue_data.scope == IssueScope.LOCAL and issue_data.locality_id:
         locality = db.get(Locality, issue_data.locality_id)
         if locality and locality.community:
             new_issue.communities.append(locality.community)
@@ -459,8 +466,11 @@ def enrich_issue(db: Session, issue: Issue, current_user_id: int = None) -> Issu
             cca2=cca2
         ))
     
+    # Get tags
+    tags = [tag.name for tag in issue.tags]
+    
     # Get organization
-    organization = db.get(Organization, issue.organization_id)
+    organization = db.get(Organization, issue.organization_id) if issue.organization_id else None
     
     # Check if current user supports this issue
     user_supports = False
@@ -493,8 +503,9 @@ def enrich_issue(db: Session, issue: Issue, current_user_id: int = None) -> Issu
             id=creator.id,
             username=creator.username,
             image=creator.image
-        ),
+        ) if not issue.is_anonymous else None,
         communities=communities,
+        tags=tags,
         comments=comments,
         updates=updates,
         user_supports=user_supports,
@@ -502,5 +513,6 @@ def enrich_issue(db: Session, issue: Issue, current_user_id: int = None) -> Issu
             id=organization.id,
             name=organization.name,
             level=organization.level
-        )
+        ) if organization else None,
+        is_anonymous=issue.is_anonymous
     ) 

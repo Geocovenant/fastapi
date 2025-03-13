@@ -6,8 +6,8 @@ from api.database import get_session
 from api.auth.dependencies import get_current_user, get_current_user_optional
 from api.public.user.models import User, UserRole
 from api.public.project.models import (
-    Project, ProjectCreate, ProjectRead, ProjectUpdate, 
-    ProjectStatus, ProjectStepCreate, ProjectCommitmentCreate,
+    ProjectCreate, ProjectRead, ProjectUpdate, 
+    ProjectStatus, ProjectCommitmentCreate,
     ProjectDonationCreate, ProjectComment, ProjectCommentCreate, ProjectCommentRead
 )
 from api.public.project.crud import (

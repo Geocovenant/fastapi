@@ -112,7 +112,6 @@ from api.public.issue.models import (
     IssueBase,
     IssueCreate,
     IssueRead,
-    IssueCategory,
     IssueCategoryBase,
     IssueCategoryCreate,
     IssueCategoryRead,
