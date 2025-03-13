@@ -9,6 +9,13 @@ class Settings(BaseSettings):
     ENV: Literal["development", "staging", "production"] = "development"
     VERSION: str = "0.0.1"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://seba:123456@localhost:5432/geounity_db")
+    
+    # Connection pool configuration
+    DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", "20"))
+    DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW", "10"))
+    DB_POOL_TIMEOUT: int = int(os.getenv("DB_POOL_TIMEOUT", "30"))
+    DB_POOL_RECYCLE: int = int(os.getenv("DB_POOL_RECYCLE", "300"))
+    
     CORS_ORIGINS: list[str] = [
         "http://localhost:5173/",
         "https://geounity.org/"

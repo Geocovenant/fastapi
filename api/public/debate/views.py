@@ -26,6 +26,7 @@ from api.public.country.models import Country
 from sqlalchemy import text
 from api.public.user.models import User
 from api.public.community.models import UserCommunityLink, DebateCommunityLink
+from api.public.tag.models import Tag
 
 router = APIRouter()
 
@@ -118,25 +119,29 @@ def create_debate(
             region = get_region_by_id(session, debate_data.region_id)
             if region and region.community:
                 new_debate.communities.append(region.community)
-        # If region_id is not provided, the provided community_ids will be used
+        # If region_id is not provided, use the community_ids provided
+        elif not debate_data.community_ids:
+            raise HTTPException(status_code=400, detail="For regional debates, you must provide region_id or community_ids")
     
     elif debate_data.type == DebateType.SUBREGIONAL:
         # Subregional debate - add subregional community
-        if not debate_data.subregion_id:
-            raise HTTPException(status_code=400, detail="Subregion ID is required for subregional debates")
-        
-        subregion = get_subregion_by_id(session, debate_data.subregion_id)
-        if subregion and subregion.community:
-            new_debate.communities.append(subregion.community)
+        if debate_data.subregion_id:
+            subregion = get_subregion_by_id(session, debate_data.subregion_id)
+            if subregion and subregion.community:
+                new_debate.communities.append(subregion.community)
+        # If subregion_id is not provided, use the community_ids provided
+        elif not debate_data.community_ids:
+            raise HTTPException(status_code=400, detail="For subregional debates, you must provide subregion_id or community_ids")
     
     elif debate_data.type == DebateType.LOCAL:
         # Local debate - add local community
-        if not debate_data.locality_id:
-            raise HTTPException(status_code=400, detail="Locality ID is required for local debates")
-        
-        locality = session.get(Locality, debate_data.locality_id)
-        if locality and locality.community:
-            new_debate.communities.append(locality.community)
+        if debate_data.locality_id:
+            locality = session.get(Locality, debate_data.locality_id)
+            if locality and locality.community:
+                new_debate.communities.append(locality.community)
+        # If locality_id is not provided, use the community_ids provided
+        elif not debate_data.community_ids:
+            raise HTTPException(status_code=400, detail="For local debates, you must provide locality_id or community_ids")
     
     # Add additional communities
     for community_id in debate_data.community_ids:

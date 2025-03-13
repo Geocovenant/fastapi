@@ -24,6 +24,7 @@ def search_community(
     region: Optional[str] = None,
     subregion: Optional[str] = None,
     local: Optional[str] = None,
+    locality: Optional[str] = None,
     db: Session = Depends(get_session)
 ):
     """
@@ -54,7 +55,10 @@ def search_community(
     normalized_country = normalize_text(country) if country else None
     normalized_region = normalize_text(region) if region else None
     normalized_subregion = normalize_text(subregion) if subregion else None
-    normalized_local = normalize_text(local) if local else None
+    
+    # Use locality if local is not present, or local if it is available
+    local_param = local if local is not None else locality
+    normalized_local = normalize_text(local_param) if local_param else None
     
     # Query using Session.query directly to avoid issues with complex selects
     query = db.query(Community).filter(Community.level == level)
@@ -72,23 +76,23 @@ def search_community(
                 func.lower(Community.name), 
                 '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
             ),
-            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
+            '[áàäâã]', 'a', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
+                '[éèëê]', 'e', 'g'
             ),
-            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
+            '[íìïî]', 'i', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
+                '[óòöôõ]', 'o', 'g'
             ),
-            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
+            '[úùüû]', 'u', 'g'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_country,
@@ -107,25 +111,25 @@ def search_community(
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
+                '[-_]', ' ', 'g'
             ),
-            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
+            '[áàäâã]', 'a', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
+                '[éèëê]', 'e', 'g'
             ),
-            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
+            '[íìïî]', 'i', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
+                '[óòöôõ]', 'o', 'g'
             ),
-            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
+            '[úùüû]', 'u', 'g'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_region,
@@ -144,25 +148,25 @@ def search_community(
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
+                '[-_]', ' ', 'g'
             ),
-            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
+            '[áàäâã]', 'a', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
+                '[éèëê]', 'e', 'g'
             ),
-            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
+            '[íìïî]', 'i', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
+                '[óòöôõ]', 'o', 'g'
             ),
-            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
+            '[úùüû]', 'u', 'g'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_subregion,
@@ -171,7 +175,7 @@ def search_community(
         )
     
     elif level == CommunityLevel.LOCAL:
-        if not country or not local:
+        if not country or not normalized_local:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="The 'country' and 'local' parameters are required for LOCAL level"
@@ -181,25 +185,25 @@ def search_community(
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
+                '[-_]', ' ', 'g'
             ),
-            '[áàäâã]', 'a', 'g'  # Replace variants of 'a'
+            '[áàäâã]', 'a', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[éèëê]', 'e', 'g'  # Replace variants of 'e'
+                '[éèëê]', 'e', 'g'
             ),
-            '[íìïî]', 'i', 'g'  # Replace variants of 'i'
+            '[íìïî]', 'i', 'g'
         )
         normalized_db_name = func.regexp_replace(
             func.regexp_replace(
                 normalized_db_name,
-                '[óòöôõ]', 'o', 'g'  # Replace variants of 'o'
+                '[óòöôõ]', 'o', 'g'
             ),
-            '[úùüû]', 'u', 'g'  # Replace variants of 'u'
+            '[úùüû]', 'u', 'g'
         )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')  # Replace ñ
+        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
         query = query.filter(
             or_(
                 func.lower(Community.name) == normalized_local,
@@ -230,6 +234,21 @@ def search_community(
             # Add the region_id to the response
             result_dict = result.dict()
             result_dict["region_id"] = region_data.id
+            # Convert back to the response model
+            result = CommunityRead(**result_dict)
+    
+    # Add subregion_id if the community level is SUBREGIONAL
+    elif community.level == CommunityLevel.SUBREGIONAL:
+        # Query the subregion table to find the subregion associated with this community
+        from api.public.subregion.models import Subregion
+        subregion_data = db.exec(
+            select(Subregion).where(Subregion.community_id == community.id)
+        ).first()
+        
+        if subregion_data:
+            # Add the subregion_id to the response
+            result_dict = result.dict()
+            result_dict["subregion_id"] = subregion_data.id
             # Convert back to the response model
             result = CommunityRead(**result_dict)
     

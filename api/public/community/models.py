@@ -50,7 +50,8 @@ class Community(CommunityBase, table=True):
 class CommunityRead(CommunityBase):
     id: int
     parent_id: Optional[int] = None
-    region_id: Optional[int] = None  # New optional field
+    region_id: Optional[int] = None
+    subregion_id: Optional[int] = None
 
 class CommunityRequest(SQLModel, table=True):
     __tablename__ = "community_requests"
@@ -60,7 +61,7 @@ class CommunityRequest(SQLModel, table=True):
     region: str = Field(nullable=False)
     city: str = Field(nullable=False)
     email: str = Field(nullable=False)
-    status: str = Field(default="pending")  # pending, approved, rejected
+    status: str = Field(default="pending")
     created_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
     updated_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
 
