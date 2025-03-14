@@ -9,6 +9,12 @@ from api.public.user.models import User, UserFollowLink, UserUpdateSchema, Usern
 from api.public.community.models import Community
 from api.utils.generic_models import UserFollowLink, UserCommunityLink
 
+# Imports for activity statistics
+from api.public.debate.models import Debate, Opinion, PointOfView
+from api.public.poll.models import Poll, PollVote
+from api.public.project.models import Project, ProjectCommitment, ProjectDonation
+from api.public.issue.models import Issue, IssueSupport, IssueComment
+
 router = APIRouter()
 
 @router.get("/me")
@@ -129,6 +135,90 @@ def get_user_profile(
         }
         for community, is_public in communities_result
     ]
+    
+    # Add activity statistics on the platform
+    
+    # Poll statistics
+    polls_created_count = db.exec(
+        select(func.count()).where(func.poll.c.creator_id == user.id)
+    ).first() or 0
+    
+    polls_voted_count = db.exec(
+        select(func.count()).where(func.poll_vote.c.user_id == user.id)
+    ).first() or 0
+    
+    # Debate statistics
+    debates_created_count = db.exec(
+        select(func.count()).where(func.debate.c.creator_id == user.id)
+    ).first() or 0
+    
+    debate_opinions_count = db.exec(
+        select(func.count())
+        .select_from(
+            select(Opinion)
+            .join(PointOfView)
+            .where(Opinion.user_id == user.id)
+            .subquery()
+        )
+    ).first() or 0
+    
+    # Project statistics
+    projects_created_count = db.exec(
+        select(func.count()).where(func.project.c.creator_id == user.id)
+    ).first() or 0
+    
+    project_commitments_count = db.exec(
+        select(func.count()).where(func.project_commitment.c.user_id == user.id)
+    ).first() or 0
+    
+    project_donations_count = db.exec(
+        select(func.count()).where(func.project_donation.c.user_id == user.id)
+    ).first() or 0
+    
+    # Issue statistics
+    issues_created_count = db.exec(
+        select(func.count()).where(func.issue.c.creator_id == user.id)
+    ).first() or 0
+    
+    issue_supports_count = db.exec(
+        select(func.count()).where(func.issue_support.c.user_id == user.id)
+    ).first() or 0
+    
+    issue_comments_count = db.exec(
+        select(func.count()).where(func.issue_comment.c.user_id == user.id)
+    ).first() or 0
+    
+    # Add all statistics to the response object
+    user_data["activity_stats"] = {
+        "polls": {
+            "created": polls_created_count,
+            "voted": polls_voted_count,
+            "total_participation": polls_created_count + polls_voted_count
+        },
+        "debates": {
+            "created": debates_created_count,
+            "opinions": debate_opinions_count,
+            "total_participation": debates_created_count + debate_opinions_count
+        },
+        "projects": {
+            "created": projects_created_count,
+            "commitments": project_commitments_count,
+            "donations": project_donations_count,
+            "total_participation": projects_created_count + project_commitments_count + project_donations_count
+        },
+        "issues": {
+            "created": issues_created_count,
+            "supports": issue_supports_count,
+            "comments": issue_comments_count,
+            "total_participation": issues_created_count + issue_supports_count + issue_comments_count
+        },
+        "total_activity": (
+            polls_created_count + polls_voted_count +
+            debates_created_count + debate_opinions_count +
+            projects_created_count + project_commitments_count + project_donations_count +
+            issues_created_count + issue_supports_count + issue_comments_count
+        )
+    }
     
     return user_data
 
