@@ -8,3 +8,15 @@ __pycache__/
 .idea/
 restclient.http
 data/
+
+# Additional entries
+*.log
+logs/
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.DS_Store
+*.sqlite3
+.env.*
+!.env.example
