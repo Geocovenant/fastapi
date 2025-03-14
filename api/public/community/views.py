@@ -11,9 +11,12 @@ from pydantic import BaseModel
 import datetime
 import unicodedata
 
+from api.utils.pagination import PaginatedResponse
+
 from api.public.community.models import CommunityRequest
 from api.public.community.crud import create_community_request, get_community_requests, update_community_request_status
 from api.public.region.models import Region
+from api.public.community.models import Community
 
 router = APIRouter()
 
@@ -146,26 +149,38 @@ def search_community(
 def read(community_id: int, db: Session = Depends(get_session)):
     return get_community(community_id, db)
 
-@router.get("/{community_id}/members")
+@router.get("/{community_id}/members", response_model=PaginatedResponse)
 def get_community_members(
     community_id: int,
     page: int = Query(1, ge=1, description="Page number"),
-    size: int = Query(100, ge=1, le=100, description="Page size"),
+    size: int = Query(10, ge=1, le=100, description="Items per page"),
     current_user: Optional[User] = Depends(get_current_user_optional),
     db: Session = Depends(get_session)
 ):
     """
-    Retrieves the members of a community.
-    Shows only users who have chosen to be visible (is_public=True).
-    Does not include the authenticated user if they have is_public=False.
+    Get all members of a community.
+    Optionally filter by public/private membership.
     """
-    # First check if the community exists, without checking membership
-    community = get_community(community_id, db, check_membership=False, current_user=current_user)
+    # Verify that the community exists
+    community = db.get(Community, community_id)
     if not community:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Community with ID {community_id} not found"
+            detail="Community not found"
         )
+    
+    # Get user's membership status if authenticated
+    user_community_result = None
+    if current_user:
+        user_community_result = db.exec(
+            select(UserCommunityLink.is_public)
+            .where(
+                UserCommunityLink.user_id == current_user.id,
+                UserCommunityLink.community_id == community_id
+            )
+        ).first()
+    
+    current_user_is_public = user_community_result
     
     # Calculate offset for pagination
     offset = (page - 1) * size
@@ -213,7 +228,6 @@ def get_community_members(
     total_anonymous = 0 if total_anonymous_result is None else total_anonymous_result
     
     # Check if the current user is set as not public in this community
-    current_user_is_public = True
     current_user_is_member = False
     
     if current_user:
@@ -229,19 +243,22 @@ def get_community_members(
             # The user is a member of the community
             current_user_is_member = True
             # Access the selected field directly
-            current_user_is_public = user_community_result[0]
+            current_user_is_public = user_community_result
     
-    # Calculate number of pages based only on public users
-    total_pages = (total_public + size - 1) // size if total_public > 0 else 1
+    total = total_public
+    pages = (total + size - 1) // size if size > 0 else 0
+    has_more = page < pages
     
     # Build the response
     response = {
         "items": user_list,
+        "total": total,
         "total_public": total_public,
         "total_anonymous": total_anonymous,
         "page": page,
         "size": size,
-        "pages": total_pages
+        "pages": pages,
+        "has_more": has_more
     }
     
     # Add information about the current user only if authenticated
