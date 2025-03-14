@@ -10,28 +10,28 @@ async def get_current_user(
     db: Session = Depends(get_session)
 ) -> User:
     """
-    Obtiene el usuario actual basado en el token de sesión enviado en el header Authorization.
+    Gets the current user based on the session token sent in the Authorization header.
     
     Args:
-        authorization: Token de sesión enviado en el header
-        db: Sesión de base de datos
+        authorization: Session token sent in the header
+        db: Database session
     
     Returns:
-        User: Usuario autenticado
+        User: Authenticated user
     
     Raises:
-        HTTPException: Si no hay token de sesión o si el token es inválido
+        HTTPException: If there is no session token or if the token is invalid
     """
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No se ha proporcionado token de sesión"
+            detail="No session token provided"
         )
 
-    # Extraer el token del header (por si viene como "Bearer <token>")
+    # Extract the token from the header (in case it comes as "Bearer <token>")
     session_token = authorization.replace("Bearer ", "")
 
-    # Buscar la sesión activa usando el modelo de Auth.js
+    # Look for the active session using the Auth.js model
     query = select(UserSession, User).join(User).where(
         UserSession.sessionToken == session_token,
         UserSession.expires > datetime.utcnow()
@@ -41,7 +41,7 @@ async def get_current_user(
     if not result:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Sesión inválida o expirada"
+            detail="Invalid or expired session"
         )
     
     session, user = result

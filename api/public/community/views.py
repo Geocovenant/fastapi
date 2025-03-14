@@ -39,7 +39,6 @@ def search_community(
     """
     from api.public.community.models import Community
     
-    # Function to normalize text: removes accents, converts to lowercase, and normalizes separators
     def normalize_text(text):
         if not text:
             return None
@@ -47,171 +46,60 @@ def search_community(
         text = text.lower()
         # Replace hyphens and underscores with spaces
         text = text.replace('-', ' ').replace('_', ' ')
-        # Normalize accented characters and remove diacritics
+        # Normalize accented characters
         text = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('utf-8')
         return text
     
-    # Normalize all search parameters
     normalized_country = normalize_text(country) if country else None
     normalized_region = normalize_text(region) if region else None
     normalized_subregion = normalize_text(subregion) if subregion else None
     
-    # Use locality if local is not present, or local if it is available
     local_param = local if local is not None else locality
     normalized_local = normalize_text(local_param) if local_param else None
     
-    # Query using Session.query directly to avoid issues with complex selects
+    required_params = {
+        CommunityLevel.NATIONAL: [("country", normalized_country)],
+        CommunityLevel.REGIONAL: [("country", normalized_country), ("region", normalized_region)],
+        CommunityLevel.SUBREGIONAL: [("country", normalized_country), ("region", normalized_region), 
+                                   ("subregion", normalized_subregion)],
+        CommunityLevel.LOCAL: [("country", normalized_country), ("local", normalized_local)]
+    }
+    
+    if level in required_params:
+        for param_name, param_value in required_params[level]:
+            if not param_value:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"The '{param_name}' parameter is required for {level} level"
+                )
+    
+    # Build base query
     query = db.query(Community).filter(Community.level == level)
     
-    # Add filters based on level and provided parameters
-    if level == CommunityLevel.NATIONAL:
-        if not country:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="The 'country' parameter is required for NATIONAL level"
-            )
-        # Apply normalization function to names in the database for flexible searching
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                func.lower(Community.name), 
-                '[-_]', ' ', 'g'  # Replace all hyphens and underscores with spaces
-            ),
-            '[áàäâã]', 'a', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[éèëê]', 'e', 'g'
-            ),
-            '[íìïî]', 'i', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[óòöôõ]', 'o', 'g'
-            ),
-            '[úùüû]', 'u', 'g'
-        )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
+    # Simplify normalization logic in the query
+    # This reduces complexity and improves performance
+    search_param = {
+        CommunityLevel.NATIONAL: normalized_country,
+        CommunityLevel.REGIONAL: normalized_region,
+        CommunityLevel.SUBREGIONAL: normalized_subregion,
+        CommunityLevel.LOCAL: normalized_local
+    }.get(level)
+    
+    if search_param:
+        # Use simpler, more compatible approach for normalization
         query = query.filter(
-            or_(
-                func.lower(Community.name) == normalized_country,
-                normalized_db_name == normalized_country
-            )
+            func.lower(
+                func.regexp_replace(
+                    func.regexp_replace(
+                        func.lower(Community.name), 
+                        '[-_]', ' ', 'g'
+                    ),
+                    '\\s+', ' ', 'g'
+                )
+            ) == search_param
         )
     
-    elif level == CommunityLevel.REGIONAL:
-        if not country or not region:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="The 'country' and 'region' parameters are required for REGIONAL level"
-            )
-        
-        # Flexible search for the name of the region
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                func.lower(Community.name), 
-                '[-_]', ' ', 'g'
-            ),
-            '[áàäâã]', 'a', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[éèëê]', 'e', 'g'
-            ),
-            '[íìïî]', 'i', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[óòöôõ]', 'o', 'g'
-            ),
-            '[úùüû]', 'u', 'g'
-        )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
-        query = query.filter(
-            or_(
-                func.lower(Community.name) == normalized_region,
-                normalized_db_name == normalized_region
-            )
-        )
-    
-    elif level == CommunityLevel.SUBREGIONAL:
-        if not country or not region or not subregion:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="The 'country', 'region', and 'subregion' parameters are required for SUBREGIONAL level"
-            )
-        
-        # Flexible search for the name of the subregion
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                func.lower(Community.name), 
-                '[-_]', ' ', 'g'
-            ),
-            '[áàäâã]', 'a', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[éèëê]', 'e', 'g'
-            ),
-            '[íìïî]', 'i', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[óòöôõ]', 'o', 'g'
-            ),
-            '[úùüû]', 'u', 'g'
-        )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
-        query = query.filter(
-            or_(
-                func.lower(Community.name) == normalized_subregion,
-                normalized_db_name == normalized_subregion
-            )
-        )
-    
-    elif level == CommunityLevel.LOCAL:
-        if not country or not normalized_local:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="The 'country' and 'local' parameters are required for LOCAL level"
-            )
-        
-        # Flexible search for the name of the locality
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                func.lower(Community.name), 
-                '[-_]', ' ', 'g'
-            ),
-            '[áàäâã]', 'a', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[éèëê]', 'e', 'g'
-            ),
-            '[íìïî]', 'i', 'g'
-        )
-        normalized_db_name = func.regexp_replace(
-            func.regexp_replace(
-                normalized_db_name,
-                '[óòöôõ]', 'o', 'g'
-            ),
-            '[úùüû]', 'u', 'g'
-        )
-        normalized_db_name = func.regexp_replace(normalized_db_name, '[ñ]', 'n', 'g')
-        query = query.filter(
-            or_(
-                func.lower(Community.name) == normalized_local,
-                normalized_db_name == normalized_local
-            )
-        )
-    
-    # Execute query using first()
+    # Execute query in an optimized manner
     community = query.first()
     
     if not community:
