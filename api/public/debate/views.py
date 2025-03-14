@@ -27,6 +27,8 @@ from sqlalchemy import text
 from api.public.user.models import User
 from api.public.community.models import UserCommunityLink, DebateCommunityLink
 from api.public.tag.models import Tag
+from api.public.region.models import Region
+from api.public.subregion.models import Subregion
 
 router = APIRouter()
 
@@ -296,7 +298,105 @@ def get_debate(
     debate.views_count += 1
     session.commit()
     
-    return get_debate_read(session, debate, current_user)
+    # Get the debate with the read format
+    debate_read = get_debate_read(session, debate, current_user)
+    
+    # Add divisions to the response according to debate type
+    if debate.type in [DebateType.NATIONAL, DebateType.REGIONAL, DebateType.SUBREGIONAL]:
+        divisions = get_debate_divisions(session, debate)
+        if divisions:
+            # Convert DebateRead to dict to add the new field (that isn't in the model)
+            debate_read_dict = debate_read.dict()
+            debate_read_dict["divisions"] = divisions
+            
+            # We need to return a dict instead of DebateRead model since we've added a field
+            return debate_read_dict
+    
+    return debate_read
+
+def get_debate_divisions(session: Session, debate):
+    """Get the administrative divisions associated with the debate based on its type"""
+    divisions = []
+    
+    if not debate.communities or len(debate.communities) == 0:
+        return divisions
+    
+    if debate.type == DebateType.NATIONAL:
+        # For NATIONAL debates, get all regions of the country
+        community = debate.communities[0]  # Get the first community (should be the country)
+        
+        # Find the country by community_id
+        country = session.exec(
+            select(Country).where(Country.community_id == community.id)
+        ).first()
+        
+        if country:
+            # Get all regions for this country
+            regions = session.exec(
+                select(Region).where(Region.country_id == country.id)
+            ).all()
+            
+            divisions = [
+                {
+                    "id": region.id,
+                    "name": region.name,
+                    "type": "REGION",
+                    "community_id": region.community_id
+                }
+                for region in regions
+            ]
+    
+    elif debate.type == DebateType.REGIONAL:
+        # For REGIONAL debates, get all subregions of the region
+        community = debate.communities[0]  # Get the first community (should be the region)
+        
+        # Find the region by community_id
+        region = session.exec(
+            select(Region).where(Region.community_id == community.id)
+        ).first()
+        
+        if region:
+            # Get all subregions for this region
+            subregions = session.exec(
+                select(Subregion).where(Subregion.region_id == region.id)
+            ).all()
+            
+            divisions = [
+                {
+                    "id": subregion.id,
+                    "name": subregion.name,
+                    "type": "SUBREGION",
+                    "community_id": subregion.community_id
+                }
+                for subregion in subregions
+            ]
+    
+    elif debate.type == DebateType.SUBREGIONAL:
+        # For SUBREGIONAL debates, get all localities of the subregion
+        community = debate.communities[0]  # Get the first community (should be the subregion)
+        
+        # Find the subregion by community_id
+        subregion = session.exec(
+            select(Subregion).where(Subregion.community_id == community.id)
+        ).first()
+        
+        if subregion:
+            # Get all localities for this subregion
+            localities = session.exec(
+                select(Locality).where(Locality.subregion_id == subregion.id)
+            ).all()
+            
+            divisions = [
+                {
+                    "id": locality.id,
+                    "name": locality.name,
+                    "type": "LOCALITY",
+                    "community_id": locality.community_id if hasattr(locality, 'community_id') else None
+                }
+                for locality in localities
+            ]
+    
+    return divisions
 
 @router.patch("/{debate_id}", response_model=DebateRead)
 def update_debate(
@@ -370,80 +470,74 @@ def delete_debate(
     return None
 
 @router.post("/{debate_id}/opinions", response_model=OpinionRead)
-def add_opinion(
+def create_debate_opinion(
     debate_id: int,
     opinion_data: OpinionCreate,
-    current_user = Depends(get_current_user),
-    session: Session = Depends(get_session)
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session)
 ):
-    """Add an opinion to a debate, creating the point of view if necessary"""
-    
+    """
+    Create an opinion for a specific debate.
+    The opinion can be associated using community_id or country_cca2.
+    """
     # Check that the debate exists
-    debate = session.get(Debate, debate_id)
-    if not debate or debate.deleted_at:
-        raise HTTPException(status_code=404, detail="Debate not found")
-    
-    # Check that the debate is not closed
-    if debate.status in [DebateStatus.CLOSED, DebateStatus.ARCHIVED, DebateStatus.RESOLVED]:
-        raise HTTPException(status_code=400, detail="Cannot add opinions to closed or archived debates")
-    
-    # Check if the user has already opined in this debate
-    existing_opinion = session.exec(
-        select(Opinion)
-        .join(PointOfView)
-        .where(
-            PointOfView.debate_id == debate_id,
-            Opinion.user_id == current_user.id
-        )
-    ).first()
-    
-    if existing_opinion:
+    debate = db.get(Debate, debate_id)
+    if not debate:
         raise HTTPException(
-            status_code=400, 
-            detail="You have already opined in this debate. Only one opinion per user is allowed."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Debate not found"
         )
     
-    # Handle obtaining the community_id according to the type of debate
-    if debate.type in [DebateType.GLOBAL, DebateType.INTERNATIONAL]:
-        if not opinion_data.country_cca2:
-            raise HTTPException(
-                status_code=400, 
-                detail="For global and international debates, country_cca2 is required"
-            )
-        
-        # Find the country by cca2
-        country = session.exec(
-            select(Country)
-            .where(Country.cca2 == opinion_data.country_cca2)
+    # Get the community either by community_id or by country_cca2
+    community_id = None
+    
+    # If community_id is provided directly
+    if opinion_data.community_id:
+        community_id = opinion_data.community_id
+    # If country_cca2 is provided, we get the associated community_id
+    elif opinion_data.country_cca2:
+        country = db.exec(
+            select(Country).where(Country.cca2 == opinion_data.country_cca2.upper())
         ).first()
         
         if not country:
-            raise HTTPException(status_code=404, detail="Country not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Country with code {opinion_data.country_cca2} not found"
+            )
         
         community_id = country.community_id
-    elif debate.type == DebateType.NATIONAL:
-        # For national debates, we use region_id
-        if not opinion_data.region_id:
-            raise HTTPException(status_code=400, detail="region_id is required for national debates")
-        
-        # Find the region by ID
-        region = get_region_by_id(session, opinion_data.region_id)
-        if not region:
-            raise HTTPException(status_code=404, detail="Region not found")
-        
-        community_id = region.community_id
     else:
-        if not opinion_data.community_id:
-            raise HTTPException(status_code=400, detail="community_id is required for this type of debate")
-        community_id = opinion_data.community_id
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You must provide community_id or country_cca2"
+        )
     
     # Check that the community exists
-    community = get_community_by_id(session, community_id)
+    community = db.get(Community, community_id)
     if not community:
-        raise HTTPException(status_code=404, detail="Community not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Community not found"
+        )
     
-    # Check if a point of view already exists for this debate and community
-    pov = session.exec(
+    # Check that the user is a member of the community
+    user_membership = db.exec(
+        select(UserCommunityLink)
+        .where(
+            UserCommunityLink.user_id == current_user.id,
+            UserCommunityLink.community_id == community_id
+        )
+    ).first()
+    
+    if not user_membership:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must be a member of the community to express an opinion in this debate"
+        )
+    
+    # Find or create a point of view for this community
+    point_of_view = db.exec(
         select(PointOfView)
         .where(
             PointOfView.debate_id == debate_id,
@@ -451,29 +545,33 @@ def add_opinion(
         )
     ).first()
     
-    # If the point of view does not exist, create it
-    if not pov:
-        pov = PointOfView(
-            name=community.name,  # Use the community's name as the point of view name
+    if not point_of_view:
+        # Create a new point of view for this community
+        point_of_view = PointOfView(
+            name=community.name,
             debate_id=debate_id,
             created_by_id=current_user.id,
-            community_id=community_id
+            community_id=community_id,
+            created_at=datetime.utcnow()
         )
-        session.add(pov)
-        session.flush()  # To get the ID
+        db.add(point_of_view)
+        db.commit()
+        db.refresh(point_of_view)
     
-    # Create the opinion
+    # Create the opinion directly
     new_opinion = Opinion(
-        point_of_view_id=pov.id,
+        point_of_view_id=point_of_view.id,
         user_id=current_user.id,
-        content=opinion_data.content
+        content=opinion_data.content,
+        created_at=datetime.utcnow()
     )
     
-    session.add(new_opinion)
-    session.commit()
-    session.refresh(new_opinion)
+    db.add(new_opinion)
+    db.commit()
+    db.refresh(new_opinion)
     
-    return get_opinion_read(session, new_opinion, current_user)
+    # Return the opinion formatted according to OpinionRead
+    return get_opinion_read(db, new_opinion, current_user)
 
 @router.post("/opinions/{opinion_id}/vote", response_model=OpinionRead)
 def vote_opinion(

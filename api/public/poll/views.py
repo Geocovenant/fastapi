@@ -93,14 +93,22 @@ def read_polls(
         if scope:
             query = query.where(Poll.scope == scope)
             
-        # Another option for the query
-        total_query = select(func.count()).select_from(
+        # Consulta para el total debe incluir los mismos filtros que la consulta principal
+        base_query = (
             select(Poll.id)
             .join(PollCommunityLink)
             .where(PollCommunityLink.community_id == community_id)
-            .distinct()
-            .subquery()
         )
+
+        # Aplicar el mismo filtro de scope a la consulta total
+        if scope:
+            base_query = base_query.where(Poll.scope == scope)
+
+        # Ahora usar esa consulta base para el conteo
+        total_query = select(func.count()).select_from(
+            base_query.distinct().subquery()
+        )
+
         total = db.exec(total_query).first() or 0
         total_pages = (total + size - 1) // size if total > 0 else 1
         

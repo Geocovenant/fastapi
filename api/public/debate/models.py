@@ -8,7 +8,7 @@ from api.public.user.models import User
 from api.public.community.models import Community
 from api.utils.generic_models import DebateTagLink, DebateCommunityLink
 from api.utils.shared_models import UserMinimal, CommunityMinimal
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 
 class DebateType(str, Enum):
     GLOBAL = "GLOBAL"
@@ -138,10 +138,21 @@ class PointOfViewCreate(SQLModel):
     community_ids: list[int] = Field(default=[])
 
 class OpinionCreate(SQLModel):
-    content: str
+    content: str = Field(max_length=5000)
     community_id: Optional[int] = None
     country_cca2: Optional[str] = None
-    region_id: Optional[int] = None
+    
+    @field_validator('content')
+    def content_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError("El contenido no puede estar vacío")
+        return v
+    
+    @model_validator(mode='after')
+    def validate_community_info(self):
+        if not self.community_id and not self.country_cca2:
+            raise ValueError("Debe proporcionar community_id o country_cca2")
+        return self
 
 class OpinionVoteCreate(SQLModel):
     opinion_id: int
@@ -201,6 +212,7 @@ class DebateRead(DebateBase):
     tags: list[str] = []
     points_of_view: list[PointOfViewRead] = []
     is_anonymous: bool = False
+    divisions: Optional[list[dict]] = None  # Field for administrative divisions
 
 class DebateUpdate(SQLModel):
     title: Optional[str] = Field(default=None, min_length=5, max_length=100)
