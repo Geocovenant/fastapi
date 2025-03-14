@@ -237,11 +237,10 @@ def vote_poll(
     db: Session = Depends(get_session)
 ):
     """
-    Vote in a poll.
-    If option_ids is empty, remove the user's existing votes.
-    Requires authentication and membership in the poll's community.
+    Vote on a poll.
+    Authentication and membership in the poll's community are required.
     """
-    # First, get the poll
+    # Verify that the poll exists
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
@@ -249,18 +248,27 @@ def vote_poll(
             detail="Poll not found"
         )
     
+    # Verify that the poll is not closed
+    if poll.status == PollStatus.CLOSED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot vote on a closed poll"
+        )
+    
     # Verify that the user is a member of at least one of the poll's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
     ).all()
-    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    user_community_ids = set(user_communities)
     
     poll_communities = db.exec(
         select(PollCommunityLink.community_id)
         .where(PollCommunityLink.poll_id == poll_id)
     ).all()
-    poll_community_ids = set(pc.community_id for pc in poll_communities)
+    
+    poll_community_ids = set(poll_communities)
     
     if not user_community_ids.intersection(poll_community_ids):
         raise HTTPException(
@@ -333,10 +341,10 @@ def react_to_poll(
     db: Session = Depends(get_session)
 ):
     """
-    React to a poll with LIKE or DISLIKE.
-    Requires authentication and membership in the poll's community.
+    React to a poll with like or dislike.
+    Authentication required.
     """
-    # First, get the poll
+    # Verify that the poll exists
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
@@ -349,13 +357,15 @@ def react_to_poll(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
     ).all()
-    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    user_community_ids = set(user_communities)
     
     poll_communities = db.exec(
         select(PollCommunityLink.community_id)
         .where(PollCommunityLink.poll_id == poll_id)
     ).all()
-    poll_community_ids = set(pc.community_id for pc in poll_communities)
+    
+    poll_community_ids = set(poll_communities)
     
     if not user_community_ids.intersection(poll_community_ids):
         raise HTTPException(
@@ -411,28 +421,33 @@ def create_poll_comment(
     db: Session = Depends(get_session)
 ):
     """
-    Create a new comment on a poll.
-    Requires authentication and membership in the poll's community.
+    Create a comment on a poll.
+    Authentication and membership in the poll's community are required.
     """
+    # Verify that the poll exists
     poll = db.get(Poll, poll_id)
     if not poll:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Poll not found"
         )
-
+    
     # Verify that the user is a member of at least one of the poll's communities
     user_communities = db.exec(
         select(UserCommunityLink.community_id)
         .where(UserCommunityLink.user_id == current_user.id)
     ).all()
-    user_community_ids = set(uc.community_id for uc in user_communities)
+    
+    # Usar directamente los enteros
+    user_community_ids = set(user_communities)
     
     poll_communities = db.exec(
         select(PollCommunityLink.community_id)
         .where(PollCommunityLink.poll_id == poll_id)
     ).all()
-    poll_community_ids = set(pc.community_id for pc in poll_communities)
+    
+    # Usar directamente los enteros
+    poll_community_ids = set(poll_communities)
     
     if not user_community_ids.intersection(poll_community_ids):
         raise HTTPException(

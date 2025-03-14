@@ -761,11 +761,20 @@ def enrich_poll(db: Session, poll: Poll, current_user_id: int | None = None) -> 
     # Get creator
     creator = db.get(User, poll.creator_id)
     
-    # Get options
+    # Get options with vote counts, ordered by ID to maintain consistency
     options = db.exec(
         select(PollOption)
         .where(PollOption.poll_id == poll.id)
+        .order_by(PollOption.id)
     ).all()
+
+    # Count votes per option
+    for option in options:
+        votes_count = db.exec(
+            select(func.count())
+            .where(PollVote.option_id == option.id)
+        ).first()
+        option.votes = votes_count or 0
 
     # Get reactions
     reactions = db.exec(
