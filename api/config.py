@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     
     # Server configuration
     PORT: int = int(os.getenv("PORT", "8080"))
+    
+    # Auth.js configuration
+    AUTHJS_SECRET: str = os.getenv("AUTHJS_SECRET")
+    AUTHJS_SALT: str = os.getenv("AUTHJS_SALT")
 
     class Config:
         env_file = ".env"
