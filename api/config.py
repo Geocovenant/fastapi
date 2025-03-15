@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = [
         "http://localhost:5173",
         "https://geounity.org"
-    ] if ENV == "development" else ["https://geounity.org"]
+    ]
     
     # Cloudinary configuration
     CLOUDINARY_CLOUD_NAME: str = os.getenv("CLOUDINARY_CLOUD_NAME", "")
