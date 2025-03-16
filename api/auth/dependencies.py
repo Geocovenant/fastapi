@@ -16,32 +16,32 @@ AUTHJS_SALT = os.getenv("AUTHJS_SALT")
 # Configure HTTPBearer to extract the token from the Authorization header
 security = HTTPBearer()
 
-def get_derived_encryption_key(secret: str, salt: str) -> bytes:
-    """
-    Derives a 64-byte encryption key using HKDF for A256CBC-HS512.
-    
-    Args:
-        secret (str): The Auth.js secret (AUTHJS_SECRET).
-        salt (str): The salt, typically the cookie name.
-    
-    Returns:
-        bytes: 64-byte derived key.
-    """
-    salt_bytes = salt.encode('utf-8')
-    info_string = f"Auth.js Generated Encryption Key ({salt})".encode('utf-8')
-    hkdf = HKDF(
-        algorithm=hashes.SHA256(),
-        length=64,  # 64 bytes for A256CBC-HS512
-        salt=salt_bytes,
-        info=info_string
-    )
-    key = hkdf.derive(secret.encode('utf-8'))
-    return key
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_session)
 ):
+    def get_derived_encryption_key(secret: str, salt: str) -> bytes:
+        """
+        Derives a 64-byte encryption key using HKDF for A256CBC-HS512.
+        
+        Args:
+            secret (str): The Auth.js secret (AUTHJS_SECRET).
+            salt (str): The salt, typically the cookie name.
+        
+        Returns:
+            bytes: 64-byte derived key.
+        """
+        salt_bytes = salt.encode('utf-8')
+        info_string = f"Auth.js Generated Encryption Key ({salt})".encode('utf-8')
+        hkdf = HKDF(
+            algorithm=hashes.SHA256(),
+            length=64,  # 64 bytes for A256CBC-HS512
+            salt=salt_bytes,
+            info=info_string
+        )
+        key = hkdf.derive(secret.encode('utf-8'))
+        return key
     token = credentials.credentials
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No token provided")
