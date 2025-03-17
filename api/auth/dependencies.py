@@ -52,13 +52,10 @@ async def get_current_user(
 
         # Decrypt the JWE with the derived key
         decrypted_token = jwe.decrypt(token, derived_key)
-        print('decrypted_token', decrypted_token)
         
         token_data = json.loads(decrypted_token.decode('utf-8'))
         
         email = token_data.get("email")
-        print('====================================================')
-        print('email', email)
         if not email:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: email not found")
         

@@ -41,6 +41,7 @@ def search_community(
     - /communities/search?level=LOCAL&country=argentina&region=buenos-aires&subregion=caba&local=palermo
     """
     from api.public.community.models import Community
+    import unicodedata
     
     def normalize_text(text):
         if not text:
@@ -76,49 +77,50 @@ def search_community(
                     detail=f"The '{param_name}' parameter is required for {level} level"
                 )
     
-    # Build base query
-    query = db.query(Community).filter(Community.level == level)
+    # Obtener todas las comunidades de ese nivel
+    communities = db.query(Community).filter(Community.level == level).all()
     
-    # Simplify normalization logic in the query
-    # This reduces complexity and improves performance
-    search_param = {
-        CommunityLevel.NATIONAL: normalized_country,
-        CommunityLevel.REGIONAL: normalized_region,
-        CommunityLevel.SUBREGIONAL: normalized_subregion,
-        CommunityLevel.LOCAL: normalized_local
-    }.get(level)
+    # Realizar la comparación en Python después de normalizar
+    selected_community = None
+    search_term = None
     
-    if search_param:
-        # Use simpler, more compatible approach for normalization
-        query = query.filter(
-            func.lower(
-                func.regexp_replace(
-                    func.regexp_replace(
-                        func.lower(Community.name), 
-                        '[-_]', ' ', 'g'
-                    ),
-                    '\\s+', ' ', 'g'
-                )
-            ) == search_param
-        )
+    if level == CommunityLevel.NATIONAL:
+        search_term = normalized_country
+    elif level == CommunityLevel.REGIONAL:
+        search_term = normalized_region
+    elif level == CommunityLevel.SUBREGIONAL:
+        search_term = normalized_subregion
+    elif level == CommunityLevel.LOCAL:
+        search_term = normalized_local
     
-    # Execute query in an optimized manner
-    community = query.first()
+    for community in communities:
+        community_name = normalize_text(community.name)
+        if community_name == search_term:
+            selected_community = community
+            break
     
-    if not community:
+    # Si no encontramos coincidencia exacta, intentamos búsqueda parcial
+    if not selected_community and search_term:
+        for community in communities:
+            community_name = normalize_text(community.name)
+            if search_term in community_name or community_name in search_term:
+                selected_community = community
+                break
+    
+    if not selected_community:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"No community found with the specified criteria"
         )
     
-    # The community object is already an instance of Community
-    result = CommunityRead.from_orm(community)
+    # El objeto community es ya una instancia de Community
+    result = CommunityRead.from_orm(selected_community)
     
-    # Add region_id if the community level is REGIONAL
-    if community.level == CommunityLevel.REGIONAL:
+    # Añadir region_id si el nivel de comunidad es REGIONAL
+    if selected_community.level == CommunityLevel.REGIONAL:
         # Query the region table to find the region associated with this community
         region_data = db.exec(
-            select(Region).where(Region.community_id == community.id)
+            select(Region).where(Region.community_id == selected_community.id)
         ).first()
         
         if region_data:
@@ -128,12 +130,12 @@ def search_community(
             # Convert back to the response model
             result = CommunityRead(**result_dict)
     
-    # Add subregion_id if the community level is SUBREGIONAL
-    elif community.level == CommunityLevel.SUBREGIONAL:
+    # Añadir subregion_id si el nivel de comunidad es SUBREGIONAL
+    elif selected_community.level == CommunityLevel.SUBREGIONAL:
         # Query the subregion table to find the subregion associated with this community
         from api.public.subregion.models import Subregion
         subregion_data = db.exec(
-            select(Subregion).where(Subregion.community_id == community.id)
+            select(Subregion).where(Subregion.community_id == selected_community.id)
         ).first()
         
         if subregion_data:
